@@ -295,10 +295,163 @@
             .section-body { padding: 1rem; }
             .stat-grid { grid-template-columns: 1fr 1fr; }
         }
+
+        /* ── Edit Mode ── */
+        .edit-toolbar {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            align-items: flex-end;
+        }
+        .et-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.82rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            transition: transform 0.15s, box-shadow 0.15s;
+            white-space: nowrap;
+        }
+        .et-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+        .et-edit   { background: #1a3a4a; color: white; }
+        .et-edit.active { background: #28a745; }
+        .et-export { background: #2a6478; color: white; }
+        .et-reset  { background: #dc3545; color: white; }
+
+        .edit-banner {
+            display: none;
+            background: linear-gradient(90deg, #28a745, #218838);
+            color: white;
+            text-align: center;
+            padding: 0.55rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            letter-spacing: 0.3px;
+        }
+        .edit-mode .edit-banner { display: block; }
+
+        /* Contenteditable feedback */
+        .edit-mode [contenteditable="true"] {
+            outline: 2px dashed rgba(42,100,120,0.35);
+            border-radius: 3px;
+            cursor: text;
+            min-width: 20px;
+            min-height: 1em;
+            transition: outline 0.15s, background 0.15s;
+        }
+        .edit-mode [contenteditable="true"]:hover {
+            outline-color: #2a6478;
+            background: rgba(42,100,120,0.06);
+        }
+        .edit-mode [contenteditable="true"]:focus {
+            outline: 2px solid #2a6478;
+            background: rgba(42,100,120,0.1);
+        }
+
+        /* Delete buttons */
+        .del-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .del-btn:hover { background: #a71d2a; }
+        .del-btn[contenteditable="false"] { -webkit-user-select: none; user-select: none; }
+
+        /* Delete column in tables */
+        th.del-col, td.del-col {
+            width: 34px;
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.3rem 0.25rem !important;
+        }
+        td.del-col { background: #fff5f5 !important; }
+        th.del-col { background: #3a1a1a !important; }
+
+        /* Add row / add item / add stat buttons */
+        .add-row-btn, .add-item-btn, .add-stat-btn, .add-box-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            background: transparent;
+            border: 2px dashed #28a745;
+            color: #155724;
+            border-radius: 8px;
+            padding: 0.45rem 1rem;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 0.5rem;
+            transition: background 0.15s;
+        }
+        .add-row-btn:hover, .add-item-btn:hover,
+        .add-stat-btn:hover, .add-box-btn:hover { background: #d4edda; }
+
+        /* Stat item delete overlay */
+        .stat-item { position: relative; }
+        .si-del-btn {
+            position: absolute;
+            top: 5px; right: 5px;
+            width: 18px; height: 18px;
+            font-size: 0.72rem;
+            line-height: 18px;
+            display: none;
+        }
+        .edit-mode .si-del-btn { display: block; }
+
+        /* Info-box delete overlay */
+        .info-box { position: relative; }
+        .ib-del-btn {
+            position: absolute;
+            top: 6px; right: 6px;
+            display: none;
+        }
+        .edit-mode .ib-del-btn { display: block; }
+
+        /* List item delete button */
+        li { display: flex; align-items: flex-start; gap: 0.35rem; }
+        li .li-del-btn { flex-shrink: 0; margin-top: 0.1rem; display: none; }
+        .edit-mode li .li-del-btn { display: block; }
+
+        /* Edit mode section highlight */
+        .edit-mode .section-card { outline: 2px dashed rgba(42,100,120,0.18); }
+        .edit-mode .section-card:hover { outline-color: rgba(42,100,120,0.35); }
     </style>
 </head>
 <body>
 <div class="container">
+
+    <!-- Edit Toolbar -->
+    <div class="edit-toolbar">
+        <button class="et-btn et-edit" id="editToggleBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="et-btn et-export" onclick="exportHTML()">💾 Export HTML</button>
+        <button class="et-btn et-reset" onclick="resetChanges()">🔄 Reset</button>
+    </div>
+
+    <!-- Edit Mode Banner -->
+    <div class="edit-banner">✏️ EDIT MODE ACTIVE — Click any cell, list item, or text to edit &nbsp;|&nbsp; Use ＋ buttons to add rows or items &nbsp;|&nbsp; Click × to delete</div>
 
     <!-- Breadcrumb -->
     <div class="breadcrumb">
@@ -1511,7 +1664,11 @@
 </div>
 
 <script>
+/* ═══════════════════════════════════════════════════
+   SECTION COLLAPSE / EXPAND
+═══════════════════════════════════════════════════ */
 function toggleSection(headerEl) {
+    if (editMode) return; // don't collapse while editing
     const body = headerEl.nextElementSibling;
     const icon = headerEl.querySelector('.toggle-icon');
     if (body.classList.contains('hidden')) {
@@ -1524,9 +1681,359 @@ function toggleSection(headerEl) {
         icon.textContent = '▼';
     }
 }
+
+/* ═══════════════════════════════════════════════════
+   COUNTER ANIMATION
+═══════════════════════════════════════════════════ */
+function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const duration = 1200;
+    const start = performance.now();
+    function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = target;
+    }
+    requestAnimationFrame(update);
+}
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            document.querySelectorAll('.count-anim').forEach(el => animateCounter(el));
+            observer.disconnect();
+        }
+    });
+}, { threshold: 0.3 });
+const statsRow = document.querySelector('.stats-row');
+if (statsRow) observer.observe(statsRow);
+
+/* ═══════════════════════════════════════════════════
+   EDIT MODE ENGINE
+═══════════════════════════════════════════════════ */
+const STORAGE_KEY = 'mvec_cs_v1';
+let editMode = false;
+
+function toggleEditMode() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    const btn = document.getElementById('editToggleBtn');
+    if (editMode) {
+        btn.textContent = '✅ Done Editing';
+        btn.classList.add('active');
+        enableEditing();
+    } else {
+        btn.textContent = '✏️ Edit Mode';
+        btn.classList.remove('active');
+        disableEditing();
+        saveToStorage();
+    }
+}
+
+/* ── Enable ── */
+function enableEditing() {
+
+    /* 1. Tables inside section-body: add delete column + Add Row button */
+    document.querySelectorAll('.section-body table').forEach(tbl => {
+        // Header delete column
+        const headerRow = tbl.querySelector('thead tr');
+        if (headerRow && !headerRow.querySelector('th.del-col')) {
+            const th = document.createElement('th');
+            th.className = 'del-col';
+            headerRow.appendChild(th);
+        }
+        // Body rows: make cells editable + add delete td
+        tbl.querySelectorAll('tbody tr').forEach(tr => {
+            tr.querySelectorAll('td:not(.del-col)').forEach(td => {
+                td.contentEditable = 'true';
+            });
+            if (!tr.querySelector('td.del-col')) {
+                const td = mkDelCell(() => tr.remove());
+                tr.appendChild(td);
+            }
+        });
+        // Add Row button below table (only once)
+        if (!tbl.nextElementSibling || !tbl.nextElementSibling.classList.contains('add-row-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-row-btn';
+            btn.textContent = '＋ Add Row';
+            btn.onclick = () => addTableRow(tbl);
+            tbl.after(btn);
+        }
+    });
+
+    /* 2. List items: make editable + add delete buttons */
+    document.querySelectorAll('.section-body li, .dpc-body li').forEach(li => {
+        li.contentEditable = 'true';
+        if (!li.querySelector('.li-del-btn')) {
+            const btn = mkDelBtn(() => li.remove());
+            btn.classList.add('li-del-btn');
+            btn.contentEditable = 'false';
+            li.appendChild(btn);
+        }
+    });
+
+    /* 3. Add Item buttons after each UL */
+    document.querySelectorAll('.section-body ul, .dpc-body ul').forEach(ul => {
+        if (!ul.nextElementSibling || !ul.nextElementSibling.classList.contains('add-item-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-item-btn';
+            btn.textContent = '＋ Add Item';
+            btn.onclick = () => addListItem(ul);
+            ul.after(btn);
+        }
+    });
+
+    /* 4. Stat items: make label/value/sub editable + delete button */
+    document.querySelectorAll('.stat-item').forEach(item => {
+        item.querySelectorAll('.si-label, .si-value, .si-sub').forEach(el => {
+            el.contentEditable = 'true';
+        });
+        if (!item.querySelector('.si-del-btn')) {
+            const btn = mkDelBtn(() => item.remove());
+            btn.className += ' si-del-btn';
+            btn.contentEditable = 'false';
+            item.appendChild(btn);
+        }
+    });
+
+    /* 5. Add Stat button after the stat grid */
+    const statGrid = document.querySelector('.stat-grid');
+    if (statGrid && (!statGrid.nextElementSibling || !statGrid.nextElementSibling.classList.contains('add-stat-btn'))) {
+        const btn = document.createElement('button');
+        btn.className = 'add-stat-btn';
+        btn.textContent = '＋ Add Stat Item';
+        btn.onclick = addStatItem;
+        statGrid.after(btn);
+    }
+
+    /* 6. Info boxes: make editable + delete button */
+    document.querySelectorAll('.info-box').forEach(box => {
+        box.contentEditable = 'true';
+        if (!box.querySelector('.ib-del-btn')) {
+            const btn = mkDelBtn(() => box.remove());
+            btn.className += ' ib-del-btn';
+            btn.contentEditable = 'false';
+            box.appendChild(btn);
+        }
+    });
+
+    /* 7. Add Info Box buttons — one per section-body */
+    document.querySelectorAll('.section-body').forEach(body => {
+        if (!body.querySelector('.add-box-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-box-btn';
+            btn.textContent = '＋ Add Info Box';
+            btn.onclick = () => addInfoBox(btn);
+            body.appendChild(btn);
+        }
+    });
+
+    /* 8. Section headings editable */
+    document.querySelectorAll('.section-card-header h2, .section-body h3.sub-heading, .section-body .body-text, .dpc-header, .dpc-mil-bar').forEach(el => {
+        el.contentEditable = 'true';
+    });
+
+    /* 9. Network diagram editable */
+    document.querySelectorAll('.network-diagram').forEach(el => {
+        el.contentEditable = 'true';
+    });
+}
+
+/* ── Disable ── */
+function disableEditing() {
+
+    /* Remove delete columns from tables */
+    document.querySelectorAll('th.del-col, td.del-col').forEach(el => el.remove());
+
+    /* Remove add-row / add-item / add-stat / add-box buttons */
+    document.querySelectorAll('.add-row-btn, .add-item-btn, .add-stat-btn, .add-box-btn').forEach(el => el.remove());
+
+    /* Remove table cell contenteditable */
+    document.querySelectorAll('.section-body tbody td[contenteditable]').forEach(td => td.removeAttribute('contenteditable'));
+
+    /* Remove li delete buttons + contenteditable */
+    document.querySelectorAll('.li-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('li[contenteditable]').forEach(li => li.removeAttribute('contenteditable'));
+
+    /* Remove stat delete buttons + contenteditable */
+    document.querySelectorAll('.si-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.si-label[contenteditable], .si-value[contenteditable], .si-sub[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+    /* Remove info-box delete buttons + contenteditable */
+    document.querySelectorAll('.ib-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.info-box[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+    /* Remove heading contenteditable */
+    document.querySelectorAll('.section-card-header h2[contenteditable], h3.sub-heading[contenteditable], .body-text[contenteditable], .dpc-header[contenteditable], .dpc-mil-bar[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+    /* Remove network diagram contenteditable */
+    document.querySelectorAll('.network-diagram[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+}
+
+/* ── Helpers ── */
+function mkDelBtn(onClickFn) {
+    const btn = document.createElement('button');
+    btn.className = 'del-btn';
+    btn.textContent = '×';
+    btn.title = 'Delete';
+    btn.onclick = (e) => { e.stopPropagation(); onClickFn(); };
+    return btn;
+}
+
+function mkDelCell(onClickFn) {
+    const td = document.createElement('td');
+    td.className = 'del-col';
+    td.appendChild(mkDelBtn(onClickFn));
+    return td;
+}
+
+function addTableRow(tbl) {
+    const headerRow = tbl.querySelector('thead tr');
+    // count data cols (exclude del-col)
+    const dataCols = headerRow
+        ? [...headerRow.cells].filter(c => !c.classList.contains('del-col')).length
+        : 3;
+    const tr = document.createElement('tr');
+    for (let i = 0; i < dataCols; i++) {
+        const td = document.createElement('td');
+        td.contentEditable = 'true';
+        td.textContent = 'Click to edit';
+        tr.appendChild(td);
+    }
+    tr.appendChild(mkDelCell(() => tr.remove()));
+    tbl.querySelector('tbody').appendChild(tr);
+    tr.cells[0].focus();
+}
+
+function addListItem(ul) {
+    const li = document.createElement('li');
+    li.contentEditable = 'true';
+    li.textContent = 'New item — click to edit';
+    const btn = mkDelBtn(() => li.remove());
+    btn.classList.add('li-del-btn');
+    btn.contentEditable = 'false';
+    li.appendChild(btn);
+    ul.appendChild(li);
+    // Move cursor to start of li text
+    const range = document.createRange();
+    const textNode = li.firstChild;
+    if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        range.setStart(textNode, 0);
+        range.collapse(true);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+    li.focus();
+}
+
+function addStatItem() {
+    const grid = document.querySelector('.stat-grid');
+    if (!grid) return;
+    const item = document.createElement('div');
+    item.className = 'stat-item';
+    item.innerHTML =
+        '<div class="si-label" contenteditable="true">Label</div>' +
+        '<div class="si-value" contenteditable="true">Value</div>' +
+        '<div class="si-sub"  contenteditable="true">Sub-detail</div>';
+    const btn = mkDelBtn(() => item.remove());
+    btn.className += ' si-del-btn';
+    btn.contentEditable = 'false';
+    item.appendChild(btn);
+    // Insert before the add-stat-btn
+    const addBtn = grid.nextElementSibling;
+    grid.appendChild(item);
+    item.querySelector('.si-value').focus();
+}
+
+function addInfoBox(addBtn) {
+    const box = document.createElement('div');
+    box.className = 'info-box info';
+    box.contentEditable = 'true';
+    box.innerHTML = '<strong contenteditable="false">Heading</strong> Enter your text here.';
+    const delBtn = mkDelBtn(() => box.remove());
+    delBtn.className += ' ib-del-btn';
+    delBtn.contentEditable = 'false';
+    box.appendChild(delBtn);
+    addBtn.before(box);
+    box.focus();
+}
+
+/* ═══════════════════════════════════════════════════
+   PERSISTENCE
+═══════════════════════════════════════════════════ */
+function saveToStorage() {
+    try {
+        // Temporarily strip edit UI before saving
+        const container = document.querySelector('.container');
+        localStorage.setItem(STORAGE_KEY, container.innerHTML);
+    } catch(e) {
+        console.warn('localStorage save failed:', e);
+    }
+}
+
+function loadFromStorage() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            document.querySelector('.container').innerHTML = saved;
+        }
+    } catch(e) {}
+}
+
+function resetChanges() {
+    if (confirm('Reset all edits and restore the original case study?\n\nThis cannot be undone.')) {
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+        if (editMode) {
+            editMode = false;
+            document.body.classList.remove('edit-mode');
+        }
+        location.reload();
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════════════════ */
+function exportHTML() {
+    // Make sure we're not in edit mode when exporting
+    const wasEditing = editMode;
+    if (wasEditing) {
+        editMode = false;
+        document.body.classList.remove('edit-mode');
+        disableEditing();
+    }
+
+    const clone = document.documentElement.cloneNode(true);
+    // Remove the toolbar from the export
+    const toolbar = clone.querySelector('.edit-toolbar');
+    if (toolbar) toolbar.remove();
+    const banner = clone.querySelector('.edit-banner');
+    if (banner) banner.remove();
+    clone.querySelector('body')?.classList.remove('edit-mode');
+
+    const blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'mvec-case-study.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+
+    if (wasEditing) {
+        editMode = true;
+        document.body.classList.add('edit-mode');
+        enableEditing();
+    }
+}
+
+/* ── Load saved state on page load ── */
+// loadFromStorage(); // Uncomment to auto-restore saved edits on load
 </script>
 </body>
 </html>
-
-
-
