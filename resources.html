@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Resources & References</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%); min-height: 100vh; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 1rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .card h2 { font-size: 1.6rem; color: #1a3a4a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #2a6478; }
+        .card p { color: #555; line-height: 1.7; margin-bottom: 0.8rem; font-size: 0.95rem; }
+        .resource-list { list-style: none; padding: 0; }
+        .resource-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; border-radius: 10px; margin-bottom: 0.8rem; transition: background 0.2s; background: #f8f9fa; border: 1px solid #e9ecef; }
+        .resource-item:hover { background: #e8f4f8; border-color: #b0d4e3; }
+        .resource-item .icon { font-size: 1.8rem; flex-shrink: 0; }
+        .resource-item .info h4 { font-size: 1rem; color: #1a3a4a; margin-bottom: 0.3rem; }
+        .resource-item .info p { font-size: 0.88rem; color: #666; margin-bottom: 0.3rem; line-height: 1.5; }
+        .resource-item .info .source { font-size: 0.78rem; color: #888; font-style: italic; }
+        .resource-item .info a { color: #2a6478; text-decoration: none; font-size: 0.85rem; font-weight: 600; }
+        .resource-item .info a:hover { text-decoration: underline; }
+        .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.72rem; font-weight: 700; margin-right: 0.3rem; margin-bottom: 0.3rem; }
+        .tag-doe { background: #e8f4f8; color: #1a3a4a; }
+        .tag-nist { background: #f0e8f8; color: #5a1a8a; }
+        .tag-free { background: #d4edda; color: #155724; }
+        .tag-tool { background: #fff3cd; color: #856404; }
+        .tag-isac { background: #fde8d8; color: #7a2e00; }
+        .related-portal { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .portal-link { text-decoration: none; background: #f0f7fa; border-radius: 10px; padding: 1.2rem; border: 1px solid #b0d4e3; transition: all 0.2s; text-align: center; }
+        .portal-link:hover { background: #e8f4f8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .portal-link .icon { font-size: 1.8rem; display: block; margin-bottom: 0.5rem; }
+        .portal-link .label { font-size: 0.9rem; color: #1a3a4a; font-weight: 600; }
+        .footer { text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-top: 2rem; }
+        @media (max-width: 768px) { .container { padding: 1rem; } .page-header h1 { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+    <div class="page-header">
+        <h1>📋 Resources & References</h1>
+        <p>Official documents, toolkits, training, and sector resources for C2M2</p>
+    </div>
+
+    <div class="card">
+        <h2>Official C2M2 Documents (DOE)</h2>
+        <ul class="resource-list">
+            <li class="resource-item">
+                <span class="icon">📘</span>
+                <div class="info">
+                    <h4>C2M2 Version 2.1 Model Document</h4>
+                    <p>The authoritative source for all C2M2 domains, objectives, practices, and MIL definitions. Published by U.S. Department of Energy CESER.</p>
+                    <div><span class="tag tag-doe">DOE</span><span class="tag tag-free">Free</span></div>
+                    <span class="source">energy.gov/ceser/cybersecurity-capability-maturity-model-c2m2</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">🔧</span>
+                <div class="info">
+                    <h4>C2M2 Self-Evaluation Tool (SET)</h4>
+                    <p>Excel-based toolkit from DOE that guides organizations through the self-evaluation process with scoring worksheets, heatmap outputs, and report generation.</p>
+                    <div><span class="tag tag-doe">DOE</span><span class="tag tag-tool">Tool</span><span class="tag tag-free">Free</span></div>
+                    <span class="source">energy.gov/ceser — Download from C2M2 Toolkit section</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">📋</span>
+                <div class="info">
+                    <h4>C2M2 Facilitation Guide</h4>
+                    <p>Step-by-step guide for C2M2 facilitators on how to run a self-evaluation session: preparation, facilitation techniques, scoring, and reporting.</p>
+                    <div><span class="tag tag-doe">DOE</span><span class="tag tag-free">Free</span></div>
+                    <span class="source">energy.gov/ceser</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">📊</span>
+                <div class="info">
+                    <h4>C2M2 Program Overview Presentation</h4>
+                    <p>Official DOE slide deck providing an introduction to C2M2 concepts, use cases, and the self-evaluation process. Useful for executive briefings.</p>
+                    <div><span class="tag tag-doe">DOE</span><span class="tag tag-free">Free</span></div>
+                    <span class="source">energy.gov/ceser</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Related NIST Publications</h2>
+        <ul class="resource-list">
+            <li class="resource-item">
+                <span class="icon">📖</span>
+                <div class="info">
+                    <h4>NIST Cybersecurity Framework (CSF) 2.0</h4>
+                    <p>The NIST CSF provides the Identify, Protect, Detect, Respond, Recover functions that underpin many C2M2 domain objectives. C2M2 v2.1 aligns to CSF 1.1; CSF 2.0 adds a Govern function.</p>
+                    <div><span class="tag tag-nist">NIST</span><span class="tag tag-free">Free</span></div>
+                    <span class="source">nist.gov/cyberframework</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">📖</span>
+                <div class="info">
+                    <h4>NIST SP 800-82 Rev 3 — OT Security Guide</h4>
+                    <p>Guide for Industrial Control System (ICS) security. Essential companion for C2M2 ASSET and ARCHITECTURE domain practices relating to OT environments.</p>
+                    <div><span class="tag tag-nist">NIST</span><span class="tag tag-free">Free</span></div>
+                    <span class="source">csrc.nist.gov/publications/detail/sp/800-82/rev-3/final</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">📖</span>
+                <div class="info">
+                    <h4>NIST SP 800-53 Rev 5 — Security Controls</h4>
+                    <p>Comprehensive control catalog. Useful for mapping C2M2 practices to specific security controls when building your SSP or evidence package.</p>
+                    <div><span class="tag tag-nist">NIST</span><span class="tag tag-free">Free</span></div>
+                    <span class="source">csrc.nist.gov/publications/detail/sp/800-53/rev-5/final</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">📖</span>
+                <div class="info">
+                    <h4>NIST SP 800-30 — Risk Assessment Guide</h4>
+                    <p>Guidance for conducting risk assessments. Directly supports C2M2 RISK domain practices at MIL 1 and MIL 2.</p>
+                    <div><span class="tag tag-nist">NIST</span><span class="tag tag-free">Free</span></div>
+                    <span class="source">csrc.nist.gov/publications/detail/sp/800-30/rev-1/final</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Sector ISACs and Information Sharing Resources</h2>
+        <ul class="resource-list">
+            <li class="resource-item">
+                <span class="icon">⚡</span>
+                <div class="info">
+                    <h4>E-ISAC — Electricity Information Sharing and Analysis Center</h4>
+                    <p>The E-ISAC provides cybersecurity information sharing, analysis, and situational awareness for the electricity sector. Membership supports C2M2 SITUATION and THREAT domain MIL 3 practices.</p>
+                    <div><span class="tag tag-isac">E-ISAC</span></div>
+                    <span class="source">eisac.com</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">🛢️</span>
+                <div class="info">
+                    <h4>ONG-ISAC — Oil and Natural Gas ISAC</h4>
+                    <p>Threat intelligence and information sharing for the oil and natural gas sector. Key resource for organizations pursuing C2M2 in the ONG subsector.</p>
+                    <div><span class="tag tag-isac">ONG-ISAC</span></div>
+                    <span class="source">ongisac.org</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">🏛️</span>
+                <div class="info">
+                    <h4>CISA — Cybersecurity and Infrastructure Security Agency</h4>
+                    <p>Free cybersecurity resources, advisories, vulnerability alerts, and the Known Exploited Vulnerabilities (KEV) catalog. Supports THREAT domain practices.</p>
+                    <div><span class="tag tag-free">Free</span></div>
+                    <span class="source">cisa.gov</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">🏛️</span>
+                <div class="info">
+                    <h4>ICS-CERT Advisories</h4>
+                    <p>CISA's ICS-CERT provides advisories and alerts specific to industrial control systems. Essential for OT-focused threat and vulnerability management.</p>
+                    <div><span class="tag tag-free">Free</span></div>
+                    <span class="source">cisa.gov/ics-cert</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>C2M2 Training Resources</h2>
+        <ul class="resource-list">
+            <li class="resource-item">
+                <span class="icon">🎓</span>
+                <div class="info">
+                    <h4>DOE C2M2 Facilitator Training</h4>
+                    <p>DOE CESER offers training for organizations that want to prepare their own C2M2 facilitators. Check the CESER website for current course offerings and schedules.</p>
+                    <div><span class="tag tag-doe">DOE</span></div>
+                    <span class="source">energy.gov/ceser</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">🎓</span>
+                <div class="info">
+                    <h4>Idaho National Laboratory (INL) — Cybersecurity Training</h4>
+                    <p>INL supports DOE energy sector cybersecurity programs and offers training resources including C2M2-aligned content for OT/ICS environments.</p>
+                    <div><span class="tag tag-doe">DOE / INL</span></div>
+                    <span class="source">inl.gov/core-capabilities/national-homeland-security</span>
+                </div>
+            </li>
+            <li class="resource-item">
+                <span class="icon">🎓</span>
+                <div class="info">
+                    <h4>SANS ICS / OT Security Training</h4>
+                    <p>SANS offers ICS410, ICS515, and other courses that build skills directly relevant to C2M2 ASSET, ARCHITECTURE, RESPONSE, and SITUATION domains.</p>
+                    <div><span class="tag tag-tool">Paid</span></div>
+                    <span class="source">sans.org/ics</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Other Pages in This Portal</h2>
+        <div class="related-portal">
+            <a href="overview.html" class="portal-link"><span class="icon">🏛️</span><div class="label">Framework Overview</div></a>
+            <a href="mil-levels.html" class="portal-link"><span class="icon">📊</span><div class="label">MIL Levels Guide</div></a>
+            <a href="domains.html" class="portal-link"><span class="icon">📚</span><div class="label">Domains Reference</div></a>
+            <a href="self-assessment.html" class="portal-link"><span class="icon">🔍</span><div class="label">Self-Assessment Tool</div></a>
+            <a href="evidence.html" class="portal-link"><span class="icon">📁</span><div class="label">Evidence Guide</div></a>
+            <a href="gap-analysis.html" class="portal-link"><span class="icon">🗺️</span><div class="label">Gap Analysis</div></a>
+            <a href="roles.html" class="portal-link"><span class="icon">👥</span><div class="label">Roles & RACI</div></a>
+            <a href="crosswalk.html" class="portal-link"><span class="icon">🔗</span><div class="label">CMMC Crosswalk</div></a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 Resources &amp; References</strong> | C2M2 Version 2.1</p>
+        <p>This portal is for educational use. Always verify information against official DOE and NIST publications.</p>
+    </div>
+</div>
+</body>
+</html>

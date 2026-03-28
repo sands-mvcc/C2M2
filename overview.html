@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Framework Overview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .card h2 { font-size: 1.6rem; color: #1a3a4a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #2a6478; }
+        .card h3 { font-size: 1.2rem; color: #1a3a4a; margin: 1.2rem 0 0.5rem; }
+        .card p { color: #555; line-height: 1.7; margin-bottom: 0.8rem; }
+        .card ul { padding-left: 1.5rem; color: #555; line-height: 1.8; }
+        .card li { margin-bottom: 0.4rem; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .info-box {
+            background: #f0f7fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #2a6478;
+            text-align: center;
+        }
+        .info-box .num { font-size: 2.5rem; font-weight: 700; color: #1a3a4a; }
+        .info-box .label { font-size: 0.9rem; color: #666; margin-top: 0.3rem; }
+        .sector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .sector-badge {
+            background: #e8f4f8;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.95rem;
+            color: #1a3a4a;
+            font-weight: 500;
+            border: 1px solid #b0d4e3;
+        }
+        .sector-badge .icon { font-size: 1.8rem; display: block; margin-bottom: 0.4rem; }
+        .timeline { margin-top: 1rem; }
+        .timeline-item { display: flex; gap: 1rem; margin-bottom: 1.2rem; align-items: flex-start; }
+        .timeline-year {
+            background: #1a3a4a;
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 60px;
+            text-align: center;
+        }
+        .timeline-text { color: #555; line-height: 1.6; font-size: 0.95rem; }
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .page-header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+
+    <div class="page-header">
+        <h1>🏛️ C2M2 Framework Overview</h1>
+        <p>Cybersecurity Capability Maturity Model — Version 2.1</p>
+    </div>
+
+    <div class="card">
+        <h2>What is C2M2?</h2>
+        <p>The <strong>Cybersecurity Capability Maturity Model (C2M2)</strong> is a voluntary framework developed by the U.S. Department of Energy (DOE) to help organizations evaluate and improve their cybersecurity capabilities. It provides a structured way to measure the maturity of cybersecurity practices across ten domains using a three-level maturity scale.</p>
+        <p>C2M2 is designed to be sector-agnostic but is especially relevant to <strong>electricity, oil and natural gas, and other critical infrastructure sectors</strong>. Unlike compliance frameworks that define a binary pass/fail, C2M2 acknowledges that cybersecurity is a continuous journey and helps organizations identify where they are and prioritize where to go next.</p>
+
+        <div class="info-grid">
+            <div class="info-box">
+                <div class="num">10</div>
+                <div class="label">Cybersecurity Domains</div>
+            </div>
+            <div class="info-box">
+                <div class="num">356+</div>
+                <div class="label">Cybersecurity Practices</div>
+            </div>
+            <div class="info-box">
+                <div class="num">3</div>
+                <div class="label">Maturity Indicator Levels</div>
+            </div>
+            <div class="info-box">
+                <div class="num">v2.1</div>
+                <div class="label">Current Version (2022)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Who Should Use C2M2?</h2>
+        <p>C2M2 is applicable to any organization that operates or relies on technology to deliver critical services. It is especially suited for:</p>
+        <div class="sector-grid">
+            <div class="sector-badge"><span class="icon">⚡</span>Electric Utilities</div>
+            <div class="sector-badge"><span class="icon">🛢️</span>Oil & Natural Gas</div>
+            <div class="sector-badge"><span class="icon">💧</span>Water Systems</div>
+            <div class="sector-badge"><span class="icon">🏭</span>Industrial / OT</div>
+            <div class="sector-badge"><span class="icon">🏥</span>Healthcare</div>
+            <div class="sector-badge"><span class="icon">🏦</span>Financial Services</div>
+            <div class="sector-badge"><span class="icon">🏛️</span>Government</div>
+            <div class="sector-badge"><span class="icon">🔭</span>Research Institutions</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>How C2M2 is Structured</h2>
+        <p>C2M2 organizes cybersecurity activities into <strong>ten domains</strong>, each representing a functional area of cybersecurity management. Within each domain, practices are grouped into <strong>objectives</strong> and assigned to <strong>Maturity Indicator Levels (MIL 1–3)</strong>.</p>
+        <h3>Domain Structure</h3>
+        <ul>
+            <li><strong>ASSET</strong> — Asset, Change, and Configuration Management</li>
+            <li><strong>THREAT</strong> — Threat and Vulnerability Management</li>
+            <li><strong>RISK</strong> — Risk Management</li>
+            <li><strong>ACCESS</strong> — Identity and Access Management</li>
+            <li><strong>SITUATION</strong> — Situational Awareness</li>
+            <li><strong>RESPONSE</strong> — Event and Incident Response, Continuity of Operations</li>
+            <li><strong>THIRD-PARTIES</strong> — Third-Party Risk Management</li>
+            <li><strong>WORKFORCE</strong> — Workforce Management</li>
+            <li><strong>ARCHITECTURE</strong> — Cybersecurity Architecture</li>
+            <li><strong>PROGRAM</strong> — Cybersecurity Program Management</li>
+        </ul>
+        <h3>MIL Progression</h3>
+        <p>Each domain can independently achieve MIL 0 (not performed) through MIL 3 (optimized). Achieving a MIL level in one domain does not require achieving the same level in other domains — organizations can have uneven maturity profiles.</p>
+    </div>
+
+    <div class="card">
+        <h2>Self-Evaluation vs. Independent Evaluation</h2>
+        <h3>Self-Evaluation</h3>
+        <p>Organizations may conduct a <strong>C2M2 self-evaluation</strong> using the DOE-provided toolkits and facilitation guides. A self-evaluation involves subject matter experts across the organization rating their own implementation of practices. Results are internal and used to guide improvement planning.</p>
+        <h3>Independent Evaluation</h3>
+        <p>A <strong>third-party (independent) evaluation</strong> provides an objective assessment and may be required by sector regulators or contractual agreements. An independent evaluator reviews evidence, conducts interviews, and validates practice implementation against C2M2 criteria.</p>
+        <h3>Key Differences</h3>
+        <ul>
+            <li>Self-evaluation is internal, voluntary, and lower cost</li>
+            <li>Independent evaluation is evidence-driven and externally validated</li>
+            <li>Neither evaluation results in a pass/fail — both produce a maturity profile</li>
+            <li>Evaluations are point-in-time; organizations should repeat them periodically</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>C2M2 Version History</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-year">2012</span>
+                <div class="timeline-text"><strong>C2M2 v1.0</strong> — Original model released by DOE targeting the electricity subsector.</div>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">2014</span>
+                <div class="timeline-text"><strong>ES-C2M2 / ONG-C2M2</strong> — Separate sector-specific supplements released for Electricity Subsector and Oil & Natural Gas subsector.</div>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">2019</span>
+                <div class="timeline-text"><strong>C2M2 v1.1</strong> — Minor revision with clarifications and alignment to NIST CSF updates.</div>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">2022</span>
+                <div class="timeline-text"><strong>C2M2 v2.0 / v2.1</strong> — Major revision consolidating sector supplements, expanding to 10 domains, adding Supply Chain and Architecture domains, and aligning with NIST CSF 1.1 and NERC CIP.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 Framework Overview</strong> | Cybersecurity Capability Maturity Model v2.1</p>
+        <p>Source: U.S. Department of Energy, Office of Cybersecurity, Energy Security, and Emergency Response (CESER)</p>
+    </div>
+</div>
+</body>
+</html>

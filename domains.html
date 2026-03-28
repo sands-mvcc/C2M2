@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Domains & Practice Reference</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 1rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .domain-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .domain-header {
+            background: #1a3a4a;
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .domain-header .abbr {
+            background: #2a6478;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .domain-header .title { font-size: 1.3rem; font-weight: 600; }
+        .domain-header .icon { font-size: 1.8rem; }
+        .domain-body { padding: 1.5rem 2rem; }
+        .domain-body .objective-label { color: #666; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem; margin-top: 1rem; }
+        .domain-body p.desc { color: #555; line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem; }
+        .practices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        .mil-practices { border-radius: 8px; padding: 1rem; }
+        .mil1-bg { background: #fff9e6; border-left: 4px solid #ffc107; }
+        .mil2-bg { background: #e8f7fb; border-left: 4px solid #17a2b8; }
+        .mil3-bg { background: #eafaf1; border-left: 4px solid #28a745; }
+        .mil-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .mil1-bg .mil-title { color: #856404; }
+        .mil2-bg .mil-title { color: #0c5460; }
+        .mil3-bg .mil-title { color: #155724; }
+        .practice-list { list-style: none; padding: 0; }
+        .practice-list li {
+            font-size: 0.85rem;
+            color: #444;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            line-height: 1.4;
+        }
+        .practice-list li:last-child { border-bottom: none; }
+        .practice-id { font-weight: 700; color: #1a3a4a; margin-right: 0.3rem; }
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) { .container { padding: 1rem; } .page-header h1 { font-size: 1.8rem; } .domain-body { padding: 1rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+
+    <div class="page-header">
+        <h1>📚 Domains & Practice Reference</h1>
+        <p>All 10 C2M2 v2.1 Domains — Objectives and Practices by MIL Level</p>
+    </div>
+
+    <!-- ASSET -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">🗂️</span>
+            <span class="abbr">ASSET</span>
+            <span class="title">Asset, Change, and Configuration Management</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Manage the organization's IT and OT assets — including hardware, software, and data — and the changes and configurations applied to them. Knowing what you have and controlling how it changes is fundamental to all other cybersecurity functions.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ASSET-1a</span> Establish and maintain an inventory of IT assets</li>
+                        <li><span class="practice-id">ASSET-1b</span> Establish and maintain an inventory of OT assets</li>
+                        <li><span class="practice-id">ASSET-2a</span> Perform change management for organizational assets</li>
+                        <li><span class="practice-id">ASSET-2b</span> Test changes to assets before deployment</li>
+                        <li><span class="practice-id">ASSET-3a</span> Establish baseline configurations for IT and OT assets</li>
+                        <li><span class="practice-id">ASSET-3b</span> Manage configurations for IT and OT assets</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ASSET-1c</span> Prioritize assets based on criticality to operations</li>
+                        <li><span class="practice-id">ASSET-1d</span> Ensure asset inventories are kept current</li>
+                        <li><span class="practice-id">ASSET-2c</span> Plan and document change management activities</li>
+                        <li><span class="practice-id">ASSET-3c</span> Define and use documented configuration management procedures</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ASSET-1e</span> Analyze asset management activities to identify improvements</li>
+                        <li><span class="practice-id">ASSET-1f</span> Communicate asset management results to stakeholders</li>
+                        <li><span class="practice-id">ASSET-2d</span> Improve change management based on lessons learned</li>
+                        <li><span class="practice-id">ASSET-3d</span> Review and improve the configuration management program</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- THREAT -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">🛡️</span>
+            <span class="abbr">THREAT</span>
+            <span class="title">Threat and Vulnerability Management</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Identify, analyze, and respond to cybersecurity threats and vulnerabilities affecting the organization's assets and operations. Includes vulnerability scanning, threat intelligence, and remediation tracking.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">THREAT-1a</span> Identify cybersecurity vulnerabilities in organizational assets</li>
+                        <li><span class="practice-id">THREAT-1b</span> Evaluate cybersecurity vulnerabilities to determine risk</li>
+                        <li><span class="practice-id">THREAT-1c</span> Respond to discovered cybersecurity vulnerabilities</li>
+                        <li><span class="practice-id">THREAT-2a</span> Perform threat analysis activities</li>
+                        <li><span class="practice-id">THREAT-2b</span> Receive cybersecurity threat intelligence from external sources</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">THREAT-1d</span> Plan and document vulnerability management activities</li>
+                        <li><span class="practice-id">THREAT-1e</span> Track remediation of identified vulnerabilities</li>
+                        <li><span class="practice-id">THREAT-2c</span> Document and manage threat analysis activities</li>
+                        <li><span class="practice-id">THREAT-2d</span> Prioritize threats based on operational impact</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">THREAT-1f</span> Analyze vulnerability management activities to improve the program</li>
+                        <li><span class="practice-id">THREAT-2e</span> Analyze threat data to improve threat management practices</li>
+                        <li><span class="practice-id">THREAT-2f</span> Share threat intelligence across organizational boundaries</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RISK -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">⚖️</span>
+            <span class="abbr">RISK</span>
+            <span class="title">Risk Management</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Establish and maintain a cybersecurity risk management strategy, assess cybersecurity risks, and communicate risk information to support organizational decision-making.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">RISK-1a</span> Identify cybersecurity risks to the organization</li>
+                        <li><span class="practice-id">RISK-1b</span> Analyze identified cybersecurity risks</li>
+                        <li><span class="practice-id">RISK-2a</span> Respond to identified cybersecurity risks</li>
+                        <li><span class="practice-id">RISK-2b</span> Prioritize risks for response based on impact</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">RISK-1c</span> Establish and document a risk management strategy</li>
+                        <li><span class="practice-id">RISK-1d</span> Define risk tolerance and acceptance criteria</li>
+                        <li><span class="practice-id">RISK-2c</span> Track and document risk responses</li>
+                        <li><span class="practice-id">RISK-2d</span> Align risk management with organizational objectives</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">RISK-1e</span> Review and improve the risk management program</li>
+                        <li><span class="practice-id">RISK-2e</span> Communicate cybersecurity risk to executive leadership</li>
+                        <li><span class="practice-id">RISK-2f</span> Integrate cybersecurity risk into enterprise risk management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCESS -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">🔑</span>
+            <span class="abbr">ACCESS</span>
+            <span class="title">Identity and Access Management</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Manage user identities and control access to organizational assets. Ensure that only authorized individuals can access systems and data, and that access is appropriate for their role.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ACCESS-1a</span> Establish and maintain user identities</li>
+                        <li><span class="practice-id">ACCESS-1b</span> Authenticate users before granting access</li>
+                        <li><span class="practice-id">ACCESS-2a</span> Control access to organizational assets based on need</li>
+                        <li><span class="practice-id">ACCESS-2b</span> Remove access when no longer required</li>
+                        <li><span class="practice-id">ACCESS-3a</span> Enforce least-privilege access controls</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ACCESS-1c</span> Document and manage the identity lifecycle</li>
+                        <li><span class="practice-id">ACCESS-2c</span> Implement multi-factor authentication for privileged accounts</li>
+                        <li><span class="practice-id">ACCESS-3b</span> Review and audit access rights periodically</li>
+                        <li><span class="practice-id">ACCESS-3c</span> Manage privileged access separately from standard access</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ACCESS-1d</span> Improve identity management based on review findings</li>
+                        <li><span class="practice-id">ACCESS-3d</span> Analyze access management results and communicate to leadership</li>
+                        <li><span class="practice-id">ACCESS-3e</span> Continuously improve access management practices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SITUATION -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">👁️</span>
+            <span class="abbr">SITUATION</span>
+            <span class="title">Situational Awareness</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Collect, analyze, and communicate cybersecurity information to develop an accurate picture of the organization's cybersecurity posture. Includes logging, monitoring, and sharing of security-relevant information.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">SITUATION-1a</span> Perform logging on IT assets</li>
+                        <li><span class="practice-id">SITUATION-1b</span> Perform logging on OT assets</li>
+                        <li><span class="practice-id">SITUATION-2a</span> Analyze log data to identify cybersecurity events</li>
+                        <li><span class="practice-id">SITUATION-2b</span> Receive and review cybersecurity information from external sources</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">SITUATION-1c</span> Define and document logging requirements</li>
+                        <li><span class="practice-id">SITUATION-1d</span> Protect log data from unauthorized modification</li>
+                        <li><span class="practice-id">SITUATION-2c</span> Document and manage situational awareness activities</li>
+                        <li><span class="practice-id">SITUATION-2d</span> Share cybersecurity situational awareness information internally</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">SITUATION-1e</span> Review and improve the logging program</li>
+                        <li><span class="practice-id">SITUATION-2e</span> Analyze situational awareness activities for improvements</li>
+                        <li><span class="practice-id">SITUATION-2f</span> Share situational awareness information with sector peers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESPONSE -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">🚨</span>
+            <span class="abbr">RESPONSE</span>
+            <span class="title">Event and Incident Response, Continuity of Operations</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Detect, escalate, respond to, and recover from cybersecurity events and incidents. Ensure that critical operations can continue through and after a cybersecurity incident.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">RESPONSE-1a</span> Detect cybersecurity events</li>
+                        <li><span class="practice-id">RESPONSE-2a</span> Escalate and report cybersecurity events</li>
+                        <li><span class="practice-id">RESPONSE-3a</span> Respond to declared cybersecurity incidents</li>
+                        <li><span class="practice-id">RESPONSE-3b</span> Contain cybersecurity incidents</li>
+                        <li><span class="practice-id">RESPONSE-4a</span> Identify functions that must continue during a cybersecurity incident</li>
+                        <li><span class="practice-id">RESPONSE-4b</span> Back up information needed to sustain operations</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">RESPONSE-1b</span> Document and plan detection activities</li>
+                        <li><span class="practice-id">RESPONSE-2b</span> Document escalation and reporting procedures</li>
+                        <li><span class="practice-id">RESPONSE-3c</span> Document and manage the incident response plan</li>
+                        <li><span class="practice-id">RESPONSE-3d</span> Train incident response personnel</li>
+                        <li><span class="practice-id">RESPONSE-4c</span> Document and maintain continuity of operations plans</li>
+                        <li><span class="practice-id">RESPONSE-4d</span> Test continuity and backup procedures</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">RESPONSE-3e</span> Conduct post-incident reviews and incorporate lessons learned</li>
+                        <li><span class="practice-id">RESPONSE-3f</span> Communicate incident response capabilities to stakeholders</li>
+                        <li><span class="practice-id">RESPONSE-4e</span> Improve continuity plans based on exercise results</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- THIRD-PARTIES -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">🤝</span>
+            <span class="abbr">THIRD-PARTIES</span>
+            <span class="title">Third-Party Risk Management</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Identify and manage cybersecurity risks introduced by third-party relationships, including vendors, suppliers, service providers, and partners who have access to or impact organizational systems.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">THIRD-1a</span> Identify third parties with access to organizational assets</li>
+                        <li><span class="practice-id">THIRD-2a</span> Establish cybersecurity requirements for third parties</li>
+                        <li><span class="practice-id">THIRD-3a</span> Address cybersecurity risks from third parties</li>
+                        <li><span class="practice-id">THIRD-4a</span> Include cybersecurity requirements in third-party agreements</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">THIRD-1b</span> Prioritize third parties by risk level</li>
+                        <li><span class="practice-id">THIRD-2b</span> Monitor third parties for compliance with cybersecurity requirements</li>
+                        <li><span class="practice-id">THIRD-3b</span> Document and track third-party risk activities</li>
+                        <li><span class="practice-id">THIRD-4b</span> Review and update third-party agreements periodically</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">THIRD-1c</span> Analyze third-party risk data to improve the program</li>
+                        <li><span class="practice-id">THIRD-3c</span> Communicate third-party risk to leadership</li>
+                        <li><span class="practice-id">THIRD-4c</span> Continuously improve third-party risk management practices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WORKFORCE -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">👷</span>
+            <span class="abbr">WORKFORCE</span>
+            <span class="title">Workforce Management</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Establish and maintain the cybersecurity knowledge, skills, and abilities of the workforce. Manage personnel practices in a cybersecurity context, including hiring, training, and departure.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">WORK-1a</span> Assign cybersecurity responsibilities to staff</li>
+                        <li><span class="practice-id">WORK-2a</span> Provide cybersecurity awareness training to all personnel</li>
+                        <li><span class="practice-id">WORK-2b</span> Provide role-based cybersecurity training</li>
+                        <li><span class="practice-id">WORK-3a</span> Screen personnel for cybersecurity risk</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">WORK-1b</span> Document cybersecurity roles and responsibilities</li>
+                        <li><span class="practice-id">WORK-2c</span> Plan and track training completion</li>
+                        <li><span class="practice-id">WORK-2d</span> Verify staff have skills to perform assigned duties</li>
+                        <li><span class="practice-id">WORK-3b</span> Manage personnel practices (onboarding/offboarding) with cybersecurity in mind</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">WORK-1c</span> Review and improve the cybersecurity workforce program</li>
+                        <li><span class="practice-id">WORK-2e</span> Analyze training effectiveness and improve program</li>
+                        <li><span class="practice-id">WORK-3c</span> Communicate workforce cybersecurity posture to leadership</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">🏗️</span>
+            <span class="abbr">ARCHITECTURE</span>
+            <span class="title">Cybersecurity Architecture</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Define and implement a cybersecurity architecture strategy that guides how the organization protects its systems and data through network design, asset hardening, and secure software development practices.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ARCH-1a</span> Define a cybersecurity architecture for the organization</li>
+                        <li><span class="practice-id">ARCH-2a</span> Implement network protections (e.g., firewalls, segmentation)</li>
+                        <li><span class="practice-id">ARCH-3a</span> Harden IT and OT assets (disable unnecessary services)</li>
+                        <li><span class="practice-id">ARCH-4a</span> Implement secure software development practices</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ARCH-1b</span> Document and maintain the cybersecurity architecture</li>
+                        <li><span class="practice-id">ARCH-2b</span> Manage and document network protection controls</li>
+                        <li><span class="practice-id">ARCH-3b</span> Define and enforce asset hardening standards</li>
+                        <li><span class="practice-id">ARCH-4b</span> Evaluate software acquisitions for cybersecurity risk</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">ARCH-1c</span> Review and improve the cybersecurity architecture program</li>
+                        <li><span class="practice-id">ARCH-2c</span> Analyze network protection effectiveness</li>
+                        <li><span class="practice-id">ARCH-3c</span> Communicate architecture posture to leadership</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRAM -->
+    <div class="domain-card">
+        <div class="domain-header">
+            <span class="icon">📋</span>
+            <span class="abbr">PROGRAM</span>
+            <span class="title">Cybersecurity Program Management</span>
+        </div>
+        <div class="domain-body">
+            <p class="desc">Establish and maintain a cybersecurity program that integrates all security activities across the organization. Provide executive leadership and governance to support a consistent, organization-wide security posture.</p>
+            <div class="practices-grid">
+                <div class="mil-practices mil1-bg">
+                    <div class="mil-title">MIL 1 — Performed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">PROGRAM-1a</span> Establish a cybersecurity program</li>
+                        <li><span class="practice-id">PROGRAM-1b</span> Define the scope of the cybersecurity program</li>
+                        <li><span class="practice-id">PROGRAM-2a</span> Assign authority and accountability for cybersecurity</li>
+                        <li><span class="practice-id">PROGRAM-3a</span> Coordinate cybersecurity requirements across the organization</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil2-bg">
+                    <div class="mil-title">MIL 2 — Managed</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">PROGRAM-1c</span> Document cybersecurity program strategy and objectives</li>
+                        <li><span class="practice-id">PROGRAM-2b</span> Fund and resource the cybersecurity program</li>
+                        <li><span class="practice-id">PROGRAM-2c</span> Track cybersecurity program performance</li>
+                        <li><span class="practice-id">PROGRAM-3b</span> Align the cybersecurity program with organizational risk management</li>
+                    </ul>
+                </div>
+                <div class="mil-practices mil3-bg">
+                    <div class="mil-title">MIL 3 — Optimized</div>
+                    <ul class="practice-list">
+                        <li><span class="practice-id">PROGRAM-1d</span> Review and improve the cybersecurity program strategy</li>
+                        <li><span class="practice-id">PROGRAM-2d</span> Communicate cybersecurity program performance to executive leadership</li>
+                        <li><span class="practice-id">PROGRAM-3c</span> Integrate cybersecurity into enterprise governance processes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 Domains & Practice Reference</strong> | C2M2 Version 2.1</p>
+        <p>Practice IDs are illustrative — always reference the official C2M2 v2.1 model document for authoritative practice text.</p>
+    </div>
+</div>
+</body>
+</html>

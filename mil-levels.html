@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Maturity Indicator Levels (MIL)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 1rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .card h2 { font-size: 1.6rem; color: #1a3a4a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #2a6478; }
+        .card p { color: #555; line-height: 1.7; margin-bottom: 0.8rem; }
+        .card ul { padding-left: 1.5rem; color: #555; line-height: 1.8; margin-bottom: 0.8rem; }
+        .card li { margin-bottom: 0.4rem; }
+        .mil-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .mil-card {
+            border-radius: 12px;
+            padding: 1.8rem;
+            border-top: 5px solid;
+        }
+        .mil-0 { background: #f8f9fa; border-color: #adb5bd; }
+        .mil-1 { background: #fff3cd; border-color: #ffc107; }
+        .mil-2 { background: #d1ecf1; border-color: #17a2b8; }
+        .mil-3 { background: #d4edda; border-color: #28a745; }
+        .mil-card .mil-label { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .mil-0 .mil-label { color: #6c757d; }
+        .mil-1 .mil-label { color: #856404; }
+        .mil-2 .mil-label { color: #0c5460; }
+        .mil-3 .mil-label { color: #155724; }
+        .mil-card .mil-name { font-size: 1rem; font-weight: 600; margin-bottom: 0.8rem; color: #333; }
+        .mil-card .mil-desc { font-size: 0.9rem; color: #555; line-height: 1.6; }
+        .mil-card ul { padding-left: 1.2rem; margin-top: 0.5rem; }
+        .mil-card li { font-size: 0.88rem; color: #555; margin-bottom: 0.3rem; }
+        .progression-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .progression-table th {
+            background: #1a3a4a;
+            color: white;
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        .progression-table td { padding: 0.8rem 1rem; border-bottom: 1px solid #dee2e6; font-size: 0.9rem; color: #555; }
+        .progression-table tr:hover td { background: #f0f7fa; }
+        .badge-mil0 { background: #adb5bd; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+        .badge-mil1 { background: #ffc107; color: #333; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+        .badge-mil2 { background: #17a2b8; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+        .badge-mil3 { background: #28a745; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+        .callout {
+            background: #e8f4f8;
+            border-left: 4px solid #2a6478;
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .callout p { color: #1a3a4a; font-weight: 500; margin-bottom: 0; }
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) { .container { padding: 1rem; } .page-header h1 { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+
+    <div class="page-header">
+        <h1>📊 Maturity Indicator Levels (MIL)</h1>
+        <p>Understanding MIL 0 through MIL 3 in the C2M2 Framework</p>
+    </div>
+
+    <div class="card">
+        <h2>What are Maturity Indicator Levels?</h2>
+        <p>In C2M2, each of the ten domains is scored using <strong>Maturity Indicator Levels (MILs)</strong>. MILs indicate how systematically and rigorously cybersecurity practices are implemented within a domain. There are four levels: MIL 0 through MIL 3.</p>
+        <p>Unlike compliance frameworks, C2M2 MIL levels are not a pass/fail — they describe the <em>quality of management</em> around cybersecurity practices, not just whether those practices exist.</p>
+        <div class="callout">
+            <p>⚠️ A domain achieves a MIL only when <strong>ALL</strong> practices at that level AND all lower levels are fully implemented. Partial implementation does not count toward MIL attainment.</p>
+        </div>
+
+        <div class="mil-grid">
+            <div class="mil-card mil-0">
+                <div class="mil-label">MIL 0</div>
+                <div class="mil-name">Not Performed</div>
+                <div class="mil-desc">
+                    Practices in the domain are not performed, or are performed only sporadically with no consistent approach.
+                    <ul>
+                        <li>No defined process</li>
+                        <li>Ad hoc or absent</li>
+                        <li>No evidence available</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mil-card mil-1">
+                <div class="mil-label">MIL 1</div>
+                <div class="mil-name">Performed</div>
+                <div class="mil-desc">
+                    Practices are initiated and completed, but may not be planned, tracked, or documented consistently.
+                    <ul>
+                        <li>Work gets done</li>
+                        <li>May be informal or undocumented</li>
+                        <li>Individual-dependent</li>
+                        <li>Not yet resourced or planned</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mil-card mil-2">
+                <div class="mil-label">MIL 2</div>
+                <div class="mil-name">Managed</div>
+                <div class="mil-desc">
+                    Practices are planned, resourced, and tracked. Staff have the skills and knowledge to perform the work.
+                    <ul>
+                        <li>Documented policies/procedures</li>
+                        <li>Assigned ownership</li>
+                        <li>Resources allocated</li>
+                        <li>Progress tracked</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mil-card mil-3">
+                <div class="mil-label">MIL 3</div>
+                <div class="mil-name">Optimized</div>
+                <div class="mil-desc">
+                    Practices are periodically reviewed, results are communicated, and improvements are made based on lessons learned.
+                    <ul>
+                        <li>Periodic review cycles</li>
+                        <li>Results shared with leadership</li>
+                        <li>Continuous improvement</li>
+                        <li>Lessons learned feed back</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>MIL Progression Requirements</h2>
+        <p>The following table summarizes what an organization must demonstrate to attain each MIL level. MIL levels are <strong>cumulative</strong> — MIL 2 requires all MIL 1 practices plus MIL 2 management practices.</p>
+        <table class="progression-table">
+            <thead>
+                <tr>
+                    <th>MIL Level</th>
+                    <th>Practice Execution</th>
+                    <th>Planning</th>
+                    <th>Resources</th>
+                    <th>Tracking</th>
+                    <th>Review &amp; Improvement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge-mil0">MIL 0</span></td>
+                    <td>Not performed</td>
+                    <td>❌</td>
+                    <td>❌</td>
+                    <td>❌</td>
+                    <td>❌</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-mil1">MIL 1</span></td>
+                    <td>Performed (may be informal)</td>
+                    <td>❌ Not required</td>
+                    <td>❌ Not required</td>
+                    <td>❌ Not required</td>
+                    <td>❌ Not required</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-mil2">MIL 2</span></td>
+                    <td>Performed consistently</td>
+                    <td>✅ Documented plan</td>
+                    <td>✅ Allocated</td>
+                    <td>✅ Tracked against plan</td>
+                    <td>❌ Not required</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-mil3">MIL 3</span></td>
+                    <td>Performed consistently</td>
+                    <td>✅ Documented plan</td>
+                    <td>✅ Allocated</td>
+                    <td>✅ Tracked against plan</td>
+                    <td>✅ Periodic review &amp; improvement</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>The MIL-Management Distinction</h2>
+        <p>One of the most important concepts in C2M2 is the difference between <strong>performing a practice</strong> and <strong>managing the performance of a practice</strong>. This is what separates MIL 1 from MIL 2.</p>
+        <h3>Example: Vulnerability Scanning</h3>
+        <ul>
+            <li><strong>MIL 1</strong>: The IT team runs vulnerability scans when they remember to, or when a problem is suspected. Scans happen but are not scheduled or documented.</li>
+            <li><strong>MIL 2</strong>: Vulnerability scanning is documented in a policy. Scans are scheduled quarterly, assigned to a specific team, and results are tracked in a ticketing system.</li>
+            <li><strong>MIL 3</strong>: In addition to MIL 2, the scanning program is reviewed annually. Findings from past scans inform improvements to scanning frequency and tool configuration. Results are reported to leadership.</li>
+        </ul>
+        <div class="callout">
+            <p>💡 Many organizations find that they perform practices at MIL 1 but cannot demonstrate MIL 2 because planning and tracking artifacts don't exist. This is the most common gap in C2M2 evaluations.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Recommended MIL Targets by Organization Type</h2>
+        <table class="progression-table">
+            <thead>
+                <tr>
+                    <th>Organization Profile</th>
+                    <th>Recommended Target</th>
+                    <th>Rationale</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Small utility / startup</td>
+                    <td><span class="badge-mil1">MIL 1</span> across all domains</td>
+                    <td>Establish baseline — ensure all practices are at least performed</td>
+                </tr>
+                <tr>
+                    <td>Mid-size organization</td>
+                    <td><span class="badge-mil2">MIL 2</span> in high-risk domains</td>
+                    <td>Focus on RISK, ACCESS, THREAT, RESPONSE first</td>
+                </tr>
+                <tr>
+                    <td>Large utility / operator</td>
+                    <td><span class="badge-mil2">MIL 2</span> all domains, <span class="badge-mil3">MIL 3</span> in critical</td>
+                    <td>Mature management across the board; optimize highest-impact domains</td>
+                </tr>
+                <tr>
+                    <td>Regulated critical infrastructure</td>
+                    <td><span class="badge-mil3">MIL 3</span> in key domains</td>
+                    <td>Regulatory drivers (NERC CIP, TSA directives) require optimized management</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 Maturity Indicator Levels Guide</strong> | C2M2 Version 2.1</p>
+        <p>Source: U.S. Department of Energy CESER</p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Evidence Collection Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%); min-height: 100vh; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 1rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 0; margin-bottom: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.15); overflow: hidden; }
+        .card-header { background: #1a3a4a; color: white; padding: 1.2rem 2rem; display: flex; align-items: center; gap: 1rem; }
+        .card-header .abbr { background: #2a6478; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.85rem; font-weight: 700; }
+        .card-header .title { font-size: 1.2rem; font-weight: 600; }
+        .card-body { padding: 1.5rem 2rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #e8f4f8; color: #1a3a4a; padding: 0.7rem 1rem; text-align: left; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 0.7rem 1rem; border-bottom: 1px solid #eee; font-size: 0.9rem; color: #555; vertical-align: top; line-height: 1.5; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f9f9f9; }
+        .owner { font-size: 0.8rem; background: #e8f4f8; color: #1a3a4a; padding: 0.2rem 0.5rem; border-radius: 10px; white-space: nowrap; font-weight: 600; }
+        .badge-mil1 { background: #ffc107; color: #333; padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .badge-mil2 { background: #17a2b8; color: white; padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .badge-mil3 { background: #28a745; color: white; padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .intro-card { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 1.5rem 2rem; margin-bottom: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.15); border-left: 5px solid #2a6478; }
+        .intro-card h3 { color: #1a3a4a; margin-bottom: 0.7rem; }
+        .intro-card p { color: #555; line-height: 1.6; font-size: 0.95rem; }
+        .footer { text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-top: 2rem; }
+        @media (max-width: 768px) { .container { padding: 1rem; } .page-header h1 { font-size: 1.8rem; } .card-body { padding: 1rem; } table { font-size: 0.82rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+    <div class="page-header">
+        <h1>📁 Evidence Collection Guide</h1>
+        <p>What to collect per domain to support a C2M2 self-evaluation or independent evaluation</p>
+    </div>
+
+    <div class="intro-card">
+        <h3>How to use this guide</h3>
+        <p>For each domain, this guide lists the evidence types most commonly needed to demonstrate practice implementation at each MIL level. Evidence at MIL 2 and MIL 3 must build on MIL 1 evidence — assessors look for artifacts showing that practices are not only performed, but planned, tracked, reviewed, and improved.</p>
+    </div>
+
+    <!-- ASSET -->
+    <div class="card">
+        <div class="card-header"><span>🗂️</span><span class="abbr">ASSET</span><span class="title">Asset, Change, and Configuration Management</span></div>
+        <div class="card-body">
+            <table>
+                <thead><tr><th>MIL</th><th>Evidence Type</th><th>Description / Examples</th><th>Owner</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>IT Asset Inventory</td><td>Spreadsheet, CMDB, or tool export listing all IT hardware and software assets</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>OT Asset Inventory</td><td>ICS/SCADA device list, PLC inventory, or OT network diagram with device listing</td><td><span class="owner">OT/ICS Team</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Change Records</td><td>Ticket records, email threads, or change logs showing changes were reviewed and tested</td><td><span class="owner">Change Manager</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Baseline Configuration Docs</td><td>System hardening guides, CIS Benchmarks applied, group policy exports</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Asset Management Policy</td><td>Documented policy defining who owns asset inventory, how often it's updated, and prioritization criteria</td><td><span class="owner">ISSO</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Change Management Procedure</td><td>Formal change control process document with approval workflow and rollback plan</td><td><span class="owner">Change Manager</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Configuration Management Plan</td><td>Written CM plan with baseline definitions, deviation tracking, and exception process</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>Asset Program Review Records</td><td>Meeting minutes, after-action reports, or memos showing periodic review of asset management program</td><td><span class="owner">CISO / Leadership</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>Lessons Learned Documentation</td><td>Change post-mortems, CM improvement tracking, updated procedures based on past issues</td><td><span class="owner">Change Manager</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- THREAT -->
+    <div class="card">
+        <div class="card-header"><span>🛡️</span><span class="abbr">THREAT</span><span class="title">Threat and Vulnerability Management</span></div>
+        <div class="card-body">
+            <table>
+                <thead><tr><th>MIL</th><th>Evidence Type</th><th>Description / Examples</th><th>Owner</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Vulnerability Scan Reports</td><td>Output from Nessus, Qualys, OpenVAS, or similar tools showing scan was performed</td><td><span class="owner">IT Security</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Threat Intelligence Subscriptions</td><td>ICS-CERT alerts, AIS feeds, MS-ISAC or E-ISAC membership records</td><td><span class="owner">Security Analyst</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Vulnerability Remediation Records</td><td>Patching records, ticket closures, or configuration changes made to address findings</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Vulnerability Management Policy/Procedure</td><td>Written policy defining scanning schedule, risk rating methodology, and remediation SLAs</td><td><span class="owner">ISSO</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Vulnerability Tracking Register</td><td>Spreadsheet or ticketing system showing open/closed vulnerabilities with target remediation dates</td><td><span class="owner">Security Analyst</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Threat Analysis Records</td><td>Documented threat assessments, risk-ranked threat lists, or threat model outputs</td><td><span class="owner">Security Team</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>Program Review Minutes</td><td>Periodic vulnerability and threat program reviews with leadership, showing continuous improvement actions</td><td><span class="owner">CISO</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>Threat Intelligence Sharing Records</td><td>Evidence of bi-directional sharing with sector ISACs, peer organizations, or government partners</td><td><span class="owner">Security Team</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ACCESS -->
+    <div class="card">
+        <div class="card-header"><span>🔑</span><span class="abbr">ACCESS</span><span class="title">Identity and Access Management</span></div>
+        <div class="card-body">
+            <table>
+                <thead><tr><th>MIL</th><th>Evidence Type</th><th>Description / Examples</th><th>Owner</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>User Account List</td><td>AD/LDAP export or user directory showing active accounts with assigned roles</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Access Revocation Records</td><td>Terminated employee offboarding checklists showing accounts were disabled</td><td><span class="owner">HR / IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Privileged Account List</td><td>List of accounts with admin/root/service privileges and their justification</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>IAM Policy</td><td>Documented access control policy defining least privilege, MFA requirements, and review schedule</td><td><span class="owner">ISSO</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>MFA Configuration Records</td><td>Screenshots or policy exports showing MFA is enforced on privileged and remote access accounts</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Access Review Records</td><td>Periodic access certification records showing who reviewed accounts and what was approved/revoked</td><td><span class="owner">IT Admin / ISSO</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>IAM Program Review Records</td><td>Leadership-level review of access management program, improvement tracking, metrics</td><td><span class="owner">CISO</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- RESPONSE -->
+    <div class="card">
+        <div class="card-header"><span>🚨</span><span class="abbr">RESPONSE</span><span class="title">Event and Incident Response, Continuity of Operations</span></div>
+        <div class="card-body">
+            <table>
+                <thead><tr><th>MIL</th><th>Evidence Type</th><th>Description / Examples</th><th>Owner</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Incident Log</td><td>Log or ticketing system records showing past incidents were documented and addressed</td><td><span class="owner">Security Team</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Backup Records</td><td>Backup completion logs, cloud backup configurations, or tape rotation schedules</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Incident Response Plan (IRP)</td><td>Written IRP with detection, escalation, containment, eradication, and recovery procedures</td><td><span class="owner">ISSO / Security Team</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>IRP Training Records</td><td>Training completion certificates, tabletop exercise attendance records</td><td><span class="owner">HR / Security Team</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Continuity of Operations Plan (COOP)</td><td>Written COOP or BCP identifying critical functions and recovery time objectives (RTOs)</td><td><span class="owner">Business Continuity</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Backup Restore Test Records</td><td>Records showing backups were tested and recovery was successful</td><td><span class="owner">IT Admin</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>Post-Incident Review Reports</td><td>After-action reports from real incidents or exercises documenting lessons learned and improvements made</td><td><span class="owner">ISSO / CISO</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>COOP Exercise Results</td><td>Full-scale or tabletop exercise results with gaps identified and improvement plan</td><td><span class="owner">Business Continuity</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- WORKFORCE -->
+    <div class="card">
+        <div class="card-header"><span>👷</span><span class="abbr">WORKFORCE</span><span class="title">Workforce Management</span></div>
+        <div class="card-body">
+            <table>
+                <thead><tr><th>MIL</th><th>Evidence Type</th><th>Description / Examples</th><th>Owner</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Security Awareness Training Records</td><td>LMS completion records, KnowBe4/Proofpoint reports, sign-in sheets for in-person training</td><td><span class="owner">HR / Security</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Role Assignment Records</td><td>Job descriptions, responsibility matrices (RACI), or org charts showing cybersecurity role assignments</td><td><span class="owner">HR / CISO</span></td></tr>
+                    <tr><td><span class="badge-mil1">MIL 1</span></td><td>Personnel Screening Records</td><td>Background check completion logs, signed AUPs, or reference check documentation</td><td><span class="owner">HR</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Workforce Management Policy</td><td>Written policy covering hiring, training, roles, and termination in a cybersecurity context</td><td><span class="owner">HR / ISSO</span></td></tr>
+                    <tr><td><span class="badge-mil2">MIL 2</span></td><td>Training Plan</td><td>Annual training calendar, course catalog with role assignments, training completion tracking</td><td><span class="owner">HR / Security</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>Training Effectiveness Reports</td><td>Phishing simulation results, quiz scores, post-training assessments with improvement tracking</td><td><span class="owner">Security Team</span></td></tr>
+                    <tr><td><span class="badge-mil3">MIL 3</span></td><td>Workforce Program Review</td><td>Annual review of workforce cybersecurity program with leadership, showing improvements made</td><td><span class="owner">CISO / HR</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 Evidence Collection Guide</strong> | C2M2 Version 2.1</p>
+        <p>Evidence requirements vary by organization. This guide reflects common expectations in C2M2 evaluations.</p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Roles & Responsibilities</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%); min-height: 100vh; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 1rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .card h2 { font-size: 1.6rem; color: #1a3a4a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #2a6478; }
+        .card p { color: #555; line-height: 1.7; margin-bottom: 0.8rem; font-size: 0.95rem; }
+        .roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .role-card { border-radius: 12px; padding: 1.5rem; border-top: 5px solid; }
+        .role-exec { background: #f8f0ff; border-color: #7b2fa8; }
+        .role-ciso { background: #e8f4f8; border-color: #1a3a4a; }
+        .role-facilitator { background: #fff3cd; border-color: #ffc107; }
+        .role-domain { background: #d4edda; border-color: #28a745; }
+        .role-it { background: #d1ecf1; border-color: #17a2b8; }
+        .role-ot { background: #fde8d8; border-color: #e05e00; }
+        .role-hr { background: #fce4ec; border-color: #e91e63; }
+        .role-third { background: #e8f5e9; border-color: #43a047; }
+        .role-card h3 { font-size: 1.1rem; margin-bottom: 0.4rem; }
+        .role-exec h3 { color: #4a0080; }
+        .role-ciso h3 { color: #1a3a4a; }
+        .role-facilitator h3 { color: #856404; }
+        .role-domain h3 { color: #155724; }
+        .role-it h3 { color: #0c5460; }
+        .role-ot h3 { color: #7a2e00; }
+        .role-hr h3 { color: #880e4f; }
+        .role-third h3 { color: #2e7d32; }
+        .role-card .subtitle { font-size: 0.8rem; color: #666; margin-bottom: 0.8rem; font-style: italic; }
+        .role-card ul { padding-left: 1.2rem; color: #444; line-height: 1.7; }
+        .role-card li { font-size: 0.88rem; margin-bottom: 0.3rem; }
+        .raci-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.82rem; }
+        .raci-table th { background: #1a3a4a; color: white; padding: 0.7rem 0.8rem; text-align: center; font-weight: 600; }
+        .raci-table th:first-child { text-align: left; }
+        .raci-table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #eee; text-align: center; color: #555; }
+        .raci-table td:first-child { text-align: left; font-weight: 500; }
+        .raci-table tr:hover td { background: #f9f9f9; }
+        .r { color: #dc3545; font-weight: 700; }
+        .a { color: #856404; font-weight: 700; }
+        .c { color: #17a2b8; font-weight: 700; }
+        .i { color: #6c757d; font-weight: 700; }
+        .raci-legend { display: flex; gap: 1.5rem; margin-top: 0.8rem; flex-wrap: wrap; }
+        .raci-legend span { font-size: 0.85rem; color: #555; }
+        .footer { text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-top: 2rem; }
+        @media (max-width: 768px) { .container { padding: 1rem; } .page-header h1 { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+    <div class="page-header">
+        <h1>👥 Roles & Responsibilities</h1>
+        <p>Organizational roles for a successful C2M2 self-evaluation and program</p>
+    </div>
+
+    <div class="card">
+        <h2>C2M2 Program Roles</h2>
+        <p>A successful C2M2 evaluation requires participation from across the organization. The following roles are typically involved in the self-evaluation process and ongoing cybersecurity program management.</p>
+        <div class="roles-grid">
+            <div class="role-card role-exec">
+                <h3>🏛️ Executive Sponsor</h3>
+                <div class="subtitle">C-Suite / Board Level</div>
+                <ul>
+                    <li>Champions the C2M2 program at the executive level</li>
+                    <li>Ensures resources and budget are allocated</li>
+                    <li>Reviews high-level maturity results and approves target MIL goals</li>
+                    <li>Integrates cybersecurity into enterprise risk oversight</li>
+                    <li>Receives MIL 3 reporting on program performance</li>
+                </ul>
+            </div>
+            <div class="role-card role-ciso">
+                <h3>🔐 CISO / Cybersecurity Program Lead</h3>
+                <div class="subtitle">Chief Information Security Officer</div>
+                <ul>
+                    <li>Owns the C2M2 program strategy and roadmap</li>
+                    <li>Assigns domain owners and coordinates cross-domain activities</li>
+                    <li>Reviews overall maturity profile and gap analysis results</li>
+                    <li>Presents findings and improvement plans to executive sponsor</li>
+                    <li>Ensures alignment between C2M2 and other frameworks (NERC CIP, NIST CSF)</li>
+                </ul>
+            </div>
+            <div class="role-card role-facilitator">
+                <h3>📋 C2M2 Facilitator</h3>
+                <div class="subtitle">Evaluation Lead</div>
+                <ul>
+                    <li>Leads the self-evaluation process using DOE toolkit</li>
+                    <li>Coordinates logistics: scheduling, participant preparation, evidence collection</li>
+                    <li>Guides domain discussions and practice scoring sessions</li>
+                    <li>Synthesizes results into domain heatmaps and summary reports</li>
+                    <li>Should be trained in C2M2 facilitation methods (DOE training available)</li>
+                </ul>
+            </div>
+            <div class="role-card role-domain">
+                <h3>🗂️ Domain Owners</h3>
+                <div class="subtitle">Subject Matter Experts per Domain</div>
+                <ul>
+                    <li>One owner per C2M2 domain (may overlap for smaller orgs)</li>
+                    <li>Responsible for collecting evidence for their domain</li>
+                    <li>Participates in evaluation sessions to discuss current practices</li>
+                    <li>Accountable for remediating gaps in their domain</li>
+                    <li>Tracks POA&M items for their assigned domain</li>
+                </ul>
+            </div>
+            <div class="role-card role-it">
+                <h3>💻 IT Staff</h3>
+                <div class="subtitle">Network, Systems, Security Administrators</div>
+                <ul>
+                    <li>Provides evidence for ASSET, ACCESS, SITUATION, ARCHITECTURE domains</li>
+                    <li>Manages technical implementation of security controls</li>
+                    <li>Supports vulnerability scanning, patching, log collection</li>
+                    <li>Implements technical remediation actions from gap analysis</li>
+                </ul>
+            </div>
+            <div class="role-card role-ot">
+                <h3>⚙️ OT / ICS Staff</h3>
+                <div class="subtitle">Operations Technology / Industrial Control Systems</div>
+                <ul>
+                    <li>Provides evidence for OT-specific practices (ASSET-1b, SITUATION-1b, etc.)</li>
+                    <li>Coordinates ICS/SCADA asset inventory and configuration management</li>
+                    <li>Ensures cybersecurity controls don't disrupt operational continuity</li>
+                    <li>Supports OT-specific incident response planning</li>
+                </ul>
+            </div>
+            <div class="role-card role-hr">
+                <h3>👤 Human Resources</h3>
+                <div class="subtitle">HR Department</div>
+                <ul>
+                    <li>Supports WORKFORCE domain — training records, personnel practices</li>
+                    <li>Provides evidence for screening, onboarding, and offboarding procedures</li>
+                    <li>Coordinates security awareness training completion tracking</li>
+                    <li>Updates policies to include cybersecurity workforce requirements</li>
+                </ul>
+            </div>
+            <div class="role-card role-third">
+                <h3>📦 Vendor / Supply Chain Manager</h3>
+                <div class="subtitle">Procurement / Contracts</div>
+                <ul>
+                    <li>Supports THIRD-PARTIES domain — vendor risk, contract review</li>
+                    <li>Maintains vendor inventory and cybersecurity requirement tracking</li>
+                    <li>Ensures third-party agreements include cybersecurity clauses</li>
+                    <li>Coordinates vendor security assessments and monitoring</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>RACI Matrix — C2M2 Self-Evaluation Activities</h2>
+        <p>R = Responsible | A = Accountable | C = Consulted | I = Informed</p>
+        <div style="overflow-x:auto;">
+        <table class="raci-table">
+            <thead>
+                <tr>
+                    <th>Activity</th>
+                    <th>Exec Sponsor</th>
+                    <th>CISO</th>
+                    <th>Facilitator</th>
+                    <th>Domain Owners</th>
+                    <th>IT Staff</th>
+                    <th>OT Staff</th>
+                    <th>HR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Set MIL targets and evaluation scope</td><td class="a">A</td><td class="r">R</td><td class="c">C</td><td class="c">C</td><td class="i">I</td><td class="i">I</td><td class="i">I</td></tr>
+                <tr><td>Schedule and coordinate evaluation sessions</td><td class="i">I</td><td class="a">A</td><td class="r">R</td><td class="c">C</td><td class="i">I</td><td class="i">I</td><td class="i">I</td></tr>
+                <tr><td>Collect domain-level evidence</td><td class="i">I</td><td class="a">A</td><td class="c">C</td><td class="r">R</td><td class="r">R</td><td class="r">R</td><td class="r">R</td></tr>
+                <tr><td>Score practices in each domain</td><td class="i">I</td><td class="c">C</td><td class="r">R</td><td class="r">R</td><td class="c">C</td><td class="c">C</td><td class="c">C</td></tr>
+                <tr><td>Develop gap analysis and POA&M</td><td class="i">I</td><td class="a">A</td><td class="r">R</td><td class="r">R</td><td class="c">C</td><td class="c">C</td><td class="c">C</td></tr>
+                <tr><td>Present results to executive leadership</td><td class="i">I</td><td class="r">R</td><td class="c">C</td><td class="c">C</td><td class="i">I</td><td class="i">I</td><td class="i">I</td></tr>
+                <tr><td>Implement POA&M remediation actions</td><td class="i">I</td><td class="a">A</td><td class="c">C</td><td class="r">R</td><td class="r">R</td><td class="r">R</td><td class="r">R</td></tr>
+                <tr><td>Conduct annual program review (MIL 3)</td><td class="c">C</td><td class="r">R</td><td class="r">R</td><td class="c">C</td><td class="i">I</td><td class="i">I</td><td class="i">I</td></tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="raci-legend">
+            <span><strong class="r">R</strong> = Responsible (does the work)</span>
+            <span><strong class="a">A</strong> = Accountable (owns the outcome)</span>
+            <span><strong class="c">C</strong> = Consulted (provides input)</span>
+            <span><strong class="i">I</strong> = Informed (kept in the loop)</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 Roles &amp; Responsibilities</strong> | C2M2 Version 2.1</p>
+        <p>Role assignments should be adapted to match your organization's structure and size.</p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Program Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header h1 { font-size: 2.5rem; color: #1a3a4a; margin-bottom: 0.5rem; font-weight: 700; }
+        .header .subtitle { font-size: 1.2rem; color: #666; font-weight: 300; }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .nav-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid transparent;
+        }
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+            border-color: #2a6478;
+        }
+        .nav-card .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+        .nav-card h3 { font-size: 1.4rem; color: #1a3a4a; margin-bottom: 0.5rem; font-weight: 600; }
+        .nav-card p { color: #666; line-height: 1.5; font-size: 0.95rem; }
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            margin-top: 2rem;
+        }
+        .footer p { margin-bottom: 0.5rem; }
+        .security-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            .nav-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .nav-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>C2M2 Program Portal</h1>
+        <p class="subtitle">Cybersecurity Capability Maturity Model — Energy Sector Self-Evaluation Program</p>
+        <span class="security-badge">⚡ ENERGY SECTOR CYBERSECURITY</span>
+    </div>
+
+    <div class="nav-grid">
+        <a href="overview.html" class="nav-card">
+            <span class="icon">🏛️</span>
+            <h3>C2M2 Framework Overview</h3>
+            <p>Understand the Cybersecurity Capability Maturity Model, its history, DOE sponsorship, target sectors, and how the self-evaluation process works.</p>
+        </a>
+
+        <a href="mil-levels.html" class="nav-card">
+            <span class="icon">📊</span>
+            <h3>Maturity Indicator Levels (MIL)</h3>
+            <p>Deep dive into MIL 0–3 definitions, what it means to achieve each level, and how MIL attainment is determined across all ten C2M2 domains.</p>
+        </a>
+
+        <a href="domains.html" class="nav-card">
+            <span class="icon">📚</span>
+            <h3>Domains & Practice Reference</h3>
+            <p>Complete reference for all ten C2M2 domains — objectives, practice summaries, and MIL-level breakdowns for Asset, Threat, Risk, Access, and more.</p>
+        </a>
+
+        <a href="self-assessment.html" class="nav-card">
+            <span class="icon">🔍</span>
+            <h3>C2M2 Self-Assessment Tool</h3>
+            <p>Interactive self-evaluation tool to score your organization across all ten domains and three MIL levels. Generates a domain-level heatmap and summary.</p>
+        </a>
+
+        <a href="evidence.html" class="nav-card">
+            <span class="icon">📁</span>
+            <h3>Evidence Collection Guide</h3>
+            <p>Domain-by-domain guidance on what artifacts, policies, logs, and configurations to collect to support a C2M2 self-evaluation or independent evaluation.</p>
+        </a>
+
+        <a href="gap-analysis.html" class="nav-card">
+            <span class="icon">🗺️</span>
+            <h3>Gap Analysis & POA&M</h3>
+            <p>Identify gaps between your current maturity and target MIL levels. Build a prioritized remediation plan and track progress toward your target state.</p>
+        </a>
+
+        <a href="roles.html" class="nav-card">
+            <span class="icon">👥</span>
+            <h3>Roles & Responsibilities</h3>
+            <p>Define organizational roles for the C2M2 program — facilitators, executive sponsors, domain owners, IT/OT staff, and third-party assessors.</p>
+        </a>
+
+        <a href="crosswalk.html" class="nav-card">
+            <span class="icon">🔗</span>
+            <h3>CMMC / NIST 800-171 Crosswalk</h3>
+            <p>Side-by-side mapping between C2M2 practices and CMMC/NIST SP 800-171 controls. Understand coverage, gaps, and how efforts in one framework support the other.</p>
+        </a>
+
+        <a href="resources.html" class="nav-card">
+            <span class="icon">📋</span>
+            <h3>Resources & References</h3>
+            <p>Links to the official C2M2 v2.1 model document, DOE CESER guidance, evaluation toolkits, sector-specific supplements, and training materials.</p>
+        </a>
+    </div>
+
+    <div class="footer">
+        <p><strong>Cybersecurity Capability Maturity Model (C2M2) Program</strong></p>
+        <p>Developed by the U.S. Department of Energy (DOE) Office of Cybersecurity, Energy Security, and Emergency Response (CESER)</p>
+        <p>C2M2 Version 2.1 | Self-Evaluation Reference Portal</p>
+        <p>For educational and workshop use only.</p>
+        <p>Last updated: March 28, 2026 | Version 1.0</p>
+    </div>
+</div>
+</body>
+</html>

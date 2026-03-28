@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 / CMMC / NIST Crosswalk</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%); min-height: 100vh; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 1rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .card h2 { font-size: 1.6rem; color: #1a3a4a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #2a6478; }
+        .card p { color: #555; line-height: 1.7; margin-bottom: 0.8rem; font-size: 0.95rem; }
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+        .compare-box { border-radius: 12px; padding: 1.5rem; }
+        .box-c2m2 { background: #e8f4f8; border-left: 5px solid #2a6478; }
+        .box-cmmc { background: #e8eef8; border-left: 5px solid #1e3c72; }
+        .compare-box h3 { color: #1a3a4a; margin-bottom: 0.8rem; font-size: 1.1rem; }
+        .compare-box ul { padding-left: 1.2rem; color: #555; line-height: 1.8; font-size: 0.9rem; }
+        .xwalk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.83rem; }
+        .xwalk-table th { background: #1a3a4a; color: white; padding: 0.7rem 0.8rem; text-align: left; font-weight: 600; }
+        .xwalk-table td { padding: 0.65rem 0.8rem; border-bottom: 1px solid #eee; vertical-align: top; line-height: 1.4; color: #555; }
+        .xwalk-table tr:hover td { background: #f9f9f9; }
+        .xwalk-table .domain-row td { background: #1a3a4a; color: white; font-weight: 700; font-size: 0.88rem; }
+        .badge-c2m2 { background: #2a6478; color: white; padding: 0.15rem 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+        .badge-nist { background: #6c3483; color: white; padding: 0.15rem 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+        .badge-cmmc { background: #1e3c72; color: white; padding: 0.15rem 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+        .map-exact { color: #155724; font-weight: 600; }
+        .map-partial { color: #856404; font-weight: 600; }
+        .map-none { color: #721c24; font-weight: 600; }
+        .callout { background: #e8f4f8; border-left: 4px solid #2a6478; padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+        .callout p { color: #1a3a4a; font-weight: 500; margin-bottom: 0; font-size: 0.9rem; }
+        .footer { text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-top: 2rem; }
+        @media (max-width: 768px) { .container { padding: 1rem; } .page-header h1 { font-size: 1.8rem; } .compare-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+    <div class="page-header">
+        <h1>🔗 CMMC / NIST 800-171 Crosswalk</h1>
+        <p>Mapping C2M2 domains and practices to CMMC 2.0 and NIST SP 800-171 controls</p>
+    </div>
+
+    <div class="card">
+        <h2>Framework Comparison Overview</h2>
+        <p>C2M2, CMMC, and NIST SP 800-171 share significant conceptual overlap but serve different purposes and sectors. Understanding the relationships helps organizations avoid redundant work and identify where investments in one framework support another.</p>
+        <div class="compare-grid">
+            <div class="compare-box box-c2m2">
+                <h3>⚡ C2M2 v2.1</h3>
+                <ul>
+                    <li>Developed by DOE for energy sector</li>
+                    <li>10 domains, 3 MIL levels</li>
+                    <li>Self-evaluation focused; no certification</li>
+                    <li>Includes OT/ICS practices</li>
+                    <li>Aligned to NIST CSF 1.1</li>
+                    <li>No contract/regulatory mandate (currently)</li>
+                    <li>Focus: maturity improvement journey</li>
+                </ul>
+            </div>
+            <div class="compare-box box-cmmc">
+                <h3>🏛️ CMMC 2.0 / NIST SP 800-171</h3>
+                <ul>
+                    <li>Developed by DoD for defense contractors</li>
+                    <li>17 domains, 3 CMMC levels, 110 practices</li>
+                    <li>C3PAO assessment required for Level 2</li>
+                    <li>IT-focused (CUI protection)</li>
+                    <li>Based on NIST SP 800-171</li>
+                    <li>Contractual mandate via DFARS 252.204-7012</li>
+                    <li>Focus: compliance certification</li>
+                </ul>
+            </div>
+        </div>
+        <div class="callout">
+            <p>💡 Organizations pursuing both C2M2 and CMMC should note: work done for CMMC (policies, IAM controls, incident response) typically counts toward C2M2 MIL 2 management practices. C2M2 OT practices have no CMMC equivalent — they must be addressed separately.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Domain-Level Crosswalk</h2>
+        <p>The table below maps C2M2 domains to their closest CMMC 2.0 domain equivalents and key NIST SP 800-171 control families. Mapping type: <span class="map-exact">Exact</span> = direct coverage, <span class="map-partial">Partial</span> = overlapping but not fully equivalent, <span class="map-none">Gap</span> = no equivalent.</p>
+        <div style="overflow-x:auto;">
+        <table class="xwalk-table">
+            <thead>
+                <tr>
+                    <th>C2M2 Domain</th>
+                    <th>C2M2 Practices (Examples)</th>
+                    <th>CMMC 2.0 Domain(s)</th>
+                    <th>NIST SP 800-171 Family</th>
+                    <th>Mapping Type</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge-c2m2">ASSET</span></td>
+                    <td>Asset inventory, change management, baseline configurations</td>
+                    <td><span class="badge-cmmc">CM</span> Configuration Management</td>
+                    <td><span class="badge-nist">3.4</span> CM Family</td>
+                    <td class="map-partial">Partial</td>
+                    <td>CMMC CM covers configuration; C2M2 ASSET includes broader asset inventory and OT-specific practices not in 800-171</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">THREAT</span></td>
+                    <td>Vulnerability scanning, threat intelligence, remediation tracking</td>
+                    <td><span class="badge-cmmc">SI</span> System &amp; Info Integrity; <span class="badge-cmmc">RA</span> Risk Assessment</td>
+                    <td><span class="badge-nist">3.11</span> RA; <span class="badge-nist">3.14</span> SI</td>
+                    <td class="map-partial">Partial</td>
+                    <td>NIST 800-171 RA and SI cover vulnerability scanning and flaw remediation; C2M2 adds threat intelligence sharing practices</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">RISK</span></td>
+                    <td>Risk identification, risk strategy, risk tolerance</td>
+                    <td><span class="badge-cmmc">RA</span> Risk Assessment; <span class="badge-cmmc">CA</span> Assessment &amp; Authorization</td>
+                    <td><span class="badge-nist">3.11</span> RA</td>
+                    <td class="map-partial">Partial</td>
+                    <td>C2M2 RISK has stronger emphasis on enterprise risk management integration (MIL 3) than 800-171 RA family</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">ACCESS</span></td>
+                    <td>User management, MFA, least privilege, access reviews</td>
+                    <td><span class="badge-cmmc">AC</span> Access Control; <span class="badge-cmmc">IA</span> Identification &amp; Authentication</td>
+                    <td><span class="badge-nist">3.1</span> AC; <span class="badge-nist">3.5</span> IA</td>
+                    <td class="map-exact">Exact</td>
+                    <td>Strong overlap — CMMC AC and IA controls map closely to C2M2 ACCESS domain practices at MIL 1 and MIL 2</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">SITUATION</span></td>
+                    <td>Logging, log protection, event monitoring, info sharing</td>
+                    <td><span class="badge-cmmc">AU</span> Audit &amp; Accountability</td>
+                    <td><span class="badge-nist">3.3</span> AU</td>
+                    <td class="map-partial">Partial</td>
+                    <td>CMMC AU covers audit logging; C2M2 SITUATION adds situational awareness information sharing (MIL 3) not in 800-171</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">RESPONSE</span></td>
+                    <td>Detection, escalation, IRP, COOP, backup/recovery</td>
+                    <td><span class="badge-cmmc">IR</span> Incident Response; <span class="badge-cmmc">RE</span> Recovery</td>
+                    <td><span class="badge-nist">3.6</span> IR</td>
+                    <td class="map-partial">Partial</td>
+                    <td>C2M2 RESPONSE includes continuity of operations (COOP) practices not covered by CMMC IR; recovery plans and COOP exercises are C2M2-specific</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">THIRD-PARTIES</span></td>
+                    <td>Vendor inventory, third-party requirements, contract clauses</td>
+                    <td><span class="badge-cmmc">SR</span> Supply Chain Risk Management</td>
+                    <td><span class="badge-nist">3.17</span> SR (800-171r2)</td>
+                    <td class="map-partial">Partial</td>
+                    <td>CMMC SR was added in CMMC 2.0; C2M2 THIRD-PARTIES covers vendor relationship management more broadly</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">WORKFORCE</span></td>
+                    <td>Cybersecurity training, role assignments, personnel screening</td>
+                    <td><span class="badge-cmmc">AT</span> Awareness &amp; Training; <span class="badge-cmmc">PS</span> Personnel Security</td>
+                    <td><span class="badge-nist">3.2</span> AT; <span class="badge-nist">3.9</span> PS</td>
+                    <td class="map-exact">Exact</td>
+                    <td>Good coverage — CMMC AT and PS practices closely mirror C2M2 WORKFORCE domain across MIL 1 and MIL 2</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">ARCHITECTURE</span></td>
+                    <td>Network segmentation, hardening, secure dev practices</td>
+                    <td><span class="badge-cmmc">SC</span> System &amp; Communications; <span class="badge-cmmc">SA</span> System &amp; Services Acquisition</td>
+                    <td><span class="badge-nist">3.13</span> SC; <span class="badge-nist">3.15</span> SA (limited)</td>
+                    <td class="map-partial">Partial</td>
+                    <td>C2M2 ARCHITECTURE includes OT architecture practices and broader secure design strategy not fully addressed by CMMC/800-171</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-c2m2">PROGRAM</span></td>
+                    <td>Program strategy, governance, executive reporting</td>
+                    <td><span class="badge-cmmc">CA</span> Security Assessment; (limited)</td>
+                    <td><span class="badge-nist">3.12</span> CA</td>
+                    <td class="map-partial">Partial</td>
+                    <td>C2M2 PROGRAM is broader than CMMC's CA domain — it covers enterprise governance, executive reporting, and program integration that 800-171 does not fully address</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Key Gaps: C2M2 Practices with No CMMC Equivalent</h2>
+        <p>The following C2M2 practice areas are <strong>not covered</strong> by CMMC 2.0 / NIST SP 800-171 and must be addressed separately if pursuing C2M2:</p>
+        <div style="overflow-x:auto;">
+        <table class="xwalk-table">
+            <thead><tr><th>C2M2 Practice Area</th><th>Domain</th><th>Why It's a Gap</th></tr></thead>
+            <tbody>
+                <tr><td>OT / ICS asset inventory and configuration management</td><td><span class="badge-c2m2">ASSET</span></td><td>CMMC focuses on IT systems protecting CUI; OT/ICS systems are out of scope for CMMC</td></tr>
+                <tr><td>Continuity of Operations (COOP) planning and exercises</td><td><span class="badge-c2m2">RESPONSE</span></td><td>CMMC IR does not require COOP plans or exercises; this is a C2M2-specific requirement</td></tr>
+                <tr><td>Threat intelligence sharing with sector peers (ISAC)</td><td><span class="badge-c2m2">THREAT / SITUATION</span></td><td>CMMC doesn't require bidirectional threat intel sharing; C2M2 MIL 3 practices emphasize this</td></tr>
+                <tr><td>Cybersecurity architecture strategy and review</td><td><span class="badge-c2m2">ARCHITECTURE</span></td><td>C2M2 requires a documented architecture strategy and periodic reviews; CMMC addresses controls, not architecture governance</td></tr>
+                <tr><td>Enterprise risk management integration</td><td><span class="badge-c2m2">RISK / PROGRAM</span></td><td>C2M2 MIL 3 requires integrating cybersecurity risk into ERM; CMMC's RA family is narrower</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 / CMMC / NIST Crosswalk</strong> | C2M2 Version 2.1 | CMMC 2.0 | NIST SP 800-171 Rev 2</p>
+        <p>Mappings are approximate. Always reference official framework documents for authoritative control-to-practice mappings.</p>
+    </div>
+</div>
+</body>
+</html>

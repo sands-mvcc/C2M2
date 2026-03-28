@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Gap Analysis & POA&M</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%); min-height: 100vh; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 1rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .card h2 { font-size: 1.6rem; color: #1a3a4a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #2a6478; }
+        .card h3 { font-size: 1.2rem; color: #1a3a4a; margin: 1.2rem 0 0.6rem; }
+        .card p { color: #555; line-height: 1.7; margin-bottom: 0.8rem; font-size: 0.95rem; }
+        .card ul { padding-left: 1.5rem; color: #555; line-height: 1.8; margin-bottom: 0.8rem; }
+        /* Gap Analysis Table */
+        .gap-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
+        .gap-table th { background: #1a3a4a; color: white; padding: 0.7rem 0.8rem; text-align: left; font-weight: 600; }
+        .gap-table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #eee; vertical-align: top; line-height: 1.4; color: #555; }
+        .gap-table tr:hover td { background: #f9f9f9; }
+        .gap-table .domain-row td { background: #e8f4f8; font-weight: 600; color: #1a3a4a; }
+        .status-met { color: #155724; font-weight: 700; }
+        .status-partial { color: #856404; font-weight: 700; }
+        .status-not { color: #721c24; font-weight: 700; }
+        .risk-high { background: #f8d7da; color: #721c24; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; }
+        .risk-med { background: #fff3cd; color: #856404; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; }
+        .risk-low { background: #d4edda; color: #155724; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; }
+        .effort-high { color: #dc3545; font-weight: 600; }
+        .effort-med { color: #fd7e14; font-weight: 600; }
+        .effort-low { color: #28a745; font-weight: 600; }
+        /* POAM Table */
+        .poam-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
+        .poam-table th { background: #1a3a4a; color: white; padding: 0.7rem 0.8rem; text-align: left; font-weight: 600; }
+        .poam-table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #eee; vertical-align: top; line-height: 1.4; color: #555; }
+        .poam-table tr:hover td { background: #f9f9f9; }
+        input[type=text], input[type=date], select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            background: white;
+        }
+        textarea { resize: vertical; min-height: 50px; }
+        .btn {
+            background: #1a3a4a;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #15303e; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+        .callout { background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+        .callout p { color: #856404; font-weight: 500; margin-bottom: 0; font-size: 0.9rem; }
+        .priority-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        .priority-box { border-radius: 10px; padding: 1rem; }
+        .p-do-now { background: #f8d7da; border: 2px solid #dc3545; }
+        .p-plan { background: #fff3cd; border: 2px solid #ffc107; }
+        .p-monitor { background: #d1ecf1; border: 2px solid #17a2b8; }
+        .p-accept { background: #d4edda; border: 2px solid #28a745; }
+        .priority-box h4 { margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .p-do-now h4 { color: #721c24; }
+        .p-plan h4 { color: #856404; }
+        .p-monitor h4 { color: #0c5460; }
+        .p-accept h4 { color: #155724; }
+        .priority-box p { font-size: 0.85rem; color: #555; margin-bottom: 0; }
+        .footer { text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-top: 2rem; }
+        @media (max-width: 768px) { .container { padding: 1rem; } .page-header h1 { font-size: 1.8rem; } .priority-matrix { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+    <div class="page-header">
+        <h1>🗺️ Gap Analysis & POA&M</h1>
+        <p>Identify maturity gaps, prioritize remediation, and build a Plan of Action &amp; Milestones</p>
+    </div>
+
+    <div class="card">
+        <h2>Gap Analysis — Example Template</h2>
+        <p>Use this table structure to document gaps between your current MIL attainment and your target state. The example below shows a sample organization targeting <strong>MIL 2 across all domains</strong> with selected MIL 3 targets in high-risk areas.</p>
+        <div class="callout">
+            <p>⚠️ This is a template/example. Populate with your actual self-assessment results from the <a href="self-assessment.html" style="color:#856404;">Self-Assessment Tool</a>.</p>
+        </div>
+        <div style="overflow-x:auto;">
+        <table class="gap-table">
+            <thead>
+                <tr>
+                    <th>Domain</th>
+                    <th>Practice ID</th>
+                    <th>Practice Summary</th>
+                    <th>Current Status</th>
+                    <th>Target MIL</th>
+                    <th>Evidence Needed</th>
+                    <th>Remediation Effort</th>
+                    <th>Risk Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="domain-row"><td colspan="8">ASSET — Asset, Change, and Configuration Management</td></tr>
+                <tr>
+                    <td>ASSET</td><td>ASSET-1c</td><td>Prioritize assets based on criticality</td>
+                    <td><span class="status-partial">⚠️ Partial</span></td><td>MIL 2</td>
+                    <td>Criticality rating in asset inventory</td>
+                    <td><span class="effort-low">Low</span></td>
+                    <td><span class="risk-med">Medium</span></td>
+                </tr>
+                <tr>
+                    <td>ASSET</td><td>ASSET-2c</td><td>Plan and document change management</td>
+                    <td><span class="status-not">❌ Not Met</span></td><td>MIL 2</td>
+                    <td>Formal CM policy and procedure</td>
+                    <td><span class="effort-med">Medium</span></td>
+                    <td><span class="risk-med">Medium</span></td>
+                </tr>
+                <tr class="domain-row"><td colspan="8">ACCESS — Identity and Access Management</td></tr>
+                <tr>
+                    <td>ACCESS</td><td>ACCESS-2c</td><td>Implement MFA for privileged accounts</td>
+                    <td><span class="status-not">❌ Not Met</span></td><td>MIL 2</td>
+                    <td>MFA configuration screenshots</td>
+                    <td><span class="effort-med">Medium</span></td>
+                    <td><span class="risk-high">High</span></td>
+                </tr>
+                <tr>
+                    <td>ACCESS</td><td>ACCESS-3b</td><td>Periodic access rights review</td>
+                    <td><span class="status-not">❌ Not Met</span></td><td>MIL 2</td>
+                    <td>Access certification records</td>
+                    <td><span class="effort-low">Low</span></td>
+                    <td><span class="risk-high">High</span></td>
+                </tr>
+                <tr class="domain-row"><td colspan="8">RESPONSE — Incident Response &amp; Continuity</td></tr>
+                <tr>
+                    <td>RESPONSE</td><td>RESPONSE-3c</td><td>Documented incident response plan</td>
+                    <td><span class="status-partial">⚠️ Partial</span></td><td>MIL 2</td>
+                    <td>Written IRP with all response phases</td>
+                    <td><span class="effort-med">Medium</span></td>
+                    <td><span class="risk-high">High</span></td>
+                </tr>
+                <tr>
+                    <td>RESPONSE</td><td>RESPONSE-4d</td><td>Test continuity and backup procedures</td>
+                    <td><span class="status-not">❌ Not Met</span></td><td>MIL 2</td>
+                    <td>Backup restore test records</td>
+                    <td><span class="effort-low">Low</span></td>
+                    <td><span class="risk-high">High</span></td>
+                </tr>
+                <tr class="domain-row"><td colspan="8">WORKFORCE — Workforce Management</td></tr>
+                <tr>
+                    <td>WORK</td><td>WORK-2c</td><td>Plan and track training completion</td>
+                    <td><span class="status-not">❌ Not Met</span></td><td>MIL 2</td>
+                    <td>Training plan and completion records</td>
+                    <td><span class="effort-low">Low</span></td>
+                    <td><span class="risk-med">Medium</span></td>
+                </tr>
+                <tr class="domain-row"><td colspan="8">THIRD-PARTIES — Third-Party Risk Management</td></tr>
+                <tr>
+                    <td>THIRD</td><td>THIRD-1b</td><td>Prioritize third parties by risk level</td>
+                    <td><span class="status-not">❌ Not Met</span></td><td>MIL 2</td>
+                    <td>Vendor risk rating methodology and records</td>
+                    <td><span class="effort-med">Medium</span></td>
+                    <td><span class="risk-med">Medium</span></td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Remediation Prioritization Matrix</h2>
+        <p>Use this framework to decide which gaps to address first. Prioritize gaps based on the combination of <strong>risk level</strong> (impact if exploited) and <strong>remediation effort</strong> (time and resources to fix).</p>
+        <div class="priority-matrix">
+            <div class="priority-box p-do-now">
+                <h4>🔴 Do Now — High Risk / Low Effort</h4>
+                <p>Quick wins that eliminate high-risk exposures. Attack immediately. Examples: enabling MFA, running first vulnerability scan, reviewing active user accounts.</p>
+            </div>
+            <div class="priority-box p-plan">
+                <h4>🟡 Plan — High Risk / High Effort</h4>
+                <p>Critical gaps requiring significant work. Assign dedicated resources, set milestones, and track progress. Examples: IRP development, architecture segmentation.</p>
+            </div>
+            <div class="priority-box p-monitor">
+                <h4>🔵 Schedule — Low Risk / High Effort</h4>
+                <p>Important but not urgent. Include in program roadmap and budget cycles. Examples: MIL 3 review programs, advanced threat intelligence sharing.</p>
+            </div>
+            <div class="priority-box p-accept">
+                <h4>🟢 Accept / Defer — Low Risk / Low Effort</h4>
+                <p>Low-priority improvements. Complete when bandwidth allows or fold into existing projects. Examples: documentation enhancements, minor process improvements.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>POA&amp;M Builder</h2>
+        <p>Use the form below to add Plan of Action &amp; Milestones (POA&amp;M) items. Entries are saved in your browser and displayed in the tracking table.</p>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div><label style="font-size:0.85rem;color:#555;display:block;margin-bottom:0.3rem;">Domain</label>
+                <select id="pf-domain">
+                    <option>ASSET</option><option>THREAT</option><option>RISK</option>
+                    <option>ACCESS</option><option>SITUATION</option><option>RESPONSE</option>
+                    <option>THIRD-PARTIES</option><option>WORKFORCE</option><option>ARCHITECTURE</option><option>PROGRAM</option>
+                </select>
+            </div>
+            <div><label style="font-size:0.85rem;color:#555;display:block;margin-bottom:0.3rem;">Practice ID</label><input type="text" id="pf-id" placeholder="e.g. ACCESS-2c"></div>
+            <div><label style="font-size:0.85rem;color:#555;display:block;margin-bottom:0.3rem;">Gap Description</label><input type="text" id="pf-gap" placeholder="What is missing?"></div>
+            <div><label style="font-size:0.85rem;color:#555;display:block;margin-bottom:0.3rem;">Planned Action</label><input type="text" id="pf-action" placeholder="What will be done?"></div>
+            <div><label style="font-size:0.85rem;color:#555;display:block;margin-bottom:0.3rem;">Responsible Party</label><input type="text" id="pf-owner" placeholder="e.g. IT Admin"></div>
+            <div><label style="font-size:0.85rem;color:#555;display:block;margin-bottom:0.3rem;">Target Completion Date</label><input type="date" id="pf-date"></div>
+            <div><label style="font-size:0.85rem;color:#555;display:block;margin-bottom:0.3rem;">Risk Level</label>
+                <select id="pf-risk"><option>High</option><option>Medium</option><option>Low</option></select>
+            </div>
+            <div><label style="font-size:0.85rem;color:#555;display:block;margin-bottom:0.3rem;">Status</label>
+                <select id="pf-status"><option>Open</option><option>In Progress</option><option>Completed</option><option>Deferred</option></select>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn" onclick="addPoam()">➕ Add POA&amp;M Item</button>
+            <button class="btn btn-danger" onclick="clearPoam()">🗑️ Clear All Items</button>
+        </div>
+
+        <h3 style="margin-top:2rem;">POA&amp;M Tracking Table</h3>
+        <div style="overflow-x:auto; margin-top:1rem;">
+        <table class="poam-table" id="poam-table">
+            <thead>
+                <tr>
+                    <th>#</th><th>Domain</th><th>Practice ID</th><th>Gap Description</th>
+                    <th>Planned Action</th><th>Owner</th><th>Target Date</th><th>Risk</th><th>Status</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="poam-body">
+                <tr><td colspan="10" style="text-align:center;color:#999;padding:2rem;">No POA&amp;M items yet. Add items using the form above.</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 Gap Analysis &amp; POA&M</strong> | C2M2 Version 2.1</p>
+        <p>POA&M data is stored locally in your browser.</p>
+    </div>
+</div>
+
+<script>
+let poamItems = JSON.parse(localStorage.getItem('c2m2-poam') || '[]');
+
+function renderPoam() {
+    const tbody = document.getElementById('poam-body');
+    if (poamItems.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#999;padding:2rem;">No POA&amp;M items yet. Add items using the form above.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = poamItems.map((item, i) => {
+        const riskClass = item.risk === 'High' ? 'risk-high' : item.risk === 'Medium' ? 'risk-med' : 'risk-low';
+        const statusColor = item.status === 'Completed' ? '#28a745' : item.status === 'In Progress' ? '#17a2b8' : item.status === 'Deferred' ? '#6c757d' : '#dc3545';
+        return `<tr>
+            <td>${i+1}</td>
+            <td><strong>${item.domain}</strong></td>
+            <td>${item.id}</td>
+            <td>${item.gap}</td>
+            <td>${item.action}</td>
+            <td>${item.owner}</td>
+            <td>${item.date || '—'}</td>
+            <td><span class="${riskClass}">${item.risk}</span></td>
+            <td><span style="color:${statusColor};font-weight:600;">${item.status}</span></td>
+            <td><button onclick="removePoam(${i})" style="background:#dc3545;color:white;border:none;padding:0.2rem 0.5rem;border-radius:5px;cursor:pointer;font-size:0.8rem;">✕</button></td>
+        </tr>`;
+    }).join('');
+}
+
+function addPoam() {
+    const item = {
+        domain: document.getElementById('pf-domain').value,
+        id: document.getElementById('pf-id').value || '—',
+        gap: document.getElementById('pf-gap').value || '—',
+        action: document.getElementById('pf-action').value || '—',
+        owner: document.getElementById('pf-owner').value || '—',
+        date: document.getElementById('pf-date').value,
+        risk: document.getElementById('pf-risk').value,
+        status: document.getElementById('pf-status').value
+    };
+    poamItems.push(item);
+    localStorage.setItem('c2m2-poam', JSON.stringify(poamItems));
+    renderPoam();
+    ['pf-id','pf-gap','pf-action','pf-owner','pf-date'].forEach(id => document.getElementById(id).value = '');
+}
+
+function removePoam(i) {
+    poamItems.splice(i, 1);
+    localStorage.setItem('c2m2-poam', JSON.stringify(poamItems));
+    renderPoam();
+}
+
+function clearPoam() {
+    if (!confirm('Clear all POA&M items?')) return;
+    poamItems = [];
+    localStorage.removeItem('c2m2-poam');
+    renderPoam();
+}
+
+renderPoam();
+</script>
+</body>
+</html>
