@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study: Muskingum Valley Electric Cooperative | C2M2 Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* ── Header ── */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2.5rem 2rem;
+            background: rgba(255,255,255,0.97);
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1a3a4a, #2a6478, #28a745, #17a2b8, #ffc107);
+        }
+        .header .doe-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #e8f4f8;
+            border: 1px solid #b0d4e3;
+            color: #1a3a4a;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .header h1 { font-size: 2.4rem; color: #1a3a4a; margin-bottom: 0.4rem; font-weight: 800; }
+        .header h1 span { color: #2a6478; }
+        .header .subtitle { font-size: 1.05rem; color: #666; margin-bottom: 1.2rem; }
+        .header .badges { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .badge-green  { background: #d4edda; color: #155724; }
+        .badge-blue   { background: #d1ecf1; color: #0c5460; }
+        .badge-yellow { background: #fff3cd; color: #856404; }
+        .badge-red    { background: #f8d7da; color: #721c24; }
+        .badge-purple { background: #e2d9f3; color: #4a235a; }
+
+        /* ── Navigation breadcrumb ── */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.75);
+        }
+        .breadcrumb a { color: rgba(255,255,255,0.85); text-decoration: none; font-weight: 600; }
+        .breadcrumb a:hover { color: white; }
+        .breadcrumb span { opacity: 0.5; }
+
+        /* ── Section Cards ── */
+        .section-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .section-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.3rem 1.8rem;
+            background: linear-gradient(135deg, #1a3a4a, #2a6478);
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-card-header .sec-icon { font-size: 1.6rem; }
+        .section-card-header h2 { font-size: 1.2rem; font-weight: 700; flex: 1; }
+        .section-card-header .sec-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.7rem;
+            border-radius: 10px;
+            font-size: 0.73rem;
+            font-weight: 700;
+        }
+        .section-card-header .toggle-icon { font-size: 1rem; transition: transform 0.25s; }
+        .section-card-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+        .section-body { padding: 1.8rem; }
+        .section-body.hidden { display: none; }
+
+        /* ── Stat Grid ── */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-item {
+            background: #f0f8fc;
+            border: 1px solid #c8e4ef;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        .stat-item .si-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #2a6478; letter-spacing: 0.8px; margin-bottom: 0.35rem; }
+        .stat-item .si-value { font-size: 1.1rem; font-weight: 700; color: #1a3a4a; }
+        .stat-item .si-sub   { font-size: 0.78rem; color: #666; margin-top: 0.15rem; }
+
+        /* ── Detail Tables ── */
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-bottom: 1rem; }
+        th {
+            background: #1a3a4a;
+            color: white;
+            padding: 0.65rem 0.9rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #e9ecef; vertical-align: top; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        tr:hover td { background: #eef6fb; }
+        td .tag {
+            display: inline-block;
+            padding: 0.1rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .tag-red    { background: #f8d7da; color: #721c24; }
+        .tag-yellow { background: #fff3cd; color: #856404; }
+        .tag-green  { background: #d4edda; color: #155724; }
+        .tag-blue   { background: #d1ecf1; color: #0c5460; }
+        .tag-gray   { background: #e9ecef; color: #495057; }
+        .tag-purple { background: #e2d9f3; color: #4a235a; }
+
+        /* ── Info Boxes ── */
+        .info-box {
+            border-left: 4px solid;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .info-box.warning { border-color: #ffc107; background: #fff9e6; }
+        .info-box.danger  { border-color: #dc3545; background: #fdf2f3; }
+        .info-box.info    { border-color: #17a2b8; background: #e8f7fa; }
+        .info-box.success { border-color: #28a745; background: #eaf6ec; }
+        .info-box strong  { display: block; margin-bottom: 0.3rem; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ── Two-column layouts ── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+        /* ── Network Diagram (ASCII-style) ── */
+        .network-diagram {
+            background: #0f1e26;
+            color: #7dd3fc;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            padding: 1.5rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .network-diagram .nd-green  { color: #86efac; }
+        .network-diagram .nd-yellow { color: #fde68a; }
+        .network-diagram .nd-red    { color: #fca5a5; }
+        .network-diagram .nd-blue   { color: #93c5fd; }
+        .network-diagram .nd-gray   { color: #6b7280; }
+        .network-diagram .nd-orange { color: #fdba74; }
+
+        /* ── Domain Assessment Prep ── */
+        .domain-prep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+        .domain-prep-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .domain-prep-card .dpc-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .dpc-asset    { background: #e8f4f8; color: #1a3a4a; }
+        .dpc-threat   { background: #fdf2f3; color: #721c24; }
+        .dpc-risk     { background: #fff9e6; color: #856404; }
+        .dpc-access   { background: #eaf6ec; color: #155724; }
+        .dpc-situate  { background: #e2d9f3; color: #4a235a; }
+        .dpc-response { background: #fdf2f3; color: #721c24; }
+        .dpc-third    { background: #d1ecf1; color: #0c5460; }
+        .dpc-work     { background: #d4edda; color: #155724; }
+        .dpc-arch     { background: #e8f4f8; color: #1a3a4a; }
+        .dpc-program  { background: #fff9e6; color: #856404; }
+        .domain-prep-card .dpc-body { padding: 0.9rem 1rem; font-size: 0.83rem; }
+        .domain-prep-card .dpc-body ul { padding-left: 1.2rem; }
+        .domain-prep-card .dpc-body li { margin-bottom: 0.35rem; line-height: 1.45; color: #444; }
+        .dpc-mil-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; background: #f8f9fa; border-top: 1px solid #eee; font-size: 0.78rem; font-weight: 700; color: #555; }
+        .mil-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+        .mil-0 { background: #dee2e6; }
+        .mil-1 { background: #ffc107; }
+        .mil-2 { background: #fd7e14; }
+        .mil-3 { background: #dc3545; }
+
+        /* ── Print / Section Labels ── */
+        .section-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.8rem;
+            margin-top: 2rem;
+        }
+        h3.sub-heading { font-size: 1rem; color: #1a3a4a; margin-bottom: 0.8rem; font-weight: 700; padding-bottom: 0.4rem; border-bottom: 2px solid #e8f4f8; }
+        p.body-text { line-height: 1.7; color: #555; margin-bottom: 1rem; font-size: 0.9rem; }
+        ul.body-list { padding-left: 1.4rem; margin-bottom: 1rem; }
+        ul.body-list li { margin-bottom: 0.4rem; line-height: 1.6; color: #555; font-size: 0.9rem; }
+
+        /* ── Org Chart ── */
+        .org-chart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+        .org-level { display: flex; gap: 1rem; justify-content: center; position: relative; padding: 0.5rem 0; }
+        .org-box {
+            background: #1a3a4a;
+            color: white;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 130px;
+        }
+        .org-box.ob-it { background: #2a6478; }
+        .org-box.ob-ops { background: #155724; }
+        .org-box.ob-contract { background: #856404; border: 2px dashed #ffc107; color: #333; background: #fff9e6; }
+        .org-line { width: 2px; height: 24px; background: #ccc; margin: 0 auto; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            color: rgba(255,255,255,0.85);
+            margin-top: 2rem;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .footer p { margin-bottom: 0.4rem; font-size: 0.9rem; }
+        .footer .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 0.25rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+        }
+
+        @media (max-width: 900px) {
+            .two-col   { grid-template-columns: 1fr; }
+            .three-col { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.8rem; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .section-body { padding: 1rem; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">C2M2 Portal</a>
+        <span>›</span>
+        <span>Case Study: Muskingum Valley Electric Cooperative</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="doe-badge">⚡ C2M2 Training Exercise | Fictional Case Study</div>
+        <h1>Muskingum Valley <span>Electric Cooperative</span></h1>
+        <p class="subtitle">Rural Ohio Distribution Cooperative &mdash; C2M2 Assessment Exercise Scenario</p>
+        <div class="badges">
+            <span class="badge badge-blue">Coshocton County, OH</span>
+            <span class="badge badge-green">Rural Distribution Cooperative</span>
+            <span class="badge badge-yellow">NERC CIP Low Impact</span>
+            <span class="badge badge-red">Multiple C2M2 Gaps</span>
+            <span class="badge badge-purple">Exercise: All 10 Domains</span>
+        </div>
+    </div>
+
+    <div class="info-box warning">
+        <strong>Exercise Notice</strong>
+        This case study is entirely fictional and created for C2M2 training purposes. All company names, personnel,
+        addresses, IP addresses, vendor configurations, and operational data are simulated. Any resemblance to an
+        actual utility is coincidental. Participants should use this data to practice a full C2M2 v2.1 self-evaluation
+        across all 10 cybersecurity domains.
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 – COMPANY PROFILE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 1 &mdash; Company Profile</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">🏢</span>
+            <h2>Company Overview</h2>
+            <span class="sec-tag">PROFILE</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="si-label">Legal Name</div>
+                    <div class="si-value">Muskingum Valley Electric Cooperative, Inc.</div>
+                    <div class="si-sub">MVEC</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Entity Type</div>
+                    <div class="si-value">Member-Owned Rural Electric Cooperative</div>
+                    <div class="si-sub">Not-for-profit | 501(c)(12)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Founded</div>
+                    <div class="si-value">1939</div>
+                    <div class="si-sub">Organized under the Rural Electrification Act</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Headquarters</div>
+                    <div class="si-value">418 Chestnut Street</div>
+                    <div class="si-sub">Coshocton, Ohio 43812</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Annual Revenue</div>
+                    <div class="si-value">$18.4 Million</div>
+                    <div class="si-sub">FY 2024 (unaudited)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Total Employees</div>
+                    <div class="si-value">34 Full-Time</div>
+                    <div class="si-sub">+ 2 part-time, 3 contracted</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Service Area</div>
+                    <div class="si-value">~1,140 sq. miles</div>
+                    <div class="si-sub">Coshocton, Muskingum &amp; Guernsey Counties</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Customers Served</div>
+                    <div class="si-value">14,620 Meters</div>
+                    <div class="si-sub">~38,200 residents &amp; businesses</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Wholesale Power</div>
+                    <div class="si-value">Buckeye Power, Inc.</div>
+                    <div class="si-sub">Member of Ohio Rural Electric Cooperatives (OREC)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Regulatory Compliance</div>
+                    <div class="si-value">NERC CIP — Low Impact</div>
+                    <div class="si-sub">PUCO-regulated distribution utility</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Primary Contact</div>
+                    <div class="si-value">David Harmon, General Manager</div>
+                    <div class="si-sub">dharmon@mvec-ohio.coop</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">IT/Cybersecurity Contact</div>
+                    <div class="si-value">TechPath Solutions LLC (MSP)</div>
+                    <div class="si-sub">Contracted; no in-house CISO or IT Manager</div>
+                </div>
+            </div>
+
+            <h3 class="sub-heading">Company Description</h3>
+            <p class="body-text">
+                Muskingum Valley Electric Cooperative (MVEC) is a member-owned rural electric cooperative serving
+                approximately 14,620 metered customers across portions of Coshocton, Muskingum, and Guernsey Counties
+                in east-central Ohio. The cooperative distributes electricity at distribution voltages (4 kV–34.5 kV)
+                and does not own generation assets. Wholesale power is purchased from Buckeye Power, Inc., MVEC's
+                generation and transmission cooperative, which is a member of the Ohio Rural Electric Cooperatives (OREC).
+            </p>
+            <p class="body-text">
+                MVEC operates entirely as a distribution-only utility. Its service territory is predominantly rural,
+                covering small communities, farms, and residential properties. Key served communities include
+                Coshocton, Warsaw, Newcomerstown, West Lafayette, and Plainfield. The cooperative employs 34
+                full-time staff including lineworkers, operations and engineering staff, customer service, and
+                administrative personnel. There is no dedicated IT or cybersecurity staff; IT support is provided
+                under contract by TechPath Solutions LLC, a local managed service provider based in Coshocton.
+            </p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2 – FACILITIES
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 2 &mdash; Facilities &amp; Service Territory</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">🏭</span>
+            <h2>Facilities &amp; Physical Infrastructure</h2>
+            <span class="sec-tag">PHYSICAL</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Facility</th>
+                        <th>Location</th>
+                        <th>Function</th>
+                        <th>Physical Security</th>
+                        <th>IT/OT Present</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Main Office &amp; Operations Center</strong></td>
+                        <td>418 Chestnut St., Coshocton, OH</td>
+                        <td>Executive offices, customer service, SCADA dispatch, IT server room, engineering</td>
+                        <td>Key-card entry (main), deadbolt server room, exterior cameras (4)</td>
+                        <td><span class="tag tag-red">High — Servers &amp; SCADA</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Coshocton Substation (SS-01)</strong></td>
+                        <td>Otsego Ave., Coshocton, OH</td>
+                        <td>Primary 69kV/12.5kV transformation; feeds 4 distribution feeders</td>
+                        <td>Chain-link fence, padlock gate, no cameras, no motion sensors</td>
+                        <td><span class="tag tag-red">High — RTU, relays</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Warsaw Substation (SS-02)</strong></td>
+                        <td>SR-60, Warsaw, OH</td>
+                        <td>Secondary 69kV/12.5kV transformation; feeds 3 distribution feeders</td>
+                        <td>Chain-link fence, padlock gate, no cameras</td>
+                        <td><span class="tag tag-red">High — RTU, relays</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Newcomerstown Substation (SS-03)</strong></td>
+                        <td>Canal St., Newcomerstown, OH</td>
+                        <td>12.5kV distribution switching; 1 distribution feeder</td>
+                        <td>Chain-link fence, padlock only</td>
+                        <td><span class="tag tag-yellow">Medium — RTU only</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Equipment Yard &amp; Warehouse</strong></td>
+                        <td>Adjacent to Main Office, Coshocton</td>
+                        <td>Line truck fleet (9 vehicles), pole yard, transformer storage</td>
+                        <td>Chain-link fence, manual padlock gate; no cameras</td>
+                        <td><span class="tag tag-gray">Low — GPS in 3 trucks</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>West Lafayette Switching Station (SS-04)</strong></td>
+                        <td>SR-36, West Lafayette, OH</td>
+                        <td>Automated distribution switching, recloser bank</td>
+                        <td>Metal cabinet (padlocked), no fence, roadside location</td>
+                        <td><span class="tag tag-yellow">Medium — Automated recloser controller</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box warning">
+                <strong>Physical Security Note for Assessors</strong>
+                Three of four substations have no surveillance cameras, intrusion detection, or alarm systems.
+                Physical access logs are not maintained. Access to substation control panels relies entirely on
+                padlocks; key control procedures are undocumented.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3 – ORGANIZATIONAL STRUCTURE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 3 &mdash; Organizational Structure</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">👥</span>
+            <h2>Organizational Structure &amp; Staffing</h2>
+            <span class="sec-tag">WORKFORCE</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="two-col">
+                <div>
+                    <h3 class="sub-heading">Organizational Chart (Simplified)</h3>
+                    <table>
+                        <thead><tr><th>Title</th><th>Name</th><th>Cybersecurity Role</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>General Manager</strong></td><td>David Harmon</td><td>Executive sponsor (informal); approves IT budget</td></tr>
+                            <tr><td>Operations Manager</td><td>Randy Fulton</td><td>OT/SCADA system owner; no formal cybersecurity training</td></tr>
+                            <tr><td>Engineering &amp; Planning Manager</td><td>Teresa Albright, PE</td><td>GIS, distribution model; no cybersecurity training</td></tr>
+                            <tr><td>Customer Service Manager</td><td>Carol Bynum</td><td>CIS system owner; oversees billing data</td></tr>
+                            <tr><td>Finance Manager</td><td>Gene Westfall</td><td>Accounting systems; no cybersecurity role</td></tr>
+                            <tr><td>Line Superintendent</td><td>Mike Dobrowski</td><td>Fleet GPS; no formal cybersecurity role</td></tr>
+                            <tr><td><strong>IT Support (Contracted)</strong></td><td>TechPath Solutions LLC</td><td>Manages workstations, servers, email, basic firewall; remote access via VPN</td></tr>
+                            <tr><td>SCADA Technician</td><td>Kyle Zumpf</td><td>Operates SCADA HMI; not cybersecurity trained</td></tr>
+                            <tr><td>Administrative Assistant</td><td>Sharon Pryor</td><td>General office; handles some IT tickets via TechPath</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3 class="sub-heading">Staffing Summary</h3>
+                    <table>
+                        <thead><tr><th>Department</th><th>FTE Count</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Executive / Management</td><td>4</td><td>GM, Ops Mgr, Eng. Mgr, Finance Mgr</td></tr>
+                            <tr><td>Line Operations (Lineworkers)</td><td>18</td><td>Journeyman and apprentice linemen</td></tr>
+                            <tr><td>Customer Service / Billing</td><td>5</td><td>CSR staff + manager</td></tr>
+                            <tr><td>Engineering / GIS</td><td>3</td><td>1 PE, 2 GIS/mapping technicians</td></tr>
+                            <tr><td>SCADA / Substation Ops</td><td>2</td><td>1 SCADA tech, 1 substation tech</td></tr>
+                            <tr><td>Administrative / HR</td><td>2</td><td>Admin assistant, HR coordinator</td></tr>
+                            <tr><td><strong>IT / Cybersecurity (In-house)</strong></td><td><strong>0</strong></td><td><span class="tag tag-red">No dedicated IT staff</span></td></tr>
+                            <tr><td>Contracted IT (TechPath)</td><td>~0.25 FTE equiv.</td><td>On-call / part-time managed services</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box danger" style="margin-top:1rem;">
+                        <strong>Critical Gap — Workforce Domain (WORK)</strong>
+                        MVEC has zero dedicated cybersecurity personnel. The contracted MSP (TechPath Solutions)
+                        manages IT on a reactive basis with no formal security responsibilities defined in their
+                        service agreement. No cybersecurity awareness training has been delivered to staff in
+                        the past 24 months.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 4 – IT ASSETS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 4 &mdash; Information Technology (IT) Assets</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">💻</span>
+            <h2>IT Asset Inventory</h2>
+            <span class="sec-tag">ASSET</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="info-box warning">
+                <strong>Asset Inventory Status</strong>
+                MVEC does not maintain a formal, documented asset inventory. The list below was compiled by
+                TechPath Solutions during a 2023 site visit and has not been formally reviewed or approved
+                by MVEC management. Participants should note that undocumented assets likely exist.
+            </div>
+
+            <h3 class="sub-heading">Servers &amp; Core Infrastructure</h3>
+            <table>
+                <thead>
+                    <tr><th>Asset ID</th><th>Hostname</th><th>Type / OS</th><th>Function</th><th>Location</th><th>Patch Status</th><th>Criticality</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SRV-001</td>
+                        <td>MVEC-FILESRV</td>
+                        <td>Dell PowerEdge R440<br>Windows Server 2019</td>
+                        <td>Primary file server; shared drives for all departments</td>
+                        <td>Server room, Main Office</td>
+                        <td><span class="tag tag-yellow">Partially Current<br>(~6 mo lag)</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-002</td>
+                        <td>MVEC-SCADA01</td>
+                        <td>HP ProLiant DL360 G9<br>Windows Server 2016</td>
+                        <td>SCADA application server (GE e-terra Habitat v2.8); hosts HMI and historian</td>
+                        <td>Server room, Main Office</td>
+                        <td><span class="tag tag-red">Critical Lag<br>(18+ months)</span></td>
+                        <td><span class="tag tag-red">CRITICAL</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-003</td>
+                        <td>MVEC-ACCTG</td>
+                        <td>Dell OptiPlex (repurposed)<br>Windows Server 2012 R2</td>
+                        <td>QuickBooks Enterprise server; accounts payable/receivable, payroll</td>
+                        <td>Finance office, Main Office</td>
+                        <td><span class="tag tag-red">End-of-Support OS<br>No patches since 2023</span></td>
+                        <td><span class="tag tag-yellow">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-004</td>
+                        <td>MVEC-AMI-HE</td>
+                        <td>Dell PowerEdge R340<br>Windows Server 2019</td>
+                        <td>Landis+Gyr Gridstream AMI head-end; manages 14,620 smart meters</td>
+                        <td>Server room, Main Office</td>
+                        <td><span class="tag tag-yellow">Partially Current</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-005</td>
+                        <td>MVEC-CIS</td>
+                        <td>Virtual (VMware on SRV-001)<br>Windows Server 2019</td>
+                        <td>Milsoft Utility Solutions CIS (customer billing, outage management)</td>
+                        <td>Logical (runs on SRV-001)</td>
+                        <td><span class="tag tag-yellow">Partially Current</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-006</td>
+                        <td>MVEC-GIS</td>
+                        <td>Virtual (VMware on SRV-001)<br>Windows Server 2019</td>
+                        <td>ESRI ArcGIS Server; distribution system geographic model</td>
+                        <td>Logical (runs on SRV-001)</td>
+                        <td><span class="tag tag-yellow">Partially Current</span></td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-heading">Workstations &amp; End-User Devices</h3>
+            <table>
+                <thead><tr><th>Count</th><th>Type / OS</th><th>Users / Location</th><th>Antivirus</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td>6</td>
+                        <td>Desktop PC — Windows 11 Pro</td>
+                        <td>Management, Finance, Engineering</td>
+                        <td>Windows Defender (not centrally managed)</td>
+                        <td>Mostly current patches; joined to workgroup (no AD domain)</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Desktop PC — Windows 10 Pro</td>
+                        <td>Customer Service, Admin, Operations</td>
+                        <td>Windows Defender (not centrally managed)</td>
+                        <td>Mixed patch levels; 2 units running Win 10 21H2 (EOL)</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Desktop PC — Windows 10 LTSC 2019</td>
+                        <td>SCADA HMI workstations (OT network)</td>
+                        <td><span class="tag tag-red">None — AV disabled by SCADA vendor recommendation</span></td>
+                        <td>Dedicated SCADA HMI; no internet access (by policy)</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Laptop — Windows 11 Pro</td>
+                        <td>Engineering, Operations, GM (remote work)</td>
+                        <td>Windows Defender</td>
+                        <td>BitLocker enabled on 2 of 4; all take work data home</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Tablet — iPad (iOS 17)</td>
+                        <td>Field engineering, line superintendent</td>
+                        <td>N/A (iOS)</td>
+                        <td>Access ESRI Field Maps; MDM not deployed; personal Apple IDs used</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Smartphone — Mixed (iOS/Android)</td>
+                        <td>Line crew leads, managers</td>
+                        <td>N/A</td>
+                        <td>Access Office 365 email; no MDM; BYOD, no formal policy</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-heading">Business Applications (Software)</h3>
+            <table>
+                <thead><tr><th>Application</th><th>Vendor</th><th>Function</th><th>Hosting</th><th>Authentication</th></tr></thead>
+                <tbody>
+                    <tr><td>GE e-terra Habitat v2.8</td><td>GE Grid Solutions</td><td>SCADA / EMS / DMS</td><td>On-premise (SRV-002)</td><td><span class="tag tag-red">Shared local account; no MFA</span></td></tr>
+                    <tr><td>Milsoft Utility Solutions</td><td>Milsoft Utility Solutions</td><td>CIS, outage management, work orders</td><td>On-premise (SRV-005)</td><td>Individual accounts; no MFA</td></tr>
+                    <tr><td>Milsoft WindMil</td><td>Milsoft Utility Solutions</td><td>Distribution planning &amp; modeling</td><td>Desktop (2 engineering PCs)</td><td>Windows login only</td></tr>
+                    <tr><td>ESRI ArcGIS Server</td><td>Esri</td><td>GIS — distribution system map</td><td>On-premise (SRV-006)</td><td>Windows auth; no MFA</td></tr>
+                    <tr><td>Landis+Gyr Command Center</td><td>Landis+Gyr</td><td>AMI meter data management</td><td>On-premise (SRV-004)</td><td>Local accounts; no MFA</td></tr>
+                    <tr><td>QuickBooks Enterprise 22.0</td><td>Intuit</td><td>Accounting, payroll, AP/AR</td><td>On-premise (SRV-003)</td><td>Local QB accounts; no MFA</td></tr>
+                    <tr><td>Microsoft 365 (E1)</td><td>Microsoft</td><td>Email (Exchange Online), OneDrive, Teams</td><td>Cloud (SaaS)</td><td>Password only; <span class="tag tag-red">MFA not enforced</span></td></tr>
+                    <tr><td>Buckeye Power EMS Link</td><td>Buckeye Power / OSIsoft</td><td>Wholesale energy metering data exchange</td><td>Vendor-hosted; VPN tunnel to Buckeye Power</td><td>Shared service account</td></tr>
+                    <tr><td>AutoCAD LT 2022</td><td>Autodesk</td><td>Engineering drawings (substation layouts)</td><td>Desktop (engineering PCs)</td><td>Autodesk cloud license</td></tr>
+                    <tr><td>NISC SmartHub (portal)</td><td>NISC</td><td>Customer self-service web portal (billing, outage reporting)</td><td>Cloud (NISC-hosted SaaS)</td><td>Customer-facing; internal admin access via password only</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 5 – OT / OPERATIONAL ASSETS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 5 &mdash; Operational Technology (OT) &amp; Industrial Control System Assets</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">⚡</span>
+            <h2>OT / ICS / SCADA Asset Inventory</h2>
+            <span class="sec-tag">OT / ICS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <h3 class="sub-heading">SCADA / Control System Components</h3>
+            <table>
+                <thead><tr><th>Asset ID</th><th>Device / System</th><th>Vendor / Model</th><th>Location</th><th>Function</th><th>Firmware Status</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td>OT-001</td>
+                        <td>SCADA Application Server</td>
+                        <td>GE e-terra Habitat v2.8</td>
+                        <td>Main Office (SRV-002)</td>
+                        <td>Supervisory control, data acquisition, HMI, historian</td>
+                        <td><span class="tag tag-red">End of Vendor Support (EOL 2021)</span></td>
+                        <td>No upgrade budget allocated</td>
+                    </tr>
+                    <tr>
+                        <td>OT-002</td>
+                        <td>RTU — SS-01 Coshocton</td>
+                        <td>GE D20MX RTU</td>
+                        <td>SS-01, Coshocton</td>
+                        <td>Remote terminal unit; collects breaker status, voltage, current; sends to SCADA</td>
+                        <td><span class="tag tag-yellow">Firmware v3.04 (2 versions behind)</span></td>
+                        <td>DNP3 protocol over fiber</td>
+                    </tr>
+                    <tr>
+                        <td>OT-003</td>
+                        <td>RTU — SS-02 Warsaw</td>
+                        <td>GE D20MX RTU</td>
+                        <td>SS-02, Warsaw</td>
+                        <td>Same as OT-002</td>
+                        <td><span class="tag tag-yellow">Firmware v3.04</span></td>
+                        <td>DNP3 protocol over fiber</td>
+                    </tr>
+                    <tr>
+                        <td>OT-004</td>
+                        <td>RTU — SS-03 Newcomerstown</td>
+                        <td>SEL-2414 RTU</td>
+                        <td>SS-03, Newcomerstown</td>
+                        <td>Monitoring only; no control capability</td>
+                        <td><span class="tag tag-green">Current</span></td>
+                        <td>900 MHz licensed radio to Main Office</td>
+                    </tr>
+                    <tr>
+                        <td>OT-005</td>
+                        <td>Protective Relay — SS-01 (x3)</td>
+                        <td>SEL-351 Feeder Protection Relay</td>
+                        <td>SS-01, Coshocton</td>
+                        <td>Distribution feeder protection; overcurrent, ground fault</td>
+                        <td><span class="tag tag-yellow">R114-V2 (1 version behind)</span></td>
+                        <td>Serial to RTU (no direct Ethernet); default passwords unchanged</td>
+                    </tr>
+                    <tr>
+                        <td>OT-006</td>
+                        <td>Protective Relay — SS-02 (x3)</td>
+                        <td>SEL-351 Feeder Protection Relay</td>
+                        <td>SS-02, Warsaw</td>
+                        <td>Same as OT-005</td>
+                        <td><span class="tag tag-yellow">R114-V2</span></td>
+                        <td><span class="tag tag-red">Default vendor passwords in use</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-007</td>
+                        <td>Automated Recloser Controllers (x12)</td>
+                        <td>S&amp;C Electric IntelliRupter PulseCloser</td>
+                        <td>Various field locations (12 total)</td>
+                        <td>Automated fault isolation and service restoration</td>
+                        <td><span class="tag tag-yellow">Mixed — 4 of 12 current</span></td>
+                        <td>900 MHz radio to SCADA; some use older unencrypted radio protocol</td>
+                    </tr>
+                    <tr>
+                        <td>OT-008</td>
+                        <td>AMI Head-End System</td>
+                        <td>Landis+Gyr Command Center v8.2</td>
+                        <td>Main Office (SRV-004)</td>
+                        <td>Smart meter data collection, demand response, remote disconnect</td>
+                        <td><span class="tag tag-yellow">v8.2 (current is v9.1)</span></td>
+                        <td>RF mesh network (2.4 GHz) — 14,620 meters enrolled</td>
+                    </tr>
+                    <tr>
+                        <td>OT-009</td>
+                        <td>Power Quality Monitor</td>
+                        <td>Dranetz HDPQ Xplorer</td>
+                        <td>SS-01 (permanent install)</td>
+                        <td>Voltage sag/swell, flicker monitoring</td>
+                        <td><span class="tag tag-green">Current</span></td>
+                        <td>USB data export; no network connectivity</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box danger">
+                <strong>Critical OT Finding — Default Credentials</strong>
+                SEL-351 relays at SS-02 Warsaw Substation are using factory-default vendor passwords.
+                These credentials are publicly documented in the SEL instruction manual. Additionally, the
+                GE e-terra SCADA system uses a shared "SCADA_ADMIN" local account accessed by two operators
+                and the TechPath MSP — there is no individual accountability for SCADA actions.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 6 – NETWORK ARCHITECTURE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 6 &mdash; Network Architecture &amp; Communications</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">🌐</span>
+            <h2>Network Architecture</h2>
+            <span class="sec-tag">ARCH</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <h3 class="sub-heading">Network Segments</h3>
+            <table>
+                <thead><tr><th>Segment</th><th>Subnet</th><th>VLAN</th><th>Systems</th><th>Segmentation</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Corporate LAN</strong></td>
+                        <td>192.168.1.0/24</td>
+                        <td>None (flat)</td>
+                        <td>All workstations, SRV-001, SRV-003, SRV-005, SRV-006, printers, VOIP phones</td>
+                        <td><span class="tag tag-red">Flat — no VLANs</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>SCADA / OT Network</strong></td>
+                        <td>10.0.10.0/24</td>
+                        <td>None (separate switch port)</td>
+                        <td>SRV-002 (SCADA), SRV-004 (AMI), 2× HMI workstations, Cisco 2960 switch (SCADA)</td>
+                        <td><span class="tag tag-yellow">Partial — separate switch, but layer-3 route to Corp LAN exists</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>DMZ / Internet Perimeter</strong></td>
+                        <td>172.16.1.0/30</td>
+                        <td>N/A</td>
+                        <td>Fortinet FortiGate 60E (WAN side); ISP hand-off</td>
+                        <td><span class="tag tag-green">Firewall present</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Guest Wi-Fi</strong></td>
+                        <td>192.168.5.0/24</td>
+                        <td>None (separate SSID)</td>
+                        <td>2× Netgear WAC104 APs; shared by visitor, BYOD employee devices</td>
+                        <td><span class="tag tag-red">Not isolated from Corporate LAN at switch level</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Field Communications (WAN)</strong></td>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                        <td>RTUs at SS-01, SS-02 via single-mode fiber; SS-03 and reclosers via 900 MHz licensed radio</td>
+                        <td><span class="tag tag-yellow">No encryption on radio links</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vendor / Remote Access</strong></td>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                        <td>Cisco ASA 5505 (end-of-support); TechPath Solutions uses this for remote IT management; GE uses for SCADA support</td>
+                        <td><span class="tag tag-red">EoL device, no MFA, shared credentials</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-heading">Logical Network Diagram</h3>
+            <div class="network-diagram"><span class="nd-gray">┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                               INTERNET / WAN                                            │
+└───────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                        │ 100 Mbps Fiber (Spectrum Business)
+                         ┌──────────────┴──────────────┐
+                         │   </span><span class="nd-green">Fortinet FortiGate 60E</span><span class="nd-gray">        │  ◄── WAN Perimeter Firewall
+                         │   Firmware: 7.0.12          │      (rules: last reviewed 2022)
+                         └──────────────┬──────────────┘
+                                        │
+              ┌─────────────────────────┼──────────────────────────────────┐
+              │                         │                                  │
+   ┌──────────┴──────────┐  ┌───────────┴───────────┐     ┌───────────────┴────────────┐
+   │  </span><span class="nd-yellow">Cisco ASA 5505 VPN</span><span class="nd-gray">   │  │   </span><span class="nd-blue">Cisco Catalyst 2960-X</span><span class="nd-gray">   │     │  </span><span class="nd-orange">Netgear WAC104 × 2</span><span class="nd-gray">          │
+   │  (End-of-Support)   │  │   CORPORATE LAN SWITCH  │     │  Wi-Fi APs (2.4/5 GHz)     │
+   │  TechPath + GE VPN  │  │   192.168.1.0/24 (flat) │     │  SSID: MVEC-Staff          │
+   └──────────┬──────────┘  └───────────┬───────────┘     │  SSID: MVEC-Guest           │
+              │                         │                  │  </span><span class="nd-red">(NOT isolated from LAN)</span><span class="nd-gray">     │
+              └─────────────────────────┘                  └────────────────────────────┘
+                                        │
+              ┌─────────────────────────┼────────────────────────────────────────┐
+              │                         │                                        │
+   ┌──────────┴───────┐    ┌────────────┴─────────┐    ┌──────────────────────┐
+   │ </span><span class="nd-blue">SRV-001 FILESRV</span><span class="nd-gray">   │    │  </span><span class="nd-blue">SRV-003 ACCOUNTING</span><span class="nd-gray">  │    │  Workstations (13×)  │
+   │ Win Server 2019  │    │  Win Server 2012 R2  │    │  Desktops/Laptops    │
+   │ (VMware host for │    │  QuickBooks Ent.     │    │  No AD Domain        │
+   │  SRV-005, SRV-006│    │  </span><span class="nd-red">(EOL — no patches) </span><span class="nd-gray">│    │  Workgroup only      │
+   └──────────────────┘    └──────────────────────┘    └──────────────────────┘
+
+ ─ ─ ─ ─ ─ ─ ─ </span><span class="nd-yellow">PARTIAL SEGMENTATION</span><span class="nd-gray"> (layer-2 switch, layer-3 route STILL EXISTS) ─ ─ ─ ─ ─ ─ ─
+
+              ┌─────────────────────────┐     ┌──────────────────────────────────────────┐
+              │  </span><span class="nd-yellow">Cisco Catalyst 2960</span><span class="nd-gray">    │     │         </span><span class="nd-orange">FIELD COMMUNICATIONS</span><span class="nd-gray">               │
+              │  OT/SCADA SWITCH        │     │  SS-01 ─── Single-mode fiber ──► RTU     │
+              │  10.0.10.0/24           │     │  SS-02 ─── Single-mode fiber ──► RTU     │
+              └──────────┬──────────────┘     │  SS-03 ─── </span><span class="nd-yellow">900 MHz radio</span><span class="nd-gray"> (unencrypted)│
+                         │                    │  Reclosers ─ 900 MHz radio (12×)        │
+    ┌────────────────────┼──────────────┐     └──────────────────────────────────────────┘
+    │                    │              │
+ ┌──┴──────────────┐  ┌──┴───────────┐  │    ┌──────────────────────────────────────────┐
+ │ </span><span class="nd-blue">SRV-002 SCADA01</span><span class="nd-gray">  │  │ </span><span class="nd-blue">SRV-004 AMI-HE</span><span class="nd-gray">│  └──►│       </span><span class="nd-orange">CLOUD / EXTERNAL</span><span class="nd-gray">                   │
+ │ GE e-terra v2.8 │  │ L+G Cmd Ctr  │       │  Microsoft 365 (O365 email)            │
+ │ </span><span class="nd-red">EOL — no support</span><span class="nd-gray"> │  │ AMI head-end │       │  NISC SmartHub (customer portal)       │
+ └─────────────────┘  └──────────────┘       │  Buckeye Power EMS link (VPN tunnel)   │
+ ┌─────────────────┐  ┌──────────────┐       │  Landis+Gyr cloud (AMI analytics)      │
+ │ HMI WS-01       │  │ HMI WS-02   │       └──────────────────────────────────────────┘
+ │ Win10 LTSC 2019 │  │ Win10 LTSC  │
+ │ </span><span class="nd-red">No AV installed</span><span class="nd-gray">  │  │ </span><span class="nd-red">No AV installed</span><span class="nd-gray">│
+ └─────────────────┘  └──────────────┘</span></div>
+
+            <h3 class="sub-heading" style="margin-top:1.5rem;">Internet &amp; Wide-Area Connectivity</h3>
+            <table>
+                <thead><tr><th>Connection</th><th>Type / Speed</th><th>Provider</th><th>Purpose</th><th>Security</th></tr></thead>
+                <tbody>
+                    <tr><td>Primary Internet</td><td>Fiber — 100/100 Mbps</td><td>Spectrum Business</td><td>Corporate internet, email, cloud apps</td><td>Fortinet FortiGate 60E firewall; NAT; stateful inspection</td></tr>
+                    <tr><td>VPN — TechPath MSP</td><td>IPsec tunnel via Cisco ASA 5505</td><td>TechPath Solutions LLC</td><td>Remote IT support access (always-on tunnel)</td><td><span class="tag tag-red">EoL device; shared PSK; no MFA; no session logging</span></td></tr>
+                    <tr><td>VPN — GE Support</td><td>IPsec tunnel via same Cisco ASA 5505</td><td>GE Grid Solutions</td><td>Remote SCADA support (on-demand)</td><td><span class="tag tag-red">Same EoL VPN appliance; separate pre-shared key; no monitoring</span></td></tr>
+                    <tr><td>EMS Data Link — Buckeye Power</td><td>IPsec VPN over ISP connection</td><td>Buckeye Power, Inc.</td><td>Wholesale energy metering, generation scheduling</td><td>Managed by Buckeye Power; MVEC has limited visibility into tunnel configuration</td></tr>
+                    <tr><td>Field RTU (SS-01, SS-02)</td><td>Single-mode fiber (dedicated)</td><td>MVEC-owned</td><td>SCADA DNP3 data from substations</td><td>No encryption (DNP3 SAv5 not implemented)</td></tr>
+                    <tr><td>Field RTU / Reclosers</td><td>Licensed 900 MHz radio</td><td>FCC licensed — MVEC</td><td>SCADA data from SS-03 and 12 reclosers</td><td><span class="tag tag-red">No encryption; no authentication on radio frames</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 7 – NETWORK SECURITY ASSETS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 7 &mdash; Network Security Assets &amp; Controls</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">🛡️</span>
+            <h2>Cybersecurity Controls &amp; Security Technologies</h2>
+            <span class="sec-tag">SECURITY TECH</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <table>
+                <thead><tr><th>Security Control Category</th><th>Tool / Solution</th><th>Coverage</th><th>Status / Maturity</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Perimeter Firewall (IT)</strong></td>
+                        <td>Fortinet FortiGate 60E</td>
+                        <td>Corporate internet perimeter</td>
+                        <td><span class="tag tag-yellow">Functional</span> — firmware 7.0.12 (1 minor version behind); rules last reviewed Nov 2022; no IPS signatures enabled; basic stateful only</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Firewall (OT / SCADA)</strong></td>
+                        <td><em>None dedicated</em></td>
+                        <td>OT network</td>
+                        <td><span class="tag tag-red">Gap</span> — No dedicated OT/IT boundary firewall; OT switch connects to Corp LAN switch via trunk port with no ACLs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Intrusion Detection / Prevention (IDS/IPS)</strong></td>
+                        <td><em>None</em></td>
+                        <td>IT &amp; OT</td>
+                        <td><span class="tag tag-red">Gap</span> — No IDS/IPS deployed anywhere on the network</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Security Information &amp; Event Management (SIEM)</strong></td>
+                        <td><em>None</em></td>
+                        <td>IT &amp; OT</td>
+                        <td><span class="tag tag-red">Gap</span> — No centralized log collection or alerting; Windows event logs stored locally, 30-day retention only</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Endpoint Detection &amp; Response (EDR)</strong></td>
+                        <td><em>None — Windows Defender only</em></td>
+                        <td>IT workstations/servers</td>
+                        <td><span class="tag tag-red">Gap</span> — Defender is not centrally managed; OT HMI workstations have Defender disabled; no EDR product deployed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Anti-Malware / Endpoint AV</strong></td>
+                        <td>Windows Defender (built-in)</td>
+                        <td>IT workstations/laptops only</td>
+                        <td><span class="tag tag-yellow">Partial</span> — Enabled on IT assets; disabled on 2 SCADA HMI workstations; not centrally managed; definition updates may lag</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Multi-Factor Authentication (MFA)</strong></td>
+                        <td><em>Not deployed</em></td>
+                        <td>All systems</td>
+                        <td><span class="tag tag-red">Gap</span> — No MFA on any system: Microsoft 365, SCADA, CIS, VPN remote access, or financial applications</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Privileged Access Management (PAM)</strong></td>
+                        <td><em>None</em></td>
+                        <td>All systems</td>
+                        <td><span class="tag tag-red">Gap</span> — No PAM solution; shared admin credentials on SCADA and servers; no session recording for privileged access</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vulnerability Scanning</strong></td>
+                        <td><em>None regular</em></td>
+                        <td>IT (ad hoc only)</td>
+                        <td><span class="tag tag-red">Gap</span> — TechPath ran a one-time Nessus scan in 2022 on IT systems only; no remediation tracking; no OT scanning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Patch Management</strong></td>
+                        <td>Manual (TechPath handles IT)</td>
+                        <td>IT (partial); OT (minimal)</td>
+                        <td><span class="tag tag-yellow">Partial</span> — IT patches applied 3–6 months behind; OT patches 12–18 months behind; no formal patch policy; OT changes require vendor pre-approval (not documented)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backup &amp; Recovery</strong></td>
+                        <td>Tape backup (weekly full, nightly incremental)</td>
+                        <td>SRV-001 (file server) only</td>
+                        <td><span class="tag tag-yellow">Partial</span> — Tape rotated offsite weekly to GM's home; SCADA historian, AMI, and accounting NOT included in backup; last restore test: never documented</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Network Monitoring (NPM/NMS)</strong></td>
+                        <td>None formal; TechPath uses RMM agent (ConnectWise Automate)</td>
+                        <td>IT servers and workstations only</td>
+                        <td><span class="tag tag-yellow">Partial</span> — IT assets only; no OT network monitoring; no baseline traffic analysis; no alerting for anomalous behavior</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Email Security (Anti-phishing / Anti-spam)</strong></td>
+                        <td>Microsoft Defender for Office 365 Plan 1 (bundled with M365 E1)</td>
+                        <td>Microsoft 365 email</td>
+                        <td><span class="tag tag-yellow">Partial</span> — Basic anti-spam enabled; no DMARC/DKIM configured; no anti-phishing simulation training run; no impersonation protection</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DNS / Web Filtering</strong></td>
+                        <td><em>None</em></td>
+                        <td>All outbound web traffic</td>
+                        <td><span class="tag tag-red">Gap</span> — No DNS filtering; no web proxy; no content categorization; users have unrestricted internet access</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Loss Prevention (DLP)</strong></td>
+                        <td><em>None</em></td>
+                        <td>All data</td>
+                        <td><span class="tag tag-red">Gap</span> — No DLP controls on endpoints, email, or cloud storage</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Identity &amp; Access Management (IAM)</strong></td>
+                        <td>Local Windows accounts (no Active Directory domain)</td>
+                        <td>IT workstations</td>
+                        <td><span class="tag tag-red">Gap</span> — No centralized IAM; no AD/Entra; accounts managed individually on each machine; no formal onboarding/offboarding process documented</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Security Awareness Training</strong></td>
+                        <td>None (last attempt: informal 2022 lunch-and-learn)</td>
+                        <td>N/A</td>
+                        <td><span class="tag tag-red">Gap</span> — No formal training program; no phishing simulations; no cybersecurity policy acknowledgment required by staff</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incident Response Plan</strong></td>
+                        <td><em>Not formally documented</em></td>
+                        <td>IT &amp; OT</td>
+                        <td><span class="tag tag-red">Gap</span> — No documented IRP; no tabletop exercises conducted; staff are unclear on escalation contacts; no relationship with E-ISAC threat intel sharing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Threat Intelligence</strong></td>
+                        <td>E-ISAC membership (subscribed, not actively monitored)</td>
+                        <td>N/A</td>
+                        <td><span class="tag tag-yellow">Nominal</span> — MVEC is an E-ISAC member; daily alerts go to General Manager's inbox but are rarely read; no OT-specific threat intel subscription (ICS-CERT alerts not subscribed)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 8 – THIRD PARTIES
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 8 &mdash; Third-Party Relationships &amp; Supply Chain</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">🤝</span>
+            <h2>Third-Party &amp; Vendor Risk</h2>
+            <span class="sec-tag">3RD-PTY</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Vendor / Partner</th>
+                        <th>Type</th>
+                        <th>Services Provided</th>
+                        <th>Access Level</th>
+                        <th>Contract / SLA</th>
+                        <th>Cyber Risk</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>TechPath Solutions LLC</strong><br><em>Coshocton, OH</em></td>
+                        <td>Managed IT Services (MSP)</td>
+                        <td>Workstation mgmt, server admin, email support, firewall, helpdesk</td>
+                        <td><span class="tag tag-red">Full admin — remote &amp; on-site; no session recording</span></td>
+                        <td>Annual contract; MSA in place; no cybersecurity obligations specified; no SOC 2 audit</td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>GE Grid Solutions</strong><br><em>(Baker Hughes co.)</em></td>
+                        <td>SCADA OEM Support</td>
+                        <td>Remote and on-site support for GE e-terra SCADA system</td>
+                        <td><span class="tag tag-red">Remote access via VPN to SCADA server; unmonitored</span></td>
+                        <td>Time &amp; materials; no formal support contract; GE e-terra EOL; support is best-effort</td>
+                        <td><span class="tag tag-red">CRITICAL</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Buckeye Power, Inc.</strong></td>
+                        <td>Generation &amp; Transmission G&amp;T Cooperative</td>
+                        <td>Wholesale power supply; MVEC G&amp;T member; EMS data exchange</td>
+                        <td>IPsec VPN for EMS metering data; Buckeye manages their side; MVEC side not fully controlled</td>
+                        <td>G&amp;T member agreement; no separate cybersecurity MOU</td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Landis+Gyr</strong></td>
+                        <td>AMI Vendor</td>
+                        <td>Smart meter hardware, Command Center head-end software, remote analytics (cloud)</td>
+                        <td>SaaS cloud access to AMI analytics portal; agents phone home to Landis+Gyr cloud</td>
+                        <td>Software maintenance agreement; SOC 2 Type II available but not reviewed by MVEC</td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>S&amp;C Electric Company</strong></td>
+                        <td>OT Equipment Vendor</td>
+                        <td>IntelliRupter automated recloser hardware &amp; firmware updates</td>
+                        <td>On-site only for physical maintenance; no remote access currently</td>
+                        <td>Hardware warranty; no cybersecurity requirements in PO terms</td>
+                        <td><span class="tag tag-green">LOW</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>NISC (National Information Solutions Cooperative)</strong></td>
+                        <td>SaaS — Customer Portal</td>
+                        <td>SmartHub customer self-service portal (billing, outage reporting)</td>
+                        <td>NISC-hosted SaaS; MVEC admin access via password (no MFA)</td>
+                        <td>Service agreement; NISC ISO 27001 certified; MVEC hasn't reviewed their security documentation</td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>E.ON Technologies (Relay Contractor)</strong></td>
+                        <td>Substation / Relay Contractor</td>
+                        <td>Relay testing, calibration, substation maintenance (annual)</td>
+                        <td>Physical on-site access; brings own laptops for relay programming</td>
+                        <td>Annual PO; background check not required; no cybersecurity requirements in PO</td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ohio Rural Electric Cooperatives (OREC)</strong></td>
+                        <td>Trade Association / Support</td>
+                        <td>Member services, engineering support, group purchasing, cybersecurity resources</td>
+                        <td>No direct system access</td>
+                        <td>Membership; OREC provides RE-ISAC participation and cybersecurity program templates</td>
+                        <td><span class="tag tag-green">LOW</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box danger">
+                <strong>Third-Party Risk Gap — No Vendor Cybersecurity Requirements</strong>
+                MVEC has no supply chain cybersecurity policy, no vendor risk assessment process, and no
+                cybersecurity addenda in any vendor contracts. TechPath Solutions and GE Grid Solutions both
+                have privileged remote access to critical IT and OT systems with no monitoring, session
+                recording, or contractual cybersecurity obligations. Third-party risk is a significant
+                exposure in the THIRD-PARTIES domain.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 9 – POLICIES & GOVERNANCE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 9 &mdash; Cybersecurity Policies &amp; Governance</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">📋</span>
+            <h2>Policies, Governance &amp; Compliance Posture</h2>
+            <span class="sec-tag">PROGRAM</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="two-col">
+                <div>
+                    <h3 class="sub-heading">Existing Policy Documents</h3>
+                    <table>
+                        <thead><tr><th>Policy</th><th>Status</th><th>Last Reviewed</th></tr></thead>
+                        <tbody>
+                            <tr><td>Acceptable Use Policy (AUP)</td><td><span class="tag tag-yellow">Exists — outdated</span></td><td>2019; not enforced</td></tr>
+                            <tr><td>Password Policy</td><td><span class="tag tag-yellow">Informal</span></td><td>Never formally documented; verbal guidance only</td></tr>
+                            <tr><td>Remote Access Policy</td><td><span class="tag tag-red">None</span></td><td>—</td></tr>
+                            <tr><td>Incident Response Plan</td><td><span class="tag tag-red">None</span></td><td>—</td></tr>
+                            <tr><td>SCADA / OT Security Policy</td><td><span class="tag tag-red">None</span></td><td>—</td></tr>
+                            <tr><td>Third-Party / Vendor Security Policy</td><td><span class="tag tag-red">None</span></td><td>—</td></tr>
+                            <tr><td>Data Classification Policy</td><td><span class="tag tag-red">None</span></td><td>—</td></tr>
+                            <tr><td>Business Continuity / Disaster Recovery Plan</td><td><span class="tag tag-yellow">Draft</span></td><td>Draft from 2021; never finalized or tested</td></tr>
+                            <tr><td>Physical Security Policy</td><td><span class="tag tag-yellow">Informal</span></td><td>Verbal procedures; key control undocumented</td></tr>
+                            <tr><td>Employee Onboarding / Offboarding (IT)</td><td><span class="tag tag-yellow">Informal</span></td><td>No IT checklist; HR handles paper forms only</td></tr>
+                            <tr><td>Cybersecurity Risk Management Policy</td><td><span class="tag tag-red">None</span></td><td>—</td></tr>
+                            <tr><td>Asset Inventory Policy</td><td><span class="tag tag-red">None</span></td><td>—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3 class="sub-heading">Regulatory &amp; Compliance Obligations</h3>
+                    <table>
+                        <thead><tr><th>Framework / Regulation</th><th>Applicability</th><th>Current Status</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>NERC CIP</strong></td><td>Low Impact BES Cyber Systems</td><td><span class="tag tag-yellow">Applicable — Low Impact only; CIP-003-8 electronic access control obligations partially addressed</span></td></tr>
+                            <tr><td><strong>C2M2 v2.1</strong></td><td>Voluntary (DOE recommended)</td><td><span class="tag tag-red">No prior self-evaluation conducted</span></td></tr>
+                            <tr><td><strong>Ohio Public Utilities Commission (PUCO)</strong></td><td>State distribution utility</td><td><span class="tag tag-green">Compliant — annual reporting current</span></td></tr>
+                            <tr><td><strong>NIST Cybersecurity Framework (CSF)</strong></td><td>Voluntary / PUCO recommended</td><td><span class="tag tag-red">Not formally adopted or assessed against</span></td></tr>
+                            <tr><td><strong>E-ISAC Membership</strong></td><td>Voluntary</td><td><span class="tag tag-yellow">Member — alerts received but not acted upon</span></td></tr>
+                            <tr><td><strong>CISA Critical Infrastructure</strong></td><td>Energy Sector CISA partnership</td><td><span class="tag tag-red">No engagement with CISA; not enrolled in CISA services (e.g., CSET, CyHy)</span></td></tr>
+                            <tr><td><strong>Rural Utilities Service (RUS) / USDA</strong></td><td>Federal loan programs</td><td><span class="tag tag-yellow">Active RUS loan; RUS cybersecurity guidelines apply but not formally reviewed</span></td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box info" style="margin-top:1rem;">
+                        <strong>Note on NERC CIP Low Impact</strong>
+                        MVEC's BES Cyber Systems are classified as Low Impact under NERC CIP. This means
+                        CIP-003-8 applies, requiring Electronic Access Controls (EACs), Physical Security Controls,
+                        and a Cyber Security Incident Response Plan for Low Impact BES Cyber Systems. MVEC has
+                        not formally documented these controls to CIP-003-8 standards.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 10 – C2M2 DOMAIN ASSESSMENT PREP
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 10 &mdash; C2M2 Domain Assessment Preparation Data</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">📊</span>
+            <h2>Domain-by-Domain Assessment Data for Participants</h2>
+            <span class="sec-tag">ALL 10 DOMAINS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <p class="body-text">
+                Use the data below for each C2M2 domain. Each card summarizes the key observable facts about
+                MVEC's current state relevant to that domain, along with an indicative current MIL level
+                for participants to validate, challenge, and score.
+            </p>
+
+            <div class="domain-prep-grid">
+
+                <!-- ASSET -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-asset">🗂️ ASSET — Asset, Change &amp; Configuration Mgmt</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>No formal IT or OT asset inventory exists; ad-hoc list from TechPath (2023)</li>
+                            <li>No configuration management baseline for IT servers or OT devices</li>
+                            <li>No change management process — SCADA changes made informally by Kyle Zumpf or TechPath</li>
+                            <li>Software inventory not maintained; unauthorized software not monitored</li>
+                            <li>Hardware lifecycle not tracked; EoL systems (Server 2012 R2, GE e-terra) in active use</li>
+                            <li>Portable media (USB) use is unrestricted on corporate PCs</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Indicative Current: MIL 1 (partial)</div>
+                </div>
+
+                <!-- THREAT -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-threat">🛡️ THREAT — Threat &amp; Vulnerability Mgmt</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>One-time Nessus scan performed in 2022 by TechPath; no remediation tracked</li>
+                            <li>No regular vulnerability scanning program; no OT scanning ever performed</li>
+                            <li>E-ISAC membership exists; threat alerts go to GM inbox, rarely read</li>
+                            <li>No ICS-CERT / CISA alert subscription or review process</li>
+                            <li>Patches applied reactively; 12–18 month lag on OT systems</li>
+                            <li>No threat intelligence analysis process or threat hunting activity</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Indicative Current: MIL 1 (minimal)</div>
+                </div>
+
+                <!-- RISK -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-risk">⚖️ RISK — Risk Management</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>No formal cybersecurity risk assessment has ever been conducted</li>
+                            <li>No risk register maintained for IT or OT</li>
+                            <li>No risk management policy or procedure documented</li>
+                            <li>Board of Directors is not briefed on cybersecurity risks</li>
+                            <li>GM informally acknowledges some risks but no risk tolerance defined</li>
+                            <li>USDA/RUS loan requirements include cybersecurity — not formally reviewed</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Indicative Current: MIL 0–1 (not performed)</div>
+                </div>
+
+                <!-- ACCESS -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-access">🔑 ACCESS — Identity &amp; Access Management</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>No Active Directory — individual local accounts on each machine</li>
+                            <li>No MFA enforced anywhere (M365, SCADA, VPN, CIS)</li>
+                            <li>Shared SCADA admin account ("SCADA_ADMIN") used by 2 operators + MSP</li>
+                            <li>Default vendor passwords on SEL-351 relays at SS-02</li>
+                            <li>No formal access provisioning or deprovisioning process</li>
+                            <li>Former employee accounts: no audit of whether accounts were removed</li>
+                            <li>TechPath has always-on VPN admin access with no session recording</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Indicative Current: MIL 1 (ad hoc)</div>
+                </div>
+
+                <!-- SITUATION -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-situate">👁️ SITUATE — Situational Awareness</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>No SIEM; no centralized log collection</li>
+                            <li>Windows event logs stored locally, 30-day retention; never reviewed</li>
+                            <li>No IDS/IPS or network traffic monitoring</li>
+                            <li>Firewall logs exist on FortiGate but are not routinely reviewed</li>
+                            <li>SCADA historian captures operational data but not security events</li>
+                            <li>No network baseline established; anomalous behavior would not be detected</li>
+                            <li>E-ISAC alerts unmonitored; no threat intel ingestion process</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Indicative Current: MIL 0–1 (no monitoring)</div>
+                </div>
+
+                <!-- RESPONSE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-response">🚨 RESPONSE — Event &amp; Incident Response, COO</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>No documented Incident Response Plan (IRP)</li>
+                            <li>No tabletop or drill exercises have ever been conducted</li>
+                            <li>Staff do not know who to contact in case of a cyber incident</li>
+                            <li>Business Continuity Plan drafted (2021) but never finalized or tested</li>
+                            <li>Backup only covers file server (SRV-001); SCADA, AMI, accounting excluded</li>
+                            <li>Recovery Time Objective (RTO) and Recovery Point Objective (RPO) not defined</li>
+                            <li>No relationship with CISA, MS-ISAC, or FBI Cyber for incident reporting</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Indicative Current: MIL 0–1 (no IRP)</div>
+                </div>
+
+                <!-- THIRD-PARTIES -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-third">🤝 THIRD-PARTIES — Third-Party Risk Mgmt</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>No vendor cybersecurity assessment process</li>
+                            <li>No cybersecurity requirements in any vendor contracts or POs</li>
+                            <li>TechPath &amp; GE have privileged access — no monitoring, no contractual cybersecurity SLA</li>
+                            <li>E.ON Technologies contractors bring personal laptops to substations — no controls</li>
+                            <li>No inventory of third-party connections to MVEC systems</li>
+                            <li>NISC and Landis+Gyr SOC 2 reports available but never reviewed by MVEC</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Indicative Current: MIL 0–1 (no program)</div>
+                </div>
+
+                <!-- WORKFORCE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-work">👷 WORKFORCE — Workforce Management</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>No cybersecurity awareness training program</li>
+                            <li>Last training event: informal lunch-and-learn, ~2022</li>
+                            <li>No phishing simulation program</li>
+                            <li>No cybersecurity responsibilities in any job descriptions</li>
+                            <li>No formal onboarding cybersecurity briefing</li>
+                            <li>No background check policy beyond standard HR pre-employment screen</li>
+                            <li>SCADA operator (Kyle Zumpf) has had no formal OT cybersecurity training</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Indicative Current: MIL 0–1 (not performed)</div>
+                </div>
+
+                <!-- ARCHITECTURE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-arch">🏗️ ARCH — Cybersecurity Architecture</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>IT/OT network partial segmentation only — layer-3 route exists between Corp LAN and SCADA network</li>
+                            <li>No dedicated OT firewall or DMZ between IT and SCADA networks</li>
+                            <li>Guest Wi-Fi not isolated from corporate LAN at switch level</li>
+                            <li>No network diagram formally maintained or reviewed</li>
+                            <li>Radio SCADA links (900 MHz) have no encryption or authentication</li>
+                            <li>No Zero Trust principles; flat network with broad lateral movement potential</li>
+                            <li>No data-in-transit encryption on DNP3 (DNP3-SAv5 not enabled)</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Indicative Current: MIL 1 (ad hoc, no design)</div>
+                </div>
+
+                <!-- PROGRAM -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-program">📋 PROGRAM — Program Management</div>
+                    <div class="dpc-body">
+                        <ul>
+                            <li>No formal cybersecurity program; no CISO or equivalent role</li>
+                            <li>No cybersecurity budget line item — cybersecurity costs bundled into "IT"</li>
+                            <li>No cybersecurity strategy or roadmap</li>
+                            <li>Board of Directors has not been briefed on cybersecurity in at least 3 years</li>
+                            <li>No C2M2 or other framework self-evaluation previously conducted</li>
+                            <li>TechPath MSP manages IT reactively; no proactive security posture management</li>
+                            <li>No metrics or KPIs tracked for cybersecurity program performance</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Indicative Current: MIL 0 (no formal program)</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 11 – EXERCISE QUESTIONS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 11 &mdash; Exercise Discussion Questions</div>
+
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">🎓</span>
+            <h2>Facilitated Exercise Questions</h2>
+            <span class="sec-tag">EXERCISE</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="two-col">
+                <div>
+                    <h3 class="sub-heading">Assessment Questions</h3>
+                    <ul class="body-list">
+                        <li><strong>ASSET:</strong> What is the minimum you need to achieve MIL 1 in the ASSET domain? What is the single highest-priority action?</li>
+                        <li><strong>ACCESS:</strong> MVEC has shared SCADA credentials and no MFA. What are the specific C2M2 practices in the ACCESS domain that are not met? What remediation would you recommend first?</li>
+                        <li><strong>ARCH:</strong> The SCADA network and corporate LAN share a layer-3 route. What C2M2 architecture practices does this violate, and what is the simplest architectural change to improve the score?</li>
+                        <li><strong>THREAT:</strong> MVEC's patch lag is 12–18 months on OT systems. Which C2M2 THREAT practices are affected? What is a realistic patching strategy for a cooperative this size?</li>
+                        <li><strong>RESPONSE:</strong> If a ransomware attack hit MVEC's corporate network tonight, what would happen? Map the lack of an IRP to specific RESPONSE domain MIL 1 practices not met.</li>
+                        <li><strong>THIRD-PARTIES:</strong> TechPath has always-on privileged access with no monitoring. Which THIRD-PARTIES domain practices are not met? What is the minimum viable vendor security requirement MVEC should add to the contract?</li>
+                        <li><strong>PROGRAM:</strong> The Board has not been briefed on cybersecurity in 3 years. What PROGRAM domain practices require executive and board-level cybersecurity engagement?</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="sub-heading">Scenario Injects (Optional)</h3>
+                    <div class="info-box info">
+                        <strong>Inject A — Phishing Incident</strong>
+                        A customer service representative clicks a phishing email link. Her workstation is now
+                        displaying ransomware demand screen. How does MVEC respond? What does the lack of an
+                        IRP mean for the response timeline? What C2M2 RESPONSE practices would have mitigated this?
+                    </div>
+                    <div class="info-box warning">
+                        <strong>Inject B — OT Anomaly</strong>
+                        SS-02 Warsaw Substation RTU begins sending unusual control signals.
+                        The SCADA operator notices a CB status change he did not initiate.
+                        What situational awareness gaps (SITUATE domain) prevented earlier detection?
+                        How would the lack of network monitoring affect the investigation?
+                    </div>
+                    <div class="info-box danger">
+                        <strong>Inject C — Vendor Compromise</strong>
+                        TechPath Solutions notifies MVEC that their RMM platform was breached and
+                        attacker-controlled commands were pushed to customer endpoints.
+                        What THIRD-PARTIES and ARCH domain gaps enabled this risk? What immediate
+                        actions should MVEC take? What monitoring capability is missing?
+                    </div>
+                    <div class="info-box success">
+                        <strong>Remediation Planning</strong>
+                        As a team, develop a 90-day Quick Win plan for MVEC targeting MIL 1
+                        across all 10 domains. Prioritize by risk, budget constraint
+                        ($50,000 available), and available staff. Which domain gaps pose the
+                        greatest immediate operational risk?
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>C2M2 Training Exercise — Muskingum Valley Electric Cooperative (MVEC)</strong></p>
+        <p>This is a fictional company created solely for cybersecurity training and C2M2 assessment exercises.</p>
+        <p>All data, names, addresses, IP addresses, and system configurations are simulated.</p>
+        <span class="version-badge">⚡ C2M2 v2.1 Exercise Scenario | Created for Electric Utility Cybersecurity Training</span>
+    </div>
+
+</div>
+
+<script>
+function toggleSection(headerEl) {
+    const body = headerEl.nextElementSibling;
+    const icon = headerEl.querySelector('.toggle-icon');
+    if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        headerEl.classList.remove('collapsed');
+        icon.textContent = '▼';
+    } else {
+        body.classList.add('hidden');
+        headerEl.classList.add('collapsed');
+        icon.textContent = '▼';
+    }
+}
+</script>
+</body>
+</html>
+
+
+
