@@ -59,6 +59,8 @@
         }
         .info-box .num { font-size: 2.5rem; font-weight: 700; color: #1a3a4a; }
         .info-box .label { font-size: 0.9rem; color: #666; margin-top: 0.3rem; }
+
+        /* ── Sector grid ── */
         .sector-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -72,10 +74,125 @@
             text-align: center;
             font-size: 0.95rem;
             color: #1a3a4a;
-            font-weight: 500;
-            border: 1px solid #b0d4e3;
+            font-weight: 600;
+            border: 2px solid #b0d4e3;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+            position: relative;
+        }
+        .sector-badge:hover {
+            background: #2a6478;
+            color: white;
+            border-color: #2a6478;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(42,100,120,0.35);
+        }
+        .sector-badge:hover .icon { filter: none; }
+        .sector-badge.active {
+            background: #1a3a4a;
+            color: white;
+            border-color: #1a3a4a;
+            box-shadow: 0 6px 20px rgba(26,58,74,0.4);
         }
         .sector-badge .icon { font-size: 1.8rem; display: block; margin-bottom: 0.4rem; }
+        .sector-badge .click-hint {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 400;
+            opacity: 0.65;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        /* ── Sector detail panel ── */
+        .sector-detail {
+            display: none;
+            margin-top: 1.5rem;
+            background: linear-gradient(135deg, #f0f7fa 0%, #e4f0f5 100%);
+            border-radius: 12px;
+            border-left: 5px solid #2a6478;
+            padding: 1.8rem;
+            position: relative;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .sector-detail.visible { display: block; }
+        .sector-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .sector-detail-icon { font-size: 2.8rem; }
+        .sector-detail-title { font-size: 1.4rem; font-weight: 700; color: #1a3a4a; }
+        .sector-detail-subtitle { font-size: 0.9rem; color: #2a6478; font-weight: 600; margin-top: 0.2rem; }
+
+        .sector-detail-body p {
+            color: #444;
+            line-height: 1.75;
+            margin-bottom: 0.9rem;
+            font-size: 0.97rem;
+        }
+        .detail-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 640px) { .detail-cols { grid-template-columns: 1fr; } }
+        .detail-col h4 {
+            font-size: 0.9rem;
+            color: #1a3a4a;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid #2a6478;
+        }
+        .detail-col ul {
+            padding-left: 1.2rem;
+            color: #555;
+            line-height: 1.8;
+            font-size: 0.92rem;
+        }
+        .detail-col li { margin-bottom: 0.3rem; }
+        .c2m2-relevance {
+            background: #1a3a4a;
+            color: white;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            margin-top: 1.2rem;
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+        .c2m2-relevance strong { color: #7ec8e3; }
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #2a6478;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .close-btn:hover { background: #1a3a4a; }
+
+        /* ── Rest of existing styles ── */
         .timeline { margin-top: 1rem; }
         .timeline-item { display: flex; gap: 1rem; margin-bottom: 1.2rem; align-items: flex-start; }
         .timeline-year {
@@ -140,18 +257,382 @@
 
     <div class="card">
         <h2>Who Should Use C2M2?</h2>
-        <p>C2M2 is applicable to any organization that operates or relies on technology to deliver critical services. It is especially suited for:</p>
+        <p>C2M2 is applicable to any organization that operates or relies on technology to deliver critical services. Click any sector below to learn more about its unique cybersecurity profile and C2M2 relevance.</p>
+
         <div class="sector-grid">
-            <div class="sector-badge"><span class="icon">⚡</span>Electric Utilities</div>
-            <div class="sector-badge"><span class="icon">🛢️</span>Oil & Natural Gas</div>
-            <div class="sector-badge"><span class="icon">💧</span>Water Systems</div>
-            <div class="sector-badge"><span class="icon">🏭</span>Industrial / OT</div>
-            <div class="sector-badge"><span class="icon">🏥</span>Healthcare</div>
-            <div class="sector-badge"><span class="icon">🏦</span>Financial Services</div>
-            <div class="sector-badge"><span class="icon">🏛️</span>Government</div>
-            <div class="sector-badge"><span class="icon">🔭</span>Research Institutions</div>
+            <div class="sector-badge" onclick="toggleSector('electric')" id="badge-electric">
+                <span class="icon">⚡</span>Electric Utilities
+                <span class="click-hint">Click to explore →</span>
+            </div>
+            <div class="sector-badge" onclick="toggleSector('oil')" id="badge-oil">
+                <span class="icon">🛢️</span>Oil &amp; Natural Gas
+                <span class="click-hint">Click to explore →</span>
+            </div>
+            <div class="sector-badge" onclick="toggleSector('water')" id="badge-water">
+                <span class="icon">💧</span>Water Systems
+                <span class="click-hint">Click to explore →</span>
+            </div>
+            <div class="sector-badge" onclick="toggleSector('industrial')" id="badge-industrial">
+                <span class="icon">🏭</span>Industrial / OT
+                <span class="click-hint">Click to explore →</span>
+            </div>
+            <div class="sector-badge" onclick="toggleSector('healthcare')" id="badge-healthcare">
+                <span class="icon">🏥</span>Healthcare
+                <span class="click-hint">Click to explore →</span>
+            </div>
+            <div class="sector-badge" onclick="toggleSector('financial')" id="badge-financial">
+                <span class="icon">🏦</span>Financial Services
+                <span class="click-hint">Click to explore →</span>
+            </div>
+            <div class="sector-badge" onclick="toggleSector('government')" id="badge-government">
+                <span class="icon">🏛️</span>Government
+                <span class="click-hint">Click to explore →</span>
+            </div>
+            <div class="sector-badge" onclick="toggleSector('research')" id="badge-research">
+                <span class="icon">🔭</span>Research Institutions
+                <span class="click-hint">Click to explore →</span>
+            </div>
         </div>
-    </div>
+
+        <!-- ═══════════════════════════════════ SECTOR DETAIL PANELS ═══════════════════════════════════ -->
+
+        <!-- ELECTRIC UTILITIES -->
+        <div class="sector-detail" id="detail-electric">
+            <button class="close-btn" onclick="closeSector('electric')" title="Close">✕</button>
+            <div class="sector-detail-header">
+                <div class="sector-detail-icon">⚡</div>
+                <div>
+                    <div class="sector-detail-title">Electric Utilities</div>
+                    <div class="sector-detail-subtitle">Power Generation, Transmission &amp; Distribution</div>
+                </div>
+            </div>
+            <div class="sector-detail-body">
+                <p>Electric utilities — including investor-owned utilities (IOUs), municipal utilities, rural electric cooperatives, and independent power producers — generate, transmit, and distribute electricity to residential, commercial, and industrial customers. The U.S. bulk electric system is one of the most complex and interdependent engineered systems in the world, spanning thousands of generating stations, high-voltage transmission lines, substations, and millions of distribution endpoints.</p>
+                <p>Because nearly every other critical infrastructure sector depends on reliable electrical power, utilities represent a top-tier target for nation-state actors, ransomware groups, and hacktivists. The convergence of legacy Operational Technology (OT) — such as SCADA systems, energy management systems (EMS), and industrial control systems — with modern IT networks creates a particularly complex attack surface.</p>
+                <div class="detail-cols">
+                    <div class="detail-col">
+                        <h4>Key Cybersecurity Threats</h4>
+                        <ul>
+                            <li>Nation-state intrusions targeting grid control systems</li>
+                            <li>Ransomware disrupting billing and operational systems</li>
+                            <li>Supply chain attacks on SCADA/ICS vendors</li>
+                            <li>Insider threats at remote substations</li>
+                            <li>Physical-cyber coordinated attacks</li>
+                            <li>Attacks on smart meter (AMI) infrastructure</li>
+                        </ul>
+                    </div>
+                    <div class="detail-col">
+                        <h4>Governing Regulations</h4>
+                        <ul>
+                            <li>NERC CIP (Critical Infrastructure Protection) Standards</li>
+                            <li>FERC orders governing bulk electric system security</li>
+                            <li>TSA Pipeline Security Directives (for dual-fuel utilities)</li>
+                            <li>State PUC cybersecurity requirements</li>
+                            <li>NIST SP 800-82 (ICS Security Guide)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="c2m2-relevance">
+                    <strong>C2M2 Relevance:</strong> Electric utilities were the original target audience for C2M2 (ES-C2M2, 2012). The framework's ASSET, ARCHITECTURE, and SITUATION domains directly map to managing IT/OT convergence and achieving NERC CIP compliance. C2M2 self-evaluations help utilities benchmark their maturity and justify cybersecurity investment decisions to regulators and boards.
+                </div>
+            </div>
+        </div>
+
+        <!-- OIL & NATURAL GAS -->
+        <div class="sector-detail" id="detail-oil">
+            <button class="close-btn" onclick="closeSector('oil')" title="Close">✕</button>
+            <div class="sector-detail-header">
+                <div class="sector-detail-icon">🛢️</div>
+                <div>
+                    <div class="sector-detail-title">Oil &amp; Natural Gas</div>
+                    <div class="sector-detail-subtitle">Upstream, Midstream &amp; Downstream Operations</div>
+                </div>
+            </div>
+            <div class="sector-detail-body">
+                <p>The oil and natural gas (ONG) sector encompasses the full energy supply chain — from upstream exploration and production (drilling, extraction) to midstream transportation (pipelines, compressor stations, LNG terminals) and downstream refining, processing, and distribution. This sector is foundational to national energy security and underpins fuel supply for transportation, heating, and industrial production across the country.</p>
+                <p>ONG infrastructure relies heavily on geographically dispersed industrial control systems (ICS), pipeline supervisory control and data acquisition (SCADA) networks, and remote terminal units (RTUs). The 2021 Colonial Pipeline ransomware attack — which disrupted fuel supplies across the U.S. Southeast — highlighted the catastrophic potential of cyberattacks on this sector.</p>
+                <div class="detail-cols">
+                    <div class="detail-col">
+                        <h4>Key Cybersecurity Threats</h4>
+                        <ul>
+                            <li>Ransomware targeting pipeline SCADA and billing systems</li>
+                            <li>Nation-state APT intrusions seeking persistent access</li>
+                            <li>Remote access exploitation of unmanned facilities</li>
+                            <li>Attacks on LNG terminal control systems</li>
+                            <li>Third-party vendor compromise (supply chain)</li>
+                            <li>Insider sabotage at remote pump/compressor stations</li>
+                        </ul>
+                    </div>
+                    <div class="detail-col">
+                        <h4>Governing Regulations</h4>
+                        <ul>
+                            <li>TSA Pipeline Security Directives (SD-02C, SD-02D)</li>
+                            <li>DOT PHMSA pipeline safety regulations</li>
+                            <li>API Cybersecurity Standards (API 1164)</li>
+                            <li>CISA Cross-Sector Cybersecurity Performance Goals</li>
+                            <li>ONG-C2M2 sector-specific supplement</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="c2m2-relevance">
+                    <strong>C2M2 Relevance:</strong> DOE published the ONG-C2M2 in 2014 specifically for this sector. The THIRD-PARTIES, RESPONSE, and RISK domains are especially critical for pipeline operators managing dispersed infrastructure and complex contractor ecosystems. C2M2 aligns closely with TSA Pipeline Security Directive requirements.
+                </div>
+            </div>
+        </div>
+
+        <!-- WATER SYSTEMS -->
+        <div class="sector-detail" id="detail-water">
+            <button class="close-btn" onclick="closeSector('water')" title="Close">✕</button>
+            <div class="sector-detail-header">
+                <div class="sector-detail-icon">💧</div>
+                <div>
+                    <div class="sector-detail-title">Water Systems</div>
+                    <div class="sector-detail-subtitle">Drinking Water &amp; Wastewater Treatment Infrastructure</div>
+                </div>
+            </div>
+            <div class="sector-detail-body">
+                <p>The water and wastewater sector includes over 148,000 public water systems and roughly 16,000 publicly owned wastewater treatment works across the United States. These systems collect, treat, and distribute safe drinking water while managing wastewater disposal — functions that are directly linked to public health. Water utilities range from large metropolitan authorities serving millions of customers to small rural systems serving a few hundred people.</p>
+                <p>Water systems often rely on aging SCADA and industrial control systems to automate treatment processes including chemical dosing, pump operations, and disinfection. The 2021 Oldsmar, Florida incident — where an attacker remotely accessed a water treatment plant and attempted to alter sodium hydroxide levels — demonstrated the life-safety implications of inadequate cybersecurity in this sector.</p>
+                <div class="detail-cols">
+                    <div class="detail-col">
+                        <h4>Key Cybersecurity Threats</h4>
+                        <ul>
+                            <li>Remote manipulation of treatment chemical levels</li>
+                            <li>Ransomware disrupting billing and operational systems</li>
+                            <li>Exploitation of internet-exposed HMI/SCADA interfaces</li>
+                            <li>Insider threats with physical access to treatment facilities</li>
+                            <li>Attacks on sensor networks and water quality monitoring</li>
+                            <li>Supply chain compromise of ICS vendors</li>
+                        </ul>
+                    </div>
+                    <div class="detail-col">
+                        <h4>Governing Regulations</h4>
+                        <ul>
+                            <li>America's Water Infrastructure Act (AWIA) — risk assessments</li>
+                            <li>EPA Cybersecurity Guidance for Water Utilities</li>
+                            <li>CISA Water Sector Security Guidance</li>
+                            <li>Safe Drinking Water Act (SDWA) requirements</li>
+                            <li>WaterISAC Threat Intelligence Sharing</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="c2m2-relevance">
+                    <strong>C2M2 Relevance:</strong> Water utilities — many resource-constrained — benefit from C2M2's scalable, non-prescriptive structure. The ASSET and THREAT domains help utilities inventory aging ICS assets and prioritize limited cybersecurity investments. C2M2 supports EPA's requirement that water systems conduct cybersecurity risk and resilience assessments.
+                </div>
+            </div>
+        </div>
+
+        <!-- INDUSTRIAL / OT -->
+        <div class="sector-detail" id="detail-industrial">
+            <button class="close-btn" onclick="closeSector('industrial')" title="Close">✕</button>
+            <div class="sector-detail-header">
+                <div class="sector-detail-icon">🏭</div>
+                <div>
+                    <div class="sector-detail-title">Industrial / Operational Technology (OT)</div>
+                    <div class="sector-detail-subtitle">Manufacturing, Process Control &amp; Industrial Automation</div>
+                </div>
+            </div>
+            <div class="sector-detail-body">
+                <p>Industrial and Operational Technology (OT) environments span a vast range of sectors — including manufacturing, chemical processing, aerospace, food &amp; beverage, pharmaceuticals, automotive, and defense industrial base. OT refers to hardware and software that monitors and controls physical equipment, processes, and events. This includes Programmable Logic Controllers (PLCs), Distributed Control Systems (DCS), Human Machine Interfaces (HMIs), and Industrial IoT (IIoT) devices.</p>
+                <p>The convergence of IT and OT networks — driven by Industry 4.0, smart manufacturing, and remote monitoring — has dramatically expanded the attack surface of industrial environments. Disruption of OT systems can cause production outages, equipment damage, environmental incidents, and in some cases, physical harm to workers. Adversaries increasingly target OT specifically to cause cascading real-world effects.</p>
+                <div class="detail-cols">
+                    <div class="detail-col">
+                        <h4>Key Cybersecurity Threats</h4>
+                        <ul>
+                            <li>ICS-targeted malware (e.g., INDUSTROYER, TRITON/TRISIS)</li>
+                            <li>Ransomware halting production lines</li>
+                            <li>Exploitation of legacy PLCs and unpatched firmware</li>
+                            <li>Remote access abuse via VPN and jump servers</li>
+                            <li>Supply chain attacks on OT hardware and software vendors</li>
+                            <li>Intellectual property theft from engineering systems</li>
+                        </ul>
+                    </div>
+                    <div class="detail-col">
+                        <h4>Governing Standards</h4>
+                        <ul>
+                            <li>IEC 62443 (Industrial Cybersecurity Standard)</li>
+                            <li>NIST SP 800-82 Rev. 3 (ICS Security Guide)</li>
+                            <li>CISA ICS-CERT advisories and guidance</li>
+                            <li>CMMC (for Defense Industrial Base manufacturers)</li>
+                            <li>ISA/IEC 62443 Zones and Conduits model</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="c2m2-relevance">
+                    <strong>C2M2 Relevance:</strong> The C2M2 was explicitly designed to address both IT and OT asset environments. The ARCHITECTURE domain guides network segmentation between IT and OT zones, while the ASSET domain addresses ICS/SCADA inventory. C2M2's MIL progression allows manufacturers to build maturity incrementally without disrupting production operations.
+                </div>
+            </div>
+        </div>
+
+        <!-- HEALTHCARE -->
+        <div class="sector-detail" id="detail-healthcare">
+            <button class="close-btn" onclick="closeSector('healthcare')" title="Close">✕</button>
+            <div class="sector-detail-header">
+                <div class="sector-detail-icon">🏥</div>
+                <div>
+                    <div class="sector-detail-title">Healthcare</div>
+                    <div class="sector-detail-subtitle">Hospitals, Health Systems &amp; Medical Infrastructure</div>
+                </div>
+            </div>
+            <div class="sector-detail-body">
+                <p>The healthcare sector includes hospitals, integrated health systems, physician practices, outpatient clinics, long-term care facilities, diagnostic labs, and medical device manufacturers. Healthcare organizations manage enormous volumes of protected health information (PHI) while operating life-critical systems including electronic health records (EHRs), clinical decision support systems, medical imaging systems (PACS/DICOM), and networked medical devices such as infusion pumps, ventilators, and patient monitors.</p>
+                <p>Healthcare is consistently ranked among the most-targeted sectors for cyberattacks. Ransomware attacks on hospitals have directly delayed care and been linked to patient harm. The sector faces a unique dual challenge: balancing robust security with the need for rapid, uninterrupted access to patient data during clinical care.</p>
+                <div class="detail-cols">
+                    <div class="detail-col">
+                        <h4>Key Cybersecurity Threats</h4>
+                        <ul>
+                            <li>Ransomware encrypting EHR systems and disrupting care</li>
+                            <li>Medical device exploitation (infusion pumps, PACS)</li>
+                            <li>Phishing targeting clinical staff credentials</li>
+                            <li>Business Email Compromise (BEC) for financial fraud</li>
+                            <li>Third-party vendor breaches (billing, telehealth)</li>
+                            <li>Data theft of PHI for identity fraud and extortion</li>
+                        </ul>
+                    </div>
+                    <div class="detail-col">
+                        <h4>Governing Regulations</h4>
+                        <ul>
+                            <li>HIPAA Security Rule (45 CFR Parts 160 &amp; 164)</li>
+                            <li>HHS 405(d) Cybersecurity Practices for Healthcare</li>
+                            <li>FDA Pre/Post-market Medical Device Cybersecurity Guidance</li>
+                            <li>State data breach notification laws</li>
+                            <li>HICP (Health Industry Cybersecurity Practices)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="c2m2-relevance">
+                    <strong>C2M2 Relevance:</strong> Healthcare organizations leverage C2M2's WORKFORCE, ACCESS, and RESPONSE domains to address insider threats, privileged access to EHR systems, and ransomware incident response. C2M2's maturity-based approach complements HIPAA Security Rule compliance by providing a structured path to improving security posture beyond minimum regulatory requirements.
+                </div>
+            </div>
+        </div>
+
+        <!-- FINANCIAL SERVICES -->
+        <div class="sector-detail" id="detail-financial">
+            <button class="close-btn" onclick="closeSector('financial')" title="Close">✕</button>
+            <div class="sector-detail-header">
+                <div class="sector-detail-icon">🏦</div>
+                <div>
+                    <div class="sector-detail-title">Financial Services</div>
+                    <div class="sector-detail-subtitle">Banking, Insurance, Investment &amp; Payment Systems</div>
+                </div>
+            </div>
+            <div class="sector-detail-body">
+                <p>The financial services sector encompasses commercial and investment banks, credit unions, insurance companies, securities exchanges, payment processors, fintech firms, and clearinghouses. Financial institutions serve as the backbone of economic activity, holding consumer assets, facilitating transactions, and providing credit. The sector operates vast interconnected technology ecosystems including core banking platforms, trading systems, payment networks (ACH, SWIFT, Fedwire), and mobile banking applications used by hundreds of millions of customers.</p>
+                <p>The financial sector is among the most heavily regulated and best-resourced for cybersecurity — yet it remains a top target due to the direct monetary value of its systems. Sophisticated adversaries pursue wire fraud, account takeover, market manipulation, and systemic disruption. A successful attack on a major clearinghouse or payment processor could cascade across the entire economy.</p>
+                <div class="detail-cols">
+                    <div class="detail-col">
+                        <h4>Key Cybersecurity Threats</h4>
+                        <ul>
+                            <li>Nation-state attacks targeting SWIFT and interbank systems</li>
+                            <li>Ransomware disrupting banking operations</li>
+                            <li>Credential stuffing and account takeover at scale</li>
+                            <li>Business Email Compromise (BEC) wire fraud</li>
+                            <li>Insider trading via unauthorized system access</li>
+                            <li>Third-party fintech and processor supply chain risk</li>
+                        </ul>
+                    </div>
+                    <div class="detail-col">
+                        <h4>Governing Regulations</h4>
+                        <ul>
+                            <li>GLBA Safeguards Rule (FTC / OCC)</li>
+                            <li>FFIEC Cybersecurity Assessment Tool (CAT)</li>
+                            <li>SEC Cybersecurity Disclosure Rules (2023)</li>
+                            <li>NY DFS Part 500 Cybersecurity Regulation</li>
+                            <li>PCI DSS (Payment Card Industry Data Security Standard)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="c2m2-relevance">
+                    <strong>C2M2 Relevance:</strong> Financial institutions use C2M2's RISK, THIRD-PARTIES, and PROGRAM domains to manage vendor risk, demonstrate governance maturity to regulators, and benchmark against peers. C2M2 complements the FFIEC CAT — both frameworks share a maturity-based approach and can be cross-walked to support comprehensive cyber risk reporting to boards and examiners.
+                </div>
+            </div>
+        </div>
+
+        <!-- GOVERNMENT -->
+        <div class="sector-detail" id="detail-government">
+            <button class="close-btn" onclick="closeSector('government')" title="Close">✕</button>
+            <div class="sector-detail-header">
+                <div class="sector-detail-icon">🏛️</div>
+                <div>
+                    <div class="sector-detail-title">Government</div>
+                    <div class="sector-detail-subtitle">Federal, State, Local &amp; Tribal Agencies</div>
+                </div>
+            </div>
+            <div class="sector-detail-body">
+                <p>Government entities at all levels — federal departments and agencies, state governments, county and municipal governments, tribal nations, and public authorities — rely on technology systems to deliver essential public services including benefits administration, law enforcement, tax collection, permitting, emergency management, and public communications. Government IT environments are diverse, often legacy-laden, and span both classified and unclassified networks.</p>
+                <p>Government agencies are prime targets for nation-state espionage, hacktivism, and ransomware. The SolarWinds supply chain compromise (2020) and the attack on the U.S. Office of Personnel Management (2015) — which exposed records of over 21 million federal employees — illustrate the scale of risk. State and local governments face particular challenges due to limited IT staffing and budget constraints.</p>
+                <div class="detail-cols">
+                    <div class="detail-col">
+                        <h4>Key Cybersecurity Threats</h4>
+                        <ul>
+                            <li>Nation-state espionage targeting classified/sensitive systems</li>
+                            <li>Supply chain compromise of government IT vendors</li>
+                            <li>Ransomware targeting municipal and county systems</li>
+                            <li>Phishing targeting government employee credentials</li>
+                            <li>Election infrastructure interference</li>
+                            <li>Insider threats with privileged access to sensitive data</li>
+                        </ul>
+                    </div>
+                    <div class="detail-col">
+                        <h4>Governing Frameworks</h4>
+                        <ul>
+                            <li>FISMA (Federal Information Security Modernization Act)</li>
+                            <li>NIST RMF (Risk Management Framework, SP 800-37)</li>
+                            <li>CISA Binding Operational Directives (BODs)</li>
+                            <li>FedRAMP (Cloud Authorization Framework)</li>
+                            <li>Executive Order 14028 (Improving Cybersecurity)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="c2m2-relevance">
+                    <strong>C2M2 Relevance:</strong> Government agencies apply C2M2's PROGRAM and RISK domains to align cybersecurity strategy with mission requirements and demonstrate security governance to oversight bodies. The WORKFORCE domain supports agencies in building internal cybersecurity capacity. C2M2 self-evaluations can complement FISMA reporting and NIST RMF authorization activities.
+                </div>
+            </div>
+        </div>
+
+        <!-- RESEARCH INSTITUTIONS -->
+        <div class="sector-detail" id="detail-research">
+            <button class="close-btn" onclick="closeSector('research')" title="Close">✕</button>
+            <div class="sector-detail-header">
+                <div class="sector-detail-icon">🔭</div>
+                <div>
+                    <div class="sector-detail-title">Research Institutions</div>
+                    <div class="sector-detail-subtitle">Universities, National Labs &amp; R&amp;D Organizations</div>
+                </div>
+            </div>
+            <div class="sector-detail-body">
+                <p>Research institutions — including universities, federally funded research and development centers (FFRDCs), national laboratories (e.g., Oak Ridge, Argonne, Sandia), and private R&amp;D organizations — generate and steward some of the nation's most valuable intellectual assets. These include cutting-edge research in defense technologies, biomedical sciences, artificial intelligence, quantum computing, and advanced energy systems. Research networks typically prioritize openness and collaboration, which can create tension with security requirements.</p>
+                <p>Research institutions present a unique cybersecurity challenge: they must protect proprietary research, classified data, and government-funded intellectual property while maintaining the open, collaborative environment essential to scientific progress. Nation-state actors — particularly from China, Russia, Iran, and North Korea — actively target universities and labs to steal research without the cost of development.</p>
+                <div class="detail-cols">
+                    <div class="detail-col">
+                        <h4>Key Cybersecurity Threats</h4>
+                        <ul>
+                            <li>Nation-state intellectual property theft campaigns</li>
+                            <li>Phishing targeting researcher and student accounts</li>
+                            <li>Compromise of research computing clusters (HPC)</li>
+                            <li>Insider threats — researchers with foreign connections</li>
+                            <li>Ransomware targeting administrative and research systems</li>
+                            <li>Vulnerabilities in collaborative research tools and portals</li>
+                        </ul>
+                    </div>
+                    <div class="detail-col">
+                        <h4>Governing Frameworks</h4>
+                        <ul>
+                            <li>NIST SP 800-171 (CUI protection for federal contractors)</li>
+                            <li>CMMC 2.0 (for DoD-funded research)</li>
+                            <li>NSF Cybersecurity requirements for grantees</li>
+                            <li>DOE Laboratory Cybersecurity Program standards</li>
+                            <li>FERPA (for student records protection)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="c2m2-relevance">
+                    <strong>C2M2 Relevance:</strong> Research institutions — particularly those receiving federal funding from DOE, NSF, DoD, or NIH — use C2M2's ASSET, ACCESS, and THIRD-PARTIES domains to inventory research computing assets, control access to sensitive data, and manage collaborator risk. The framework's non-prescriptive, scalable design accommodates the diverse and decentralized nature of university and laboratory environments.
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end card -->
 
     <div class="card">
         <h2>How C2M2 is Structured</h2>
@@ -197,7 +678,7 @@
             </div>
             <div class="timeline-item">
                 <span class="timeline-year">2014</span>
-                <div class="timeline-text"><strong>ES-C2M2 / ONG-C2M2</strong> — Separate sector-specific supplements released for Electricity Subsector and Oil & Natural Gas subsector.</div>
+                <div class="timeline-text"><strong>ES-C2M2 / ONG-C2M2</strong> — Separate sector-specific supplements released for Electricity Subsector and Oil &amp; Natural Gas subsector.</div>
             </div>
             <div class="timeline-item">
                 <span class="timeline-year">2019</span>
@@ -215,5 +696,36 @@
         <p>Source: U.S. Department of Energy, Office of Cybersecurity, Energy Security, and Emergency Response (CESER)</p>
     </div>
 </div>
+
+<script>
+    let activeSector = null;
+
+    function toggleSector(id) {
+        if (activeSector === id) {
+            closeSector(id);
+            return;
+        }
+        if (activeSector) {
+            closeSector(activeSector);
+        }
+        openSector(id);
+    }
+
+    function openSector(id) {
+        activeSector = id;
+        document.getElementById('detail-' + id).classList.add('visible');
+        document.getElementById('badge-' + id).classList.add('active');
+        // Smooth scroll to the panel
+        setTimeout(() => {
+            document.getElementById('detail-' + id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 50);
+    }
+
+    function closeSector(id) {
+        document.getElementById('detail-' + id).classList.remove('visible');
+        document.getElementById('badge-' + id).classList.remove('active');
+        if (activeSector === id) activeSector = null;
+    }
+</script>
 </body>
 </html>
