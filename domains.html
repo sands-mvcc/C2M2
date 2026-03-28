@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Domains & Practice Reference</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 1rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .page-header {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+
+        /* Controls bar */
+        .controls {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 2px solid #d0e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box input:focus { border-color: #2a6478; }
+        .search-box .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 1rem;
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-tab {
+            padding: 0.45rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .filter-tab.all { background: #1a3a4a; color: white; }
+        .filter-tab.all:hover, .filter-tab.all.active { background: #1a3a4a; border-color: #1a3a4a; color: white; }
+        .filter-tab.mil1 { background: #fff9e6; color: #856404; border-color: #ffc107; }
+        .filter-tab.mil1:hover, .filter-tab.mil1.active { background: #ffc107; color: #333; }
+        .filter-tab.mil2 { background: #e8f7fb; color: #0c5460; border-color: #17a2b8; }
+        .filter-tab.mil2:hover, .filter-tab.mil2.active { background: #17a2b8; color: white; }
+        .filter-tab.mil3 { background: #eafaf1; color: #155724; border-color: #28a745; }
+        .filter-tab.mil3:hover, .filter-tab.mil3.active { background: #28a745; color: white; }
+        .expand-all-btn {
+            padding: 0.45rem 1rem;
+            background: #f0f7fa;
+            border: 2px solid #b0d4e3;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #1a3a4a;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .expand-all-btn:hover { background: #e0eef5; }
+
+        /* Domain cards */
+        .domain-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 15px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+        .domain-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.18); }
+        .domain-card.hidden { display: none; }
+        .domain-header {
+            background: linear-gradient(90deg, #1a3a4a 0%, #2a6478 100%);
+            color: white;
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .domain-header:hover { background: linear-gradient(90deg, #15303e 0%, #245768 100%); }
+        .domain-header .left { display: flex; align-items: center; gap: 0.8rem; }
+        .domain-header .abbr {
+            background: rgba(255,255,255,0.2);
+            padding: 0.35rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .domain-header .title { font-size: 1.1rem; font-weight: 600; }
+        .domain-header .icon { font-size: 1.6rem; }
+        .domain-header .right { display: flex; align-items: center; gap: 0.8rem; }
+        .practice-count {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .chevron { font-size: 1rem; transition: transform 0.3s; }
+        .chevron.open { transform: rotate(180deg); }
+
+        /* Domain body */
+        .domain-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .domain-body.open { max-height: 2000px; }
+        .domain-body-inner { padding: 1.5rem; }
+        .domain-desc {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
+            padding: 0.8rem 1rem;
+            background: #f8fbfc;
+            border-left: 4px solid #2a6478;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        /* MIL sections */
+        .mil-section {
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border: 1px solid;
+        }
+        .mil-section.mil1 { border-color: #ffc107; }
+        .mil-section.mil2 { border-color: #17a2b8; }
+        .mil-section.mil3 { border-color: #28a745; }
+        .mil-section.hidden-mil { display: none; }
+        .mil-header {
+            padding: 0.7rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+        .mil1 .mil-header { background: #fff3cd; }
+        .mil2 .mil-header { background: #d1ecf1; }
+        .mil3 .mil-header { background: #d4edda; }
+        .mil-header-left { display: flex; align-items: center; gap: 0.6rem; }
+        .mil-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .mil1 .mil-badge { background: #ffc107; color: #333; }
+        .mil2 .mil-badge { background: #17a2b8; color: white; }
+        .mil3 .mil-badge { background: #28a745; color: white; }
+        .mil-label {
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+        .mil1 .mil-label { color: #856404; }
+        .mil2 .mil-label { color: #0c5460; }
+        .mil3 .mil-label { color: #155724; }
+        .mil-count {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        .mil-practices {
+            padding: 0.5rem 0.5rem;
+            display: none;
+        }
+        .mil-practices.open { display: block; }
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 0.2rem;
+            transition: background 0.2s;
+        }
+        .practice-item:hover { background: #f5f5f5; }
+        .practice-item.search-match { background: #fffde7; }
+        .practice-id {
+            font-weight: 700;
+            color: #1a3a4a;
+            font-size: 0.82rem;
+            white-space: nowrap;
+            margin-top: 1px;
+        }
+        .practice-text {
+            font-size: 0.88rem;
+            color: #444;
+            line-height: 1.5;
+        }
+        mark { background: #ffeb3b; padding: 0 2px; border-radius: 2px; }
+
+        /* No results */
+        .no-results {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            color: #888;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .no-results.show { display: block; }
+        .no-results .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+        /* Stats bar */
+        .stats-bar {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            color: white;
+            font-size: 0.9rem;
+        }
+        .stats-bar span strong { font-size: 1.1rem; }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .page-header h1 { font-size: 1.8rem; }
+            .domain-header .title { font-size: 0.95rem; }
+            .controls { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
+
+    <div class="page-header">
+        <h1>📚 Domains & Practice Reference</h1>
+        <p>All 10 C2M2 v2.1 Domains — Objectives and Practices by MIL Level</p>
+    </div>
+
+    <div class="controls">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Search practices, domains, IDs…" oninput="applyFilters()">
+        </div>
+        <div class="filter-tabs">
+            <span class="filter-tab all active" onclick="setFilter('all', this)">All MIL Levels</span>
+            <span class="filter-tab mil1" onclick="setFilter('mil1', this)">MIL 1 Only</span>
+            <span class="filter-tab mil2" onclick="setFilter('mil2', this)">MIL 2 Only</span>
+            <span class="filter-tab mil3" onclick="setFilter('mil3', this)">MIL 3 Only</span>
+        </div>
+        <button class="expand-all-btn" id="expand-all-btn" onclick="toggleExpandAll()">Expand All</button>
+    </div>
+
+    <div class="stats-bar" id="stats-bar">
+        <span>🏛️ <strong>10</strong> Domains</span>
+        <span>📋 <strong id="practice-count">0</strong> Practices Shown</span>
+        <span>🔍 <strong id="filter-label">All Levels</strong></span>
+    </div>
+
+    <div id="domains-container"></div>
+    <div class="no-results" id="no-results">
+        <div class="icon">🔍</div>
+        <p>No practices match your search. Try different keywords or clear the search.</p>
+    </div>
+
+    <div class="footer">
+        <p><strong>C2M2 Domains & Practice Reference</strong> | C2M2 Version 2.1</p>
+        <p>Practice IDs are illustrative — always reference the official C2M2 v2.1 model document for authoritative practice text.</p>
+    </div>
+</div>
+
+<script>
+const DOMAINS = [
+    {
+        id: 'ASSET', icon: '🗂️', name: 'Asset, Change, and Configuration Management',
+        desc: 'Manage the organization\'s IT and OT assets — including hardware, software, and data — and the changes and configurations applied to them. Knowing what you have and controlling how it changes is fundamental to all other cybersecurity functions.',
+        mil1: [
+            { id: 'ASSET-1a', text: 'Establish and maintain an inventory of IT assets' },
+            { id: 'ASSET-1b', text: 'Establish and maintain an inventory of OT assets' },
+            { id: 'ASSET-2a', text: 'Perform change management for organizational assets' },
+            { id: 'ASSET-2b', text: 'Test changes to assets before deployment' },
+            { id: 'ASSET-3a', text: 'Establish baseline configurations for IT and OT assets' },
+            { id: 'ASSET-3b', text: 'Manage configurations for IT and OT assets' },
+        ],
+        mil2: [
+            { id: 'ASSET-1c', text: 'Prioritize assets based on criticality to operations' },
+            { id: 'ASSET-1d', text: 'Ensure asset inventories are kept current' },
+            { id: 'ASSET-2c', text: 'Plan and document change management activities' },
+            { id: 'ASSET-3c', text: 'Define and use documented configuration management procedures' },
+        ],
+        mil3: [
+            { id: 'ASSET-1e', text: 'Analyze asset management activities to identify improvements' },
+            { id: 'ASSET-1f', text: 'Communicate asset management results to stakeholders' },
+            { id: 'ASSET-2d', text: 'Improve change management based on lessons learned' },
+            { id: 'ASSET-3d', text: 'Review and improve the configuration management program' },
+        ]
+    },
+    {
+        id: 'THREAT', icon: '🛡️', name: 'Threat and Vulnerability Management',
+        desc: 'Identify, analyze, and respond to cybersecurity threats and vulnerabilities affecting the organization\'s assets and operations. Includes vulnerability scanning, threat intelligence collection and sharing, and remediation tracking.',
+        mil1: [
+            { id: 'THREAT-1a', text: 'Identify cybersecurity vulnerabilities in organizational assets' },
+            { id: 'THREAT-1b', text: 'Evaluate cybersecurity vulnerabilities to determine risk' },
+            { id: 'THREAT-1c', text: 'Respond to discovered cybersecurity vulnerabilities' },
+            { id: 'THREAT-2a', text: 'Perform threat analysis activities' },
+            { id: 'THREAT-2b', text: 'Receive cybersecurity threat intelligence from external sources' },
+        ],
+        mil2: [
+            { id: 'THREAT-1d', text: 'Plan and document vulnerability management activities' },
+            { id: 'THREAT-1e', text: 'Track remediation of identified vulnerabilities' },
+            { id: 'THREAT-2c', text: 'Document and manage threat analysis activities' },
+            { id: 'THREAT-2d', text: 'Prioritize threats based on operational impact' },
+        ],
+        mil3: [
+            { id: 'THREAT-1f', text: 'Analyze vulnerability management activities to improve the program' },
+            { id: 'THREAT-2e', text: 'Analyze threat data to improve threat management practices' },
+            { id: 'THREAT-2f', text: 'Share threat intelligence across organizational boundaries' },
+        ]
+    },
+    {
+        id: 'RISK', icon: '⚖️', name: 'Risk Management',
+        desc: 'Establish and maintain a cybersecurity risk management strategy, assess cybersecurity risks to the organization, and communicate risk information to support organizational decision-making at all levels.',
+        mil1: [
+            { id: 'RISK-1a', text: 'Identify cybersecurity risks to the organization' },
+            { id: 'RISK-1b', text: 'Analyze identified cybersecurity risks' },
+            { id: 'RISK-2a', text: 'Respond to identified cybersecurity risks' },
+            { id: 'RISK-2b', text: 'Prioritize risks for response based on impact' },
+        ],
+        mil2: [
+            { id: 'RISK-1c', text: 'Establish and document a risk management strategy' },
+            { id: 'RISK-1d', text: 'Define risk tolerance and acceptance criteria' },
+            { id: 'RISK-2c', text: 'Track and document risk responses' },
+            { id: 'RISK-2d', text: 'Align risk management with organizational objectives' },
+        ],
+        mil3: [
+            { id: 'RISK-1e', text: 'Review and improve the risk management program' },
+            { id: 'RISK-2e', text: 'Communicate cybersecurity risk to executive leadership' },
+            { id: 'RISK-2f', text: 'Integrate cybersecurity risk into enterprise risk management' },
+        ]
+    },
+    {
+        id: 'ACCESS', icon: '🔑', name: 'Identity and Access Management',
+        desc: 'Manage user identities and control access to organizational assets. Ensure that only authorized individuals can access systems and data, access is appropriate for their role, and that privileged access is tightly controlled.',
+        mil1: [
+            { id: 'ACCESS-1a', text: 'Establish and maintain user identities' },
+            { id: 'ACCESS-1b', text: 'Authenticate users before granting access' },
+            { id: 'ACCESS-2a', text: 'Control access to organizational assets based on need' },
+            { id: 'ACCESS-2b', text: 'Remove access when no longer required' },
+            { id: 'ACCESS-3a', text: 'Enforce least-privilege access controls' },
+        ],
+        mil2: [
+            { id: 'ACCESS-1c', text: 'Document and manage the identity lifecycle' },
+            { id: 'ACCESS-2c', text: 'Implement multi-factor authentication for privileged accounts' },
+            { id: 'ACCESS-3b', text: 'Review and audit access rights periodically' },
+            { id: 'ACCESS-3c', text: 'Manage privileged access separately from standard access' },
+        ],
+        mil3: [
+            { id: 'ACCESS-1d', text: 'Improve identity management based on review findings' },
+            { id: 'ACCESS-3d', text: 'Analyze access management results and communicate to leadership' },
+            { id: 'ACCESS-3e', text: 'Continuously improve access management practices' },
+        ]
+    },
+    {
+        id: 'SITUATION', icon: '👁️', name: 'Situational Awareness',
+        desc: 'Collect, analyze, and communicate cybersecurity information to develop an accurate picture of the organization\'s cybersecurity posture. Includes logging, monitoring, and information sharing to detect and understand threats in context.',
+        mil1: [
+            { id: 'SITUATION-1a', text: 'Perform logging on IT assets' },
+            { id: 'SITUATION-1b', text: 'Perform logging on OT assets' },
+            { id: 'SITUATION-2a', text: 'Analyze log data to identify cybersecurity events' },
+            { id: 'SITUATION-2b', text: 'Receive and review cybersecurity information from external sources' },
+        ],
+        mil2: [
+            { id: 'SITUATION-1c', text: 'Define and document logging requirements' },
+            { id: 'SITUATION-1d', text: 'Protect log data from unauthorized modification' },
+            { id: 'SITUATION-2c', text: 'Document and manage situational awareness activities' },
+            { id: 'SITUATION-2d', text: 'Share cybersecurity situational awareness information internally' },
+        ],
+        mil3: [
+            { id: 'SITUATION-1e', text: 'Review and improve the logging program' },
+            { id: 'SITUATION-2e', text: 'Analyze situational awareness activities for improvements' },
+            { id: 'SITUATION-2f', text: 'Share situational awareness information with sector peers' },
+        ]
+    },
+    {
+        id: 'RESPONSE', icon: '🚨', name: 'Event and Incident Response, Continuity of Operations',
+        desc: 'Detect, escalate, respond to, and recover from cybersecurity events and incidents. Ensure that critical operations can continue through and after a cybersecurity incident through effective continuity planning and testing.',
+        mil1: [
+            { id: 'RESPONSE-1a', text: 'Detect cybersecurity events' },
+            { id: 'RESPONSE-2a', text: 'Escalate and report cybersecurity events' },
+            { id: 'RESPONSE-3a', text: 'Respond to declared cybersecurity incidents' },
+            { id: 'RESPONSE-3b', text: 'Contain cybersecurity incidents' },
+            { id: 'RESPONSE-4a', text: 'Identify functions that must continue during a cybersecurity incident' },
+            { id: 'RESPONSE-4b', text: 'Back up information needed to sustain operations' },
+        ],
+        mil2: [
+            { id: 'RESPONSE-1b', text: 'Document and plan detection activities' },
+            { id: 'RESPONSE-2b', text: 'Document escalation and reporting procedures' },
+            { id: 'RESPONSE-3c', text: 'Document and maintain the incident response plan' },
+            { id: 'RESPONSE-3d', text: 'Train incident response personnel' },
+            { id: 'RESPONSE-4c', text: 'Document and maintain continuity of operations plans' },
+            { id: 'RESPONSE-4d', text: 'Test continuity and backup procedures' },
+        ],
+        mil3: [
+            { id: 'RESPONSE-3e', text: 'Conduct post-incident reviews and incorporate lessons learned' },
+            { id: 'RESPONSE-3f', text: 'Communicate incident response capabilities to stakeholders' },
+            { id: 'RESPONSE-4e', text: 'Improve continuity plans based on exercise results' },
+        ]
+    },
+    {
+        id: 'THIRD-PARTIES', icon: '🤝', name: 'Third-Party Risk Management',
+        desc: 'Identify and manage cybersecurity risks introduced by third-party relationships, including vendors, suppliers, service providers, and partners who have access to or impact on organizational systems and data.',
+        mil1: [
+            { id: 'THIRD-1a', text: 'Identify third parties with access to organizational assets' },
+            { id: 'THIRD-2a', text: 'Establish cybersecurity requirements for third parties' },
+            { id: 'THIRD-3a', text: 'Address cybersecurity risks from third parties' },
+            { id: 'THIRD-4a', text: 'Include cybersecurity requirements in third-party agreements' },
+        ],
+        mil2: [
+            { id: 'THIRD-1b', text: 'Prioritize third parties by risk level' },
+            { id: 'THIRD-2b', text: 'Monitor third parties for compliance with cybersecurity requirements' },
+            { id: 'THIRD-3b', text: 'Document and track third-party risk activities' },
+            { id: 'THIRD-4b', text: 'Review and update third-party agreements periodically' },
+        ],
+        mil3: [
+            { id: 'THIRD-1c', text: 'Analyze third-party risk data to improve the program' },
+            { id: 'THIRD-3c', text: 'Communicate third-party risk to leadership' },
+            { id: 'THIRD-4c', text: 'Continuously improve third-party risk management practices' },
+        ]
+    },
+    {
+        id: 'WORKFORCE', icon: '👷', name: 'Workforce Management',
+        desc: 'Establish and maintain the cybersecurity knowledge, skills, and abilities of the workforce. Manage personnel practices in a cybersecurity context, including hiring, training, role assignments, and departure procedures.',
+        mil1: [
+            { id: 'WORK-1a', text: 'Assign cybersecurity responsibilities to staff' },
+            { id: 'WORK-2a', text: 'Provide cybersecurity awareness training to all personnel' },
+            { id: 'WORK-2b', text: 'Provide role-based cybersecurity training' },
+            { id: 'WORK-3a', text: 'Screen personnel for cybersecurity risk' },
+        ],
+        mil2: [
+            { id: 'WORK-1b', text: 'Document cybersecurity roles and responsibilities' },
+            { id: 'WORK-2c', text: 'Plan and track training completion' },
+            { id: 'WORK-2d', text: 'Verify staff have skills to perform assigned duties' },
+            { id: 'WORK-3b', text: 'Manage personnel onboarding/offboarding with cybersecurity in mind' },
+        ],
+        mil3: [
+            { id: 'WORK-1c', text: 'Review and improve the cybersecurity workforce program' },
+            { id: 'WORK-2e', text: 'Analyze training effectiveness and improve the program' },
+            { id: 'WORK-3c', text: 'Communicate workforce cybersecurity posture to leadership' },
+        ]
+    },
+    {
+        id: 'ARCHITECTURE', icon: '🏗️', name: 'Cybersecurity Architecture',
+        desc: 'Define and implement a cybersecurity architecture strategy that guides how the organization protects its systems and data through network design, asset hardening, and secure software development or acquisition practices.',
+        mil1: [
+            { id: 'ARCH-1a', text: 'Define a cybersecurity architecture for the organization' },
+            { id: 'ARCH-2a', text: 'Implement network protections (firewalls, segmentation)' },
+            { id: 'ARCH-3a', text: 'Harden IT and OT assets (disable unnecessary services)' },
+            { id: 'ARCH-4a', text: 'Implement secure software development practices' },
+        ],
+        mil2: [
+            { id: 'ARCH-1b', text: 'Document and maintain the cybersecurity architecture' },
+            { id: 'ARCH-2b', text: 'Manage and document network protection controls' },
+            { id: 'ARCH-3b', text: 'Define and enforce asset hardening standards' },
+            { id: 'ARCH-4b', text: 'Evaluate software acquisitions for cybersecurity risk' },
+        ],
+        mil3: [
+            { id: 'ARCH-1c', text: 'Review and improve the cybersecurity architecture program' },
+            { id: 'ARCH-2c', text: 'Analyze network protection effectiveness' },
+            { id: 'ARCH-3c', text: 'Communicate architecture posture to leadership' },
+        ]
+    },
+    {
+        id: 'PROGRAM', icon: '📋', name: 'Cybersecurity Program Management',
+        desc: 'Establish and maintain a cybersecurity program that integrates all security activities across the organization. Provide executive leadership and governance to support a consistent, organization-wide security posture aligned with enterprise risk.',
+        mil1: [
+            { id: 'PROGRAM-1a', text: 'Establish a cybersecurity program' },
+            { id: 'PROGRAM-1b', text: 'Define the scope of the cybersecurity program' },
+            { id: 'PROGRAM-2a', text: 'Assign authority and accountability for cybersecurity' },
+            { id: 'PROGRAM-3a', text: 'Coordinate cybersecurity requirements across the organization' },
+        ],
+        mil2: [
+            { id: 'PROGRAM-1c', text: 'Document cybersecurity program strategy and objectives' },
+            { id: 'PROGRAM-2b', text: 'Fund and resource the cybersecurity program' },
+            { id: 'PROGRAM-2c', text: 'Track cybersecurity program performance' },
+            { id: 'PROGRAM-3b', text: 'Align the cybersecurity program with organizational risk management' },
+        ],
+        mil3: [
+            { id: 'PROGRAM-1d', text: 'Review and improve the cybersecurity program strategy' },
+            { id: 'PROGRAM-2d', text: 'Communicate program performance to executive leadership' },
+            { id: 'PROGRAM-3c', text: 'Integrate cybersecurity into enterprise governance processes' },
+        ]
+    }
+];
+
+let currentFilter = 'all';
+let allExpanded = false;
+
+function highlight(text, query) {
+    if (!query) return text;
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return text.replace(new RegExp(escaped, 'gi'), m => `<mark>${m}</mark>`);
+}
+
+function buildUI() {
+    const container = document.getElementById('domains-container');
+    DOMAINS.forEach(d => {
+        const totalPractices = d.mil1.length + d.mil2.length + d.mil3.length;
+        const card = document.createElement('div');
+        card.className = 'domain-card';
+        card.id = 'card-' + d.id;
+        card.innerHTML = `
+            <div class="domain-header" onclick="toggleDomain('${d.id}')">
+                <div class="left">
+                    <span class="icon">${d.icon}</span>
+                    <span class="abbr">${d.id}</span>
+                    <span class="title">${d.name}</span>
+                </div>
+                <div class="right">
+                    <span class="practice-count">${totalPractices} practices</span>
+                    <span class="chevron" id="chev-${d.id}">▼</span>
+                </div>
+            </div>
+            <div class="domain-body" id="body-${d.id}">
+                <div class="domain-body-inner">
+                    <div class="domain-desc">${d.desc}</div>
+                    ${buildMilSection(d, 'mil1', 'MIL 1 — Performed', 1)}
+                    ${buildMilSection(d, 'mil2', 'MIL 2 — Managed', 2)}
+                    ${buildMilSection(d, 'mil3', 'MIL 3 — Optimized', 3)}
+                </div>
+            </div>`;
+        container.appendChild(card);
+    });
+    updateStats();
+}
+
+function buildMilSection(domain, milKey, label, milNum) {
+    const practices = domain[milKey];
+    const items = practices.map(p =>
+        `<div class="practice-item" id="pi-${p.id}" data-domain="${domain.id}" data-mil="${milKey}">
+            <span class="practice-id">${p.id}</span>
+            <span class="practice-text" data-raw="${p.text}">${p.text}</span>
+        </div>`
+    ).join('');
+    return `<div class="mil-section mil${milNum}" id="mil-section-${domain.id}-${milKey}">
+        <div class="mil-header" onclick="toggleMil('${domain.id}', '${milKey}', event)">
+            <div class="mil-header-left">
+                <span class="mil-badge">MIL ${milNum}</span>
+                <span class="mil-label">${label}</span>
+            </div>
+            <span class="mil-count">${practices.length} practice${practices.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="mil-practices" id="mil-practices-${domain.id}-${milKey}">
+            ${items}
+        </div>
+    </div>`;
+}
+
+function toggleDomain(id) {
+    const body = document.getElementById('body-' + id);
+    const chev = document.getElementById('chev-' + id);
+    body.classList.toggle('open');
+    chev.classList.toggle('open');
+}
+
+function toggleMil(domainId, milKey, event) {
+    event.stopPropagation();
+    const el = document.getElementById(`mil-practices-${domainId}-${milKey}`);
+    el.classList.toggle('open');
+}
+
+function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    applyFilters();
+}
+
+function applyFilters() {
+    const query = document.getElementById('search-input').value.trim().toLowerCase();
+    let anyVisible = false;
+
+    DOMAINS.forEach(d => {
+        const card = document.getElementById('card-' + d.id);
+        let domainMatches = false;
+
+        ['mil1', 'mil2', 'mil3'].forEach((milKey, idx) => {
+            const milNum = idx + 1;
+            const section = document.getElementById(`mil-section-${d.id}-${milKey}`);
+            const practices = document.querySelectorAll(`#mil-practices-${d.id}-${milKey} .practice-item`);
+
+            // Filter by MIL level
+            const milVisible = currentFilter === 'all' || currentFilter === milKey;
+            if (!milVisible) {
+                section.classList.add('hidden-mil');
+                return;
+            }
+            section.classList.remove('hidden-mil');
+
+            // Filter by search
+            let milHasMatch = false;
+            practices.forEach(item => {
+                const rawText = item.querySelector('.practice-text').dataset.raw;
+                const id = item.id.replace('pi-', '');
+                const textEl = item.querySelector('.practice-text');
+
+                if (!query || rawText.toLowerCase().includes(query) || id.toLowerCase().includes(query)) {
+                    item.style.display = '';
+                    item.classList.toggle('search-match', !!query && (rawText.toLowerCase().includes(query) || id.toLowerCase().includes(query)));
+                    textEl.innerHTML = highlight(rawText, query);
+                    milHasMatch = true;
+                } else {
+                    item.style.display = 'none';
+                    item.classList.remove('search-match');
+                }
+            });
+
+            if (!milHasMatch) {
+                section.classList.add('hidden-mil');
+            } else {
+                section.classList.remove('hidden-mil');
+                domainMatches = true;
+            }
+        });
+
+        // Auto-expand on search
+        if (query && domainMatches) {
+            document.getElementById('body-' + d.id).classList.add('open');
+            document.getElementById('chev-' + d.id).classList.add('open');
+            ['mil1', 'mil2', 'mil3'].forEach(mk => {
+                const el = document.getElementById(`mil-practices-${d.id}-${mk}`);
+                if (el) el.classList.add('open');
+            });
+        }
+
+        card.classList.toggle('hidden', !domainMatches && !!query);
+        if (domainMatches || !query) anyVisible = true;
+    });
+
+    document.getElementById('no-results').classList.toggle('show', !anyVisible);
+    updateStats();
+}
+
+function toggleExpandAll() {
+    allExpanded = !allExpanded;
+    document.getElementById('expand-all-btn').textContent = allExpanded ? 'Collapse All' : 'Expand All';
+    DOMAINS.forEach(d => {
+        const body = document.getElementById('body-' + d.id);
+        const chev = document.getElementById('chev-' + d.id);
+        body.classList.toggle('open', allExpanded);
+        chev.classList.toggle('open', allExpanded);
+        ['mil1', 'mil2', 'mil3'].forEach(mk => {
+            const el = document.getElementById(`mil-practices-${d.id}-${mk}`);
+            if (el) el.classList.toggle('open', allExpanded);
+        });
+    });
+}
+
+function updateStats() {
+    let count = 0;
+    document.querySelectorAll('.practice-item').forEach(item => {
+        if (item.style.display !== 'none' && !item.closest('.mil-section.hidden-mil') && !item.closest('.domain-card.hidden')) count++;
+    });
+    document.getElementById('practice-count').textContent = count;
+    const labels = { all: 'All Levels', mil1: 'MIL 1 Only', mil2: 'MIL 2 Only', mil3: 'MIL 3 Only' };
+    document.getElementById('filter-label').textContent = labels[currentFilter];
+}
+
+buildUI();
+updateStats();
+</script>
+</body>
+</html>
