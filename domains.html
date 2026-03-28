@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C2M2 Domains & Practice Reference</title>
+    <title>C2M2 Domains &amp; Practice Reference</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -25,6 +25,8 @@
         }
         .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
         .page-header p { color: #666; font-size: 1.1rem; }
+
+        /* ── Domain card ── */
         .domain-card {
             background: rgba(255,255,255,0.95);
             border-radius: 15px;
@@ -53,13 +55,14 @@
         .domain-header .title { font-size: 1.3rem; font-weight: 600; }
         .domain-header .icon { font-size: 1.8rem; }
         .domain-body { padding: 1.5rem 2rem; }
-        .domain-body .objective-label { color: #666; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem; margin-top: 1rem; }
-        .domain-body p.desc { color: #555; line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem; }
+        .domain-body p.desc { color: #555; line-height: 1.6; margin-bottom: 1.2rem; font-size: 0.95rem; }
+
+        /* ── MIL practice grid ── */
         .practices-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1rem;
-            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
         }
         .mil-practices { border-radius: 8px; padding: 1rem; }
         .mil1-bg { background: #fff9e6; border-left: 4px solid #ffc107; }
@@ -85,6 +88,119 @@
         }
         .practice-list li:last-child { border-bottom: none; }
         .practice-id { font-weight: 700; color: #1a3a4a; margin-right: 0.3rem; }
+
+        /* ── MIL Example Buttons ── */
+        .mil-btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+        .mil-btn-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-right: 0.3rem;
+        }
+        .mil-btn {
+            padding: 0.45rem 1.1rem;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.02em;
+        }
+        .mil-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-performed  { background: #ffc107; color: #5a3e00; }
+        .btn-performed.active  { background: #e6a800; box-shadow: 0 0 0 3px rgba(255,193,7,0.4); }
+        .btn-managed    { background: #17a2b8; color: white; }
+        .btn-managed.active    { background: #117a8b; box-shadow: 0 0 0 3px rgba(23,162,184,0.4); }
+        .btn-optimized  { background: #28a745; color: white; }
+        .btn-optimized.active  { background: #1e7e34; box-shadow: 0 0 0 3px rgba(40,167,69,0.4); }
+
+        /* ── Example panel ── */
+        .mil-example {
+            display: none;
+            border-radius: 10px;
+            padding: 1.3rem 1.5rem;
+            margin-top: 0.2rem;
+            position: relative;
+            animation: fadeSlide 0.25s ease;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .mil-example.visible { display: block; }
+        .ex-performed  { background: #fffbea; border: 2px solid #ffc107; }
+        .ex-managed    { background: #e8f7fb; border: 2px solid #17a2b8; }
+        .ex-optimized  { background: #eafaf1; border: 2px solid #28a745; }
+
+        .ex-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+        }
+        .ex-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            padding: 0.25rem 0.65rem;
+            border-radius: 12px;
+        }
+        .ex-performed  .ex-badge { background: #ffc107; color: #5a3e00; }
+        .ex-managed    .ex-badge { background: #17a2b8; color: white; }
+        .ex-optimized  .ex-badge { background: #28a745; color: white; }
+        .ex-title { font-weight: 700; font-size: 1rem; color: #1a3a4a; }
+
+        .ex-body { font-size: 0.92rem; color: #444; line-height: 1.75; }
+        .ex-body strong { color: #1a3a4a; }
+        .ex-body .scenario-label {
+            font-size: 0.73rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #888;
+            margin-top: 0.8rem;
+            margin-bottom: 0.2rem;
+            display: block;
+        }
+        .ex-body .scenario { 
+            background: rgba(0,0,0,0.04); 
+            border-radius: 6px; 
+            padding: 0.6rem 0.9rem; 
+            font-style: italic;
+            color: #333;
+        }
+
+        .close-ex-btn {
+            position: absolute;
+            top: 0.8rem;
+            right: 0.9rem;
+            background: rgba(0,0,0,0.12);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            transition: background 0.2s;
+            line-height: 1;
+        }
+        .close-ex-btn:hover { background: rgba(0,0,0,0.22); }
+
         .footer {
             text-align: center;
             padding: 1.5rem;
@@ -93,7 +209,12 @@
             color: white;
             margin-top: 2rem;
         }
-        @media (max-width: 768px) { .container { padding: 1rem; } .page-header h1 { font-size: 1.8rem; } .domain-body { padding: 1rem; } }
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .page-header h1 { font-size: 1.8rem; }
+            .domain-body { padding: 1rem; }
+            .mil-btn-row { gap: 0.5rem; }
+        }
     </style>
 </head>
 <body>
@@ -101,11 +222,11 @@
     <a href="index.html" class="back-link">← Back to C2M2 Portal</a>
 
     <div class="page-header">
-        <h1>📚 Domains & Practice Reference</h1>
+        <h1>📚 Domains &amp; Practice Reference</h1>
         <p>All 10 C2M2 v2.1 Domains — Objectives and Practices by MIL Level</p>
     </div>
 
-    <!-- ASSET -->
+    <!-- ═══════════════════════════════ ASSET ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">🗂️</span>
@@ -145,10 +266,44 @@
                     </ul>
                 </div>
             </div>
+            <!-- Buttons -->
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('asset','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('asset','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('asset','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="asset-performed">
+                <button class="close-ex-btn" onclick="closeEx('asset')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Asset Management — Basic Inventory</span></div>
+                <div class="ex-body">
+                    The IT team at a regional water utility uses a shared spreadsheet to manually list all servers, workstations, and network switches. The OT team maintains a separate paper log of PLCs and HMIs at pump stations. When a new laptop is purchased, a technician adds it to the spreadsheet. No formal process exists for removing decommissioned assets.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A network administrator installs a new firewall and adds "Firewall-HQ-01" to the Excel inventory with its IP address, make, and model. The PLC controlling a chemical dosing pump is cataloged on a whiteboard in the control room. Both inventories exist — but are siloed, inconsistent, and manually updated.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="asset-managed">
+                <button class="close-ex-btn" onclick="closeEx('asset')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Asset Management — Documented &amp; Prioritized</span></div>
+                <div class="ex-body">
+                    The utility deploys an automated asset discovery tool (e.g., Nessus, Lansweeper) that continuously scans the network and populates a centralized CMDB. Assets are tagged by criticality tier: Tier 1 (mission-critical), Tier 2 (important), Tier 3 (non-critical). A formal Change Advisory Board (CAB) reviews all proposed changes to Tier 1 assets before approval. Configuration baselines are documented in a Standard Operating Procedure.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">Before upgrading the SCADA historian server (Tier 1), the change request is submitted to the CAB with rollback procedures. The CMDB automatically flags that the server has 3 dependent devices. The change is scheduled during a maintenance window, tested in a staging environment first, and the CMDB is auto-updated upon deployment.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="asset-optimized">
+                <button class="close-ex-btn" onclick="closeEx('asset')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Asset Management — Continuous Improvement</span></div>
+                <div class="ex-body">
+                    The utility's CISO presents a quarterly Asset Management scorecard to the executive team, showing inventory completeness rates, mean-time-to-update after change, and configuration drift metrics. A post-incident review revealed that an undiscovered IoT sensor created a blind spot — leading to a new policy requiring passive OT discovery scans. Lessons learned are formally incorporated into the Configuration Management Program annually.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">After a penetration test discovers an unmanaged network tap, the CISO leads a root-cause analysis. The finding is escalated to the board, a new asset onboarding checklist is mandated, and the discovery tool's scan frequency is increased for OT segments. The improvement closes the gap and is documented in the next C2M2 self-evaluation cycle.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- THREAT -->
+    <!-- ═══════════════════════════════ THREAT ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">🛡️</span>
@@ -186,10 +341,43 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('threat','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('threat','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('threat','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="threat-performed">
+                <button class="close-ex-btn" onclick="closeEx('threat')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Threat &amp; Vulnerability — Basic Scanning</span></div>
+                <div class="ex-body">
+                    A hospital IT team runs a monthly Nessus vulnerability scan against internet-facing servers. When a critical CVE is flagged, the sysadmin patches it — usually within a few weeks. The organization subscribes to US-CERT email alerts for threat intelligence. Remediation is handled informally with no tracking system.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A scan reveals CVE-2023-XXXX affecting the hospital's VPN gateway. The sysadmin downloads the vendor patch, applies it after hours, and emails the IT director to confirm. There is no ticket, no SLA, and no verification that the patch was successful — but the vulnerability is no longer detected in the next scan.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="threat-managed">
+                <button class="close-ex-btn" onclick="closeEx('threat')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Threat &amp; Vulnerability — Tracked Remediation</span></div>
+                <div class="ex-body">
+                    The hospital adopts a Vulnerability Management Policy with defined SLAs: Critical CVEs patched within 7 days, High within 30, Medium within 90. All vulnerabilities are tracked in a ticketing system (ServiceNow). Threat intelligence feeds (ISAC, CISA KEV catalog) are reviewed weekly by the security team. High-impact threats to EHR and medical devices are prioritized over general IT.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A CISA alert warns of active exploitation of a flaw in a common medical imaging platform. The security analyst cross-references the CMDB, finds 4 affected PACS servers, opens remediation tickets with a 7-day SLA, and notifies the biomedical engineering team. A weekly dashboard tracks open critical vulnerabilities to closure.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="threat-optimized">
+                <button class="close-ex-btn" onclick="closeEx('threat')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Threat &amp; Vulnerability — Intelligence Sharing &amp; Improvement</span></div>
+                <div class="ex-body">
+                    The CISO reviews quarterly metrics on vulnerability mean-time-to-remediate, SLA breach rates, and recurring vulnerability categories. Findings show that 40% of critical vulnerabilities involve unpatched medical devices — driving a new medical device security policy. The hospital actively participates in H-ISAC, contributing anonymized threat data and receiving early warnings of healthcare-targeted campaigns.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">Analysis of 12-month vulnerability data reveals that the radiology network consistently has the longest remediation times. The CISO presents this trend to the CFO, secures budget for a dedicated biomedical security engineer, and establishes a shared threat-intelligence feed with two peer hospital systems in the region.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- RISK -->
+    <!-- ═══════════════════════════════ RISK ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">⚖️</span>
@@ -226,10 +414,43 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('risk','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('risk','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('risk','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="risk-performed">
+                <button class="close-ex-btn" onclick="closeEx('risk')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Risk Management — Ad-Hoc Identification</span></div>
+                <div class="ex-body">
+                    A municipal government's IT team informally identifies risks after incidents or audits. When a ransomware attack hits a neighboring city, the IT director makes a list of potential risks (no backups, open RDP ports, no MFA) and addresses the most obvious ones first with available budget. No formal risk register or scoring methodology exists.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">Following a phishing email that nearly compromised the tax system, the IT director identifies "lack of email filtering" as a high risk and purchases a spam filter. The decision is reactive, undocumented, and driven by the incident — not a structured risk analysis process.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="risk-managed">
+                <button class="close-ex-btn" onclick="closeEx('risk')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Risk Management — Documented Strategy &amp; Risk Register</span></div>
+                <div class="ex-body">
+                    The city adopts a formal Cybersecurity Risk Management Strategy. A risk register is maintained with each identified risk scored by likelihood and impact (5×5 matrix). Risk tolerance thresholds are defined: risks scoring above 15 require immediate mitigation; 10–14 require a remediation plan within 90 days; below 10 are accepted with documented rationale. All risk responses are tracked in the register.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">The risk register identifies "unpatched legacy systems in the permitting database" with a score of 18 (high likelihood × high impact). A mitigation plan is approved: migrate to a cloud-hosted platform within 6 months. Monthly status updates are logged in the risk register until closure.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="risk-optimized">
+                <button class="close-ex-btn" onclick="closeEx('risk')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Risk Management — Enterprise Integration &amp; Leadership Reporting</span></div>
+                <div class="ex-body">
+                    The CISO presents a quarterly cybersecurity risk dashboard to the City Council, translating technical risks into financial exposure estimates (e.g., "ransomware risk carries an estimated $2.3M impact potential"). Cybersecurity risk is formally integrated into the city's Enterprise Risk Management (ERM) framework, reported alongside financial and operational risks. Annual risk program reviews incorporate threat landscape changes.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">When the city considers a new smart-parking IoT deployment, the CISO performs a pre-deployment risk assessment and presents the findings to the City Manager. The assessment identifies supply chain risks in the IoT vendor, leading to contractual security requirements before the contract is signed — preventing risk rather than reacting to it.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ACCESS -->
+    <!-- ═══════════════════════════════ ACCESS ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">🔑</span>
@@ -267,10 +488,43 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('access','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('access','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('access','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="access-performed">
+                <button class="close-ex-btn" onclick="closeEx('access')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Identity &amp; Access — Basic Accounts</span></div>
+                <div class="ex-body">
+                    An electric cooperative creates user accounts for all employees in Active Directory and requires username/password to log in. IT restricts access to the billing system to billing staff. When an employee leaves, HR notifies IT verbally to disable the account — sometimes days later. No MFA is deployed; no formal identity lifecycle process exists.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A billing clerk is promoted to supervisor. Her IT access is updated manually by the helpdesk — but her old billing-only permissions are never removed, leaving her with more access than her new role requires. The over-provisioning goes undetected because no access reviews are performed.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="access-managed">
+                <button class="close-ex-btn" onclick="closeEx('access')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Identity &amp; Access — MFA, PAM, and Lifecycle</span></div>
+                <div class="ex-body">
+                    The cooperative deploys a Privileged Access Management (PAM) solution. All admin accounts require MFA via hardware tokens. A formal identity lifecycle SOP governs onboarding (role-based access provisioning), transfers (access review), and offboarding (same-day account disable within 4 hours of HR notification). Quarterly access reviews are conducted by department managers.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">During a quarterly access review, a manager discovers a former contractor's account still has read access to the SCADA historian. The account is immediately disabled, the incident is documented, and the onboarding/offboarding SOP is updated to include contractor accounts in the automated HR-IT workflow.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="access-optimized">
+                <button class="close-ex-btn" onclick="closeEx('access')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Identity &amp; Access — Continuous Improvement &amp; Zero Trust</span></div>
+                <div class="ex-body">
+                    The cooperative's security team analyzes access review findings quarterly and identifies that 12% of accounts have excessive privileges. This drives a Zero Trust segmentation project, implementing Just-in-Time (JIT) access for SCADA systems. The CISO reports access posture metrics — including privileged account counts and MFA adoption rates — to the board annually.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">Analysis reveals that third-party vendors frequently retain 24/7 access to OT systems even during non-maintenance periods. JIT access controls are deployed: vendors now request a time-limited session through the PAM portal, approved by an OT engineer. Standing vendor access to critical systems is eliminated entirely.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- SITUATION -->
+    <!-- ═══════════════════════════════ SITUATION ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">👁️</span>
@@ -307,10 +561,43 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('situation','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('situation','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('situation','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="situation-performed">
+                <button class="close-ex-btn" onclick="closeEx('situation')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Situational Awareness — Basic Logging</span></div>
+                <div class="ex-body">
+                    A natural gas pipeline operator enables Windows Event Logging on servers and firewall logging on the perimeter firewall. Logs are stored locally on each device and reviewed manually when something seems wrong. The operations team subscribes to ICS-CERT email alerts but reviews them inconsistently.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">After a suspicious login alert from the IT manager, the sysadmin manually reviews the Windows Security Event Log on the authentication server. The log shows 200 failed login attempts from an external IP — but the log was never forwarded to a central location, and by the time it's reviewed, the logs have partially overwritten due to limited local storage.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="situation-managed">
+                <button class="close-ex-btn" onclick="closeEx('situation')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Situational Awareness — SIEM with Documented Requirements</span></div>
+                <div class="ex-body">
+                    The operator deploys a SIEM (Security Information and Event Management) system that centralizes logs from firewalls, Windows/Linux servers, VPN, and SCADA historian. A Logging Requirements Policy defines what must be logged, retention periods (minimum 1 year), and log integrity protections (write-once storage). SIEM correlation rules auto-alert analysts to brute-force attempts, off-hours logins, and SCADA command anomalies.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">The SIEM correlates an off-hours VPN login from an engineer's account with a subsequent connection to the SCADA HMI — unusual for that user. An automated alert is sent to the on-call security analyst, who calls the engineer and confirms it was unauthorized access. The incident is contained within 20 minutes because of centralized, real-time log correlation.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="situation-optimized">
+                <button class="close-ex-btn" onclick="closeEx('situation')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Situational Awareness — Sector Intelligence Sharing</span></div>
+                <div class="ex-body">
+                    The operator's security team analyzes 6-month SIEM data and discovers that 80% of alerts are false positives from a single misconfigured OT device, reducing analyst efficiency. SIEM rules are tuned accordingly. The company joins the ONG-ISAC and contributes anonymized Indicators of Compromise (IoCs) from their incident, receiving early warning of a threat actor targeting pipeline SCADA systems — which they immediately use to update detection rules.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">An ONG-ISAC advisory describes a new spearphishing campaign targeting pipeline control engineers. Within 4 hours, the security team creates SIEM detection rules for the described IoCs, briefs the operations team, and emails targeted engineers with awareness guidance — all before the campaign reaches their network.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- RESPONSE -->
+    <!-- ═══════════════════════════════ RESPONSE ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">🚨</span>
@@ -327,7 +614,7 @@
                         <li><span class="practice-id">RESPONSE-2a</span> Escalate and report cybersecurity events</li>
                         <li><span class="practice-id">RESPONSE-3a</span> Respond to declared cybersecurity incidents</li>
                         <li><span class="practice-id">RESPONSE-3b</span> Contain cybersecurity incidents</li>
-                        <li><span class="practice-id">RESPONSE-4a</span> Identify functions that must continue during a cybersecurity incident</li>
+                        <li><span class="practice-id">RESPONSE-4a</span> Identify functions that must continue during an incident</li>
                         <li><span class="practice-id">RESPONSE-4b</span> Back up information needed to sustain operations</li>
                     </ul>
                 </div>
@@ -351,10 +638,43 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('response','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('response','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('response','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="response-performed">
+                <button class="close-ex-btn" onclick="closeEx('response')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Incident Response — Reactive Detection &amp; Containment</span></div>
+                <div class="ex-body">
+                    A manufacturing plant detects ransomware when employees report they cannot open files. The IT manager disconnects affected workstations from the network (containment) and calls in outside help. Backups exist but have not been tested. The plant floor continues operating manually while IT systems are rebuilt over 5 days. No formal IRP exists.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">At 7 AM, production floor staff notice workstations displaying ransom notes. The IT manager physically unplugs switches to isolate the network. The plant shifts to paper-based production tracking. After 5 days, systems are restored from backup tapes — but two backups are corrupted, and recovery is incomplete.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="response-managed">
+                <button class="close-ex-btn" onclick="closeEx('response')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Incident Response — Documented IRP &amp; Trained Team</span></div>
+                <div class="ex-body">
+                    The plant develops a formal Incident Response Plan with defined roles (IR Lead, Legal, Communications, IT, OT), escalation thresholds, and notification timelines (notify CEO within 2 hours of a confirmed incident). The IR team conducts a tabletop exercise annually. Backup restoration procedures are tested quarterly. A Business Continuity Plan identifies that production scheduling is the first system to restore.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">When malware is detected on the ERP system, the IR Lead activates the IRP within 15 minutes. Legal is notified (for insurance), IT isolates the affected segment via pre-configured VLAN rules, and OT systems (on a separate network) continue uninterrupted. Recovery of the ERP from a tested backup takes 6 hours — not 5 days.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="response-optimized">
+                <button class="close-ex-btn" onclick="closeEx('response')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Incident Response — Lessons Learned &amp; Continuous Improvement</span></div>
+                <div class="ex-body">
+                    After each exercise and real incident, the plant holds a formal after-action review. Findings are formally incorporated into IRP updates. The CISO reports IR readiness metrics (mean-time-to-detect, mean-time-to-contain, exercise results) to the board annually. The continuity plan is improved after a tabletop reveals that the manual production fallback takes 4 hours to activate — driving a project to pre-stage printed runbooks at each workstation.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A red team exercise reveals that the IR team has no process for communicating with customers during an outage. This gap is escalated to the CEO. A customer-communication protocol is added to the IRP, a draft notification template is prepared, and the communications director is added to the IR team roster — all documented before the next exercise.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- THIRD-PARTIES -->
+    <!-- ═══════════════════════════════ THIRD-PARTIES ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">🤝</span>
@@ -391,10 +711,43 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('third','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('third','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('third','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="third-performed">
+                <button class="close-ex-btn" onclick="closeEx('third')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Third-Party Risk — Basic Vendor Identification</span></div>
+                <div class="ex-body">
+                    A financial services firm maintains a list of major IT vendors (cloud provider, payroll processor, IT support contractor). Contracts include a general data protection clause but no specific cybersecurity requirements. Vendor security is assumed, not verified. When the IT contractor needs remote access, they are given a VPN account with no time limits.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">The firm's cloud HR platform vendor suffers a breach that exposes employee PII. The firm learns about it from a news article — not from the vendor. There is no breach-notification clause in the contract, no SLA for notification, and no process to assess the impact. The response is entirely reactive.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="third-managed">
+                <button class="close-ex-btn" onclick="closeEx('third')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Third-Party Risk — Tiered Vendors &amp; Ongoing Monitoring</span></div>
+                <div class="ex-body">
+                    The firm categorizes vendors into Tier 1 (critical, direct access to sensitive data), Tier 2 (important, indirect access), and Tier 3 (low risk). Tier 1 vendors must provide annual SOC 2 Type II reports and complete a security questionnaire. Contracts are updated to include breach notification within 72 hours. A third-party risk register tracks all vendors, risk scores, and review dates.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">Annual review of the payment processor's SOC 2 report reveals a control gap in their access management. The firm issues a formal remediation request with a 60-day deadline. The vendor's response and remediation status are tracked in the third-party risk register. The contract renewal is conditioned on closure of the gap.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="third-optimized">
+                <button class="close-ex-btn" onclick="closeEx('third')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Third-Party Risk — Program Improvement &amp; Board Reporting</span></div>
+                <div class="ex-body">
+                    The CISO presents a quarterly third-party risk summary to the board, highlighting highest-risk vendors and concentration risk (e.g., "35% of critical functions rely on a single cloud provider"). Analysis of vendor incident data over 2 years reveals that smaller niche vendors have higher breach rates — leading to a new minimum-security requirement for all vendors regardless of tier.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A supply chain analysis reveals the firm's core banking platform vendor uses a sub-processor in a geopolitically sensitive region. The CISO escalates this to the board as a concentration risk. A contingency plan is developed for a backup core banking option, and the primary vendor is required to disclose all sub-processors annually as a new contract condition.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- WORKFORCE -->
+    <!-- ═══════════════════════════════ WORKFORCE ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">👷</span>
@@ -431,10 +784,43 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('workforce','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('workforce','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('workforce','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="workforce-performed">
+                <button class="close-ex-btn" onclick="closeEx('workforce')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Workforce — Basic Awareness Training</span></div>
+                <div class="ex-body">
+                    A government agency assigns cybersecurity responsibility to the IT Director. All new employees complete a one-time online security awareness module during onboarding. IT staff attend an annual CompTIA Security+ refresher. Background checks are run on all new hires. No tracking of training completion exists beyond HR's onboarding checklist.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A new data entry clerk completes the onboarding security module on day one. 18 months later, she falls for a phishing email because she has received no follow-up training and was never tested via simulated phishing. The agency has no mechanism to detect this skills gap before an incident occurs.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="workforce-managed">
+                <button class="close-ex-btn" onclick="closeEx('workforce')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Workforce — Tracked Training &amp; Role-Based Skills Verification</span></div>
+                <div class="ex-body">
+                    The agency's Learning Management System (LMS) tracks cybersecurity training completion for all employees. Annual phishing simulation results are reviewed — departments with high click rates receive additional targeted training. Cybersecurity roles are documented in job descriptions with required certifications. System administrators must hold Security+ or equivalent; the CISO must hold CISSP. New hires cannot be granted system access until training is completed.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">The LMS shows that the Public Works department has the lowest phishing simulation pass rate (42%) of any department. The security team delivers a targeted 30-minute phishing awareness session to Public Works staff, and run rate improves to 81% in the next simulated test. Results are reported to the department head monthly until the target (90%) is met.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="workforce-optimized">
+                <button class="close-ex-btn" onclick="closeEx('workforce')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Workforce — Program Analysis &amp; Leadership Reporting</span></div>
+                <div class="ex-body">
+                    The CISO presents an annual Workforce Cybersecurity Posture report to the agency director, including training completion rates, phishing simulation trends, certification currency, and skills gap analysis. Analysis of incidents over 3 years shows 60% involved human error — driving investment in a behavior-based security culture program rather than just compliance training. Offboarding now includes a structured credential revocation checklist verified within 2 hours.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">The workforce analysis reveals a critical skills gap: only 2 of 12 IT staff have hands-on OT/ICS security training. The CISO secures budget for 4 staff to attend an ICS security course, establishes a cross-training rotation with the OT team, and sets a 2-year goal for all senior IT staff to earn GICSP certification. Progress is reported quarterly to the director.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ARCHITECTURE -->
+    <!-- ═══════════════════════════════ ARCHITECTURE ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">🏗️</span>
@@ -471,10 +857,43 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('arch','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('arch','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('arch','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="arch-performed">
+                <button class="close-ex-btn" onclick="closeEx('arch')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Architecture — Basic Network Protections</span></div>
+                <div class="ex-body">
+                    A research institution installs a perimeter firewall, enables HTTPS on all web servers, and disables Telnet in favor of SSH on network devices. A high-level network diagram exists but is outdated. CIS Benchmark hardening is applied to new servers but not consistently enforced on existing systems. No formal architecture documentation exists.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">The university's IT team installs a next-gen firewall at the campus perimeter and blocks inbound traffic to known malicious IPs. However, the research lab network is not segmented from the administrative network — a compromise of a researcher's workstation could allow lateral movement to HR and financial systems.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="arch-managed">
+                <button class="close-ex-btn" onclick="closeEx('arch')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Architecture — Documented &amp; Enforced Standards</span></div>
+                <div class="ex-body">
+                    The university documents a formal network architecture that segments research, administrative, student, and guest WiFi into separate VLANs with controlled inter-segment routing. A Hardening Standard (based on CIS Benchmarks) is applied to all new systems before deployment and validated via automated compliance scanning. All software purchases must pass a security evaluation checklist before procurement approval.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A department wants to deploy a new cloud-based collaboration tool. Before purchase, IT Security reviews the vendor's SOC 2 report, checks data residency, and verifies API security controls. One tool is rejected because it lacks MFA support. The approved tool is onboarded through a documented secure configuration process.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="arch-optimized">
+                <button class="close-ex-btn" onclick="closeEx('arch')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Architecture — Effectiveness Analysis &amp; Strategic Reporting</span></div>
+                <div class="ex-body">
+                    The CISO reviews quarterly metrics on firewall rule utilization, network segmentation violations, and hardening compliance scores. Analysis reveals that 30% of firewall rules are unused — a finding that triggers a firewall rule cleanup project reducing the attack surface. Architecture posture (segmentation maturity, encryption coverage, hardening compliance) is reported to the board as part of the annual security program review.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">A network effectiveness analysis reveals that the research network and the regulated CUI (Controlled Unclassified Information) network share a common DNS server — a segmentation gap that could enable data exfiltration. The gap is escalated to the CISO, a dedicated CUI DNS server is deployed within 30 days, and the architecture diagram is updated and approved by the board.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- PROGRAM -->
+    <!-- ═══════════════════════════════ PROGRAM ═══════════════════════════════ -->
     <div class="domain-card">
         <div class="domain-header">
             <span class="icon">📋</span>
@@ -511,13 +930,95 @@
                     </ul>
                 </div>
             </div>
+            <div class="mil-btn-row">
+                <span class="mil-btn-label">See Example:</span>
+                <button class="mil-btn btn-performed" onclick="showEx('program','performed',this)">⚙️ Performed</button>
+                <button class="mil-btn btn-managed"   onclick="showEx('program','managed',this)">📋 Managed</button>
+                <button class="mil-btn btn-optimized" onclick="showEx('program','optimized',this)">🚀 Optimized</button>
+            </div>
+            <div class="mil-example ex-performed" id="program-performed">
+                <button class="close-ex-btn" onclick="closeEx('program')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 1 — Performed</span><span class="ex-title">Program Management — Informal Cybersecurity Program</span></div>
+                <div class="ex-body">
+                    A regional bank designates the IT Manager as the person responsible for cybersecurity. An Acceptable Use Policy exists. IT makes security decisions as needed with available budget. There is no written cybersecurity strategy, no defined program scope, and no mechanism for measuring program performance. Cybersecurity decisions are reactive and technology-driven rather than risk-driven.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">The bank purchases a new EDR tool after a salesperson's pitch. There is no formal process for evaluating whether this investment addresses the bank's highest risks — or whether the budget would be better spent elsewhere. The CISO role doesn't exist; the IT Manager reports to the COO and handles security between other responsibilities.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-managed" id="program-managed">
+                <button class="close-ex-btn" onclick="closeEx('program')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 2 — Managed</span><span class="ex-title">Program Management — Strategy, Budget, and Performance Tracking</span></div>
+                <div class="ex-body">
+                    The bank hires a CISO and publishes a 3-year Cybersecurity Strategic Plan aligned to NIST CSF. An annual cybersecurity budget is formally approved by the board. KPIs are tracked: patch compliance rate, mean-time-to-detect, training completion %, and open high-risk items. Cybersecurity requirements are coordinated across all departments via a quarterly Security Steering Committee.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">The CISO presents the Q2 cybersecurity scorecard to the Security Steering Committee: patch compliance is at 94% (target 98%), phishing click rate improved to 6% (from 14% last year), and 3 of 5 high-priority risk items are closed. The remaining 2 items have updated remediation dates and resource plans documented.</div>
+                </div>
+            </div>
+            <div class="mil-example ex-optimized" id="program-optimized">
+                <button class="close-ex-btn" onclick="closeEx('program')">✕</button>
+                <div class="ex-header"><span class="ex-badge">MIL 3 — Optimized</span><span class="ex-title">Program Management — Enterprise Governance Integration</span></div>
+                <div class="ex-body">
+                    Cybersecurity is formally embedded in the bank's enterprise governance. The CISO presents annually to the full Board of Directors. Cybersecurity risk is a standing agenda item at the Board Risk Committee. The strategic plan is reviewed annually and updated based on the evolving threat landscape, regulatory changes, and program performance data. Cybersecurity is integrated into new product development, M&amp;A due diligence, and capital expenditure processes.
+                    <span class="scenario-label">Real-World Scenario</span>
+                    <div class="scenario">When the bank considers acquiring a fintech startup, the CISO is included in the due diligence team. A cybersecurity assessment reveals the startup has no patch management process and stores customer PII in an unencrypted database. This finding is factored into the acquisition price negotiation, and a mandatory 90-day remediation plan is written into the acquisition agreement.</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="footer">
-        <p><strong>C2M2 Domains & Practice Reference</strong> | C2M2 Version 2.1</p>
+        <p><strong>C2M2 Domains &amp; Practice Reference</strong> | C2M2 Version 2.1</p>
         <p>Practice IDs are illustrative — always reference the official C2M2 v2.1 model document for authoritative practice text.</p>
     </div>
 </div>
+
+<script>
+    // Track active panel per domain: { domainKey: 'performed'|'managed'|'optimized'|null }
+    const activePanel = {};
+
+    function showEx(domain, level, btnEl) {
+        const currentlyActive = activePanel[domain];
+
+        // If clicking the already-active button → close it
+        if (currentlyActive === level) {
+            closeEx(domain);
+            return;
+        }
+
+        // Hide any currently open panel for this domain
+        if (currentlyActive) {
+            document.getElementById(domain + '-' + currentlyActive).classList.remove('visible');
+            clearActiveBtns(domain);
+        }
+
+        // Show new panel
+        const panel = document.getElementById(domain + '-' + level);
+        panel.classList.add('visible');
+        activePanel[domain] = level;
+
+        // Highlight button
+        btnEl.classList.add('active');
+
+        // Smooth scroll to panel
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 40);
+    }
+
+    function closeEx(domain) {
+        const level = activePanel[domain];
+        if (level) {
+            document.getElementById(domain + '-' + level).classList.remove('visible');
+            clearActiveBtns(domain);
+            activePanel[domain] = null;
+        }
+    }
+
+    function clearActiveBtns(domain) {
+        // Remove .active from all 3 buttons in this domain's button row
+        const card = document.getElementById(domain + '-performed')?.closest('.domain-body');
+        if (card) {
+            card.querySelectorAll('.mil-btn').forEach(b => b.classList.remove('active'));
+        }
+    }
+</script>
 </body>
 </html>
