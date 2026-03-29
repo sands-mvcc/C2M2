@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Inventory & Categorization Report — MVEC | C2M2 Portal</title>
+    <style>
+        /* ── Reset & Base ── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* ── Header ── */
+        .rpt-header {
+            background: rgba(255,255,255,0.97);
+            border-radius: 18px;
+            padding: 2rem 2.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+            position: relative;
+            overflow: hidden;
+        }
+        .rpt-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1a3a4a, #2a6478, #28a745, #17a2b8, #ffc107);
+        }
+        .rpt-header-inner { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+        .rpt-icon {
+            font-size: 3rem;
+            width: 72px; height: 72px;
+            background: #1a3a4a;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .rpt-header-text { flex: 1; min-width: 260px; }
+        .rpt-category {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: #e8f4f8; border: 1px solid #b0d4e3;
+            color: #1a3a4a; padding: 0.25rem 0.8rem;
+            border-radius: 20px; font-size: 0.78rem; font-weight: 700;
+            margin-bottom: 0.6rem;
+        }
+        .rpt-header-text h1 { font-size: 1.9rem; color: #1a3a4a; font-weight: 800; margin-bottom: 0.3rem; }
+        .rpt-header-text p  { color: #666; font-size: 0.92rem; line-height: 1.5; margin-bottom: 0.8rem; }
+        .rpt-meta-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .pill {
+            display: inline-block; padding: 0.25rem 0.75rem;
+            border-radius: 20px; font-size: 0.77rem; font-weight: 700;
+        }
+        .pill-blue   { background: #d1ecf1; color: #0c5460; }
+        .pill-green  { background: #d4edda; color: #155724; }
+        .pill-yellow { background: #fff3cd; color: #856404; }
+        .pill-red    { background: #f8d7da; color: #721c24; }
+        .pill-gray   { background: #e9ecef; color: #495057; }
+
+        /* ── Breadcrumb ── */
+        .breadcrumb {
+            display: flex; align-items: center; gap: 0.5rem;
+            margin-bottom: 1.2rem; font-size: 0.83rem;
+            color: rgba(255,255,255,0.75);
+        }
+        .breadcrumb a { color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 600; }
+        .breadcrumb a:hover { color: #fff; }
+        .breadcrumb span { opacity: 0.5; }
+
+        /* ── Document Control Block ── */
+        .doc-control {
+            background: rgba(255,255,255,0.97);
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .dc-item .dc-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #2a6478; margin-bottom: 0.2rem; }
+        .dc-item .dc-value { font-size: 0.88rem; font-weight: 600; color: #1a3a4a; }
+
+        /* ── Section Cards ── */
+        .section-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.11);
+            overflow: hidden;
+        }
+        .section-card-header {
+            display: flex; align-items: center; gap: 0.9rem;
+            padding: 1.1rem 1.6rem;
+            background: linear-gradient(135deg, #1a3a4a, #2a6478);
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-card-header .sec-icon { font-size: 1.4rem; }
+        .section-card-header h2 { font-size: 1.05rem; font-weight: 700; flex: 1; }
+        .section-card-header .sec-tag {
+            background: rgba(255,255,255,0.2); padding: 0.18rem 0.65rem;
+            border-radius: 10px; font-size: 0.7rem; font-weight: 700;
+        }
+        .section-card-header .toggle-icon { font-size: 0.9rem; transition: transform 0.25s; }
+        .section-card-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+        .section-body { padding: 1.6rem; }
+        .section-body.hidden { display: none; }
+
+        /* ── Tables ── */
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 0.5rem; }
+        th {
+            background: #1a3a4a; color: white;
+            padding: 0.6rem 0.85rem;
+            text-align: left; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.4px;
+        }
+        td { padding: 0.55rem 0.85rem; border-bottom: 1px solid #e9ecef; vertical-align: middle; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        tr:hover td { background: #eef6fb; }
+
+        /* ── Tags ── */
+        .tag {
+            display: inline-block; padding: 0.12rem 0.55rem;
+            border-radius: 8px; font-size: 0.72rem; font-weight: 700; white-space: nowrap;
+        }
+        .tag-red    { background: #f8d7da; color: #721c24; }
+        .tag-yellow { background: #fff3cd; color: #856404; }
+        .tag-green  { background: #d4edda; color: #155724; }
+        .tag-blue   { background: #d1ecf1; color: #0c5460; }
+        .tag-gray   { background: #e9ecef; color: #495057; }
+        .tag-orange { background: #ffe5cc; color: #7d4200; }
+        .tag-purple { background: #e2d9f3; color: #4a235a; }
+
+        /* CIA impact rating cells */
+        .cia-h { background: #f8d7da; color: #721c24; font-weight: 800; text-align: center; border-radius: 4px; padding: 0.2rem 0.5rem; display: inline-block; min-width: 40px; font-size: 0.78rem; }
+        .cia-m { background: #fff3cd; color: #856404; font-weight: 800; text-align: center; border-radius: 4px; padding: 0.2rem 0.5rem; display: inline-block; min-width: 40px; font-size: 0.78rem; }
+        .cia-l { background: #d4edda; color: #155724; font-weight: 800; text-align: center; border-radius: 4px; padding: 0.2rem 0.5rem; display: inline-block; min-width: 40px; font-size: 0.78rem; }
+
+        /* ── Info Boxes ── */
+        .info-box {
+            border-left: 4px solid; padding: 0.9rem 1.1rem;
+            border-radius: 0 8px 8px 0; margin-bottom: 1rem;
+            font-size: 0.88rem; line-height: 1.6; position: relative;
+        }
+        .info-box.warning { border-color: #ffc107; background: #fff9e6; }
+        .info-box.danger  { border-color: #dc3545; background: #fdf2f3; }
+        .info-box.info    { border-color: #17a2b8; background: #e8f7fa; }
+        .info-box.success { border-color: #28a745; background: #eaf6ec; }
+        .info-box strong  { display: block; margin-bottom: 0.25rem; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ── Summary Grid ── */
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .summary-card { border-radius: 10px; padding: 1rem; text-align: center; }
+        .summary-card .sc-num { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+        .summary-card .sc-lbl { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.3rem; }
+        .sc-high   { background: #f8d7da; color: #721c24; }
+        .sc-mod    { background: #fff3cd; color: #856404; }
+        .sc-low    { background: #d4edda; color: #155724; }
+        .sc-total  { background: #e8f4f8; color: #1a3a4a; }
+
+        /* ── Sub-heading ── */
+        h3.sub-h { font-size: 0.95rem; color: #1a3a4a; margin: 1.2rem 0 0.7rem; font-weight: 700; padding-bottom: 0.35rem; border-bottom: 2px solid #e8f4f8; }
+
+        /* ── Two-col ── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
+
+        /* ── Section Label ── */
+        .section-label {
+            color: rgba(255,255,255,0.8); font-size: 0.78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.7rem; margin-top: 1.8rem;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center; padding: 1.5rem;
+            background: rgba(255,255,255,0.08); border-radius: 14px;
+            color: rgba(255,255,255,0.8); margin-top: 2rem;
+            border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem;
+        }
+        .footer p { margin-bottom: 0.3rem; }
+
+        /* ════════════════════════
+           EDIT MODE ENGINE
+        ════════════════════════ */
+        .edit-toolbar {
+            position: fixed; top: 1rem; right: 1rem;
+            z-index: 9999; display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-end;
+        }
+        .et-btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.45rem 0.95rem; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: 700; font-size: 0.8rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            transition: transform 0.15s, box-shadow 0.15s; white-space: nowrap;
+        }
+        .et-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+        .et-edit   { background: #1a3a4a; color: white; }
+        .et-edit.active { background: #28a745; }
+        .et-export { background: #2a6478; color: white; }
+        .et-print  { background: #6c757d; color: white; }
+        .et-reset  { background: #dc3545; color: white; }
+
+        .edit-banner {
+            display: none; background: linear-gradient(90deg, #28a745, #218838);
+            color: white; text-align: center; padding: 0.5rem 1rem;
+            font-size: 0.8rem; font-weight: 700; border-radius: 8px;
+            margin-bottom: 1rem; letter-spacing: 0.3px;
+        }
+        .edit-mode .edit-banner { display: block; }
+
+        .edit-mode [contenteditable="true"] {
+            outline: 2px dashed rgba(42,100,120,0.4);
+            border-radius: 3px; cursor: text; min-width: 20px; min-height: 1em;
+        }
+        .edit-mode [contenteditable="true"]:hover { outline-color: #2a6478; background: rgba(42,100,120,0.06); }
+        .edit-mode [contenteditable="true"]:focus { outline: 2px solid #2a6478; background: rgba(42,100,120,0.1); }
+
+        .del-btn {
+            background: #dc3545; color: white; border: none; border-radius: 4px;
+            width: 22px; height: 22px; line-height: 22px; text-align: center;
+            cursor: pointer; font-size: 1rem; padding: 0; flex-shrink: 0; transition: background 0.15s;
+        }
+        .del-btn:hover { background: #a71d2a; }
+
+        th.del-col, td.del-col {
+            width: 34px; text-align: center; vertical-align: middle; padding: 0.25rem !important;
+        }
+        td.del-col { background: #fff5f5 !important; }
+        th.del-col { background: #3a1a1a !important; }
+
+        .add-row-btn {
+            display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+            background: transparent; border: 2px dashed #28a745; color: #155724;
+            border-radius: 8px; padding: 0.4rem 1rem; cursor: pointer;
+            font-size: 0.8rem; font-weight: 700; width: 100%; margin-top: 0.4rem; transition: background 0.15s;
+        }
+        .add-row-btn:hover { background: #d4edda; }
+
+        .dc-item .dc-value[contenteditable="true"] { outline: 2px dashed rgba(42,100,120,0.4); border-radius: 3px; }
+
+        /* CIA dropdowns in edit mode */
+        .cia-select { font-size: 0.78rem; font-weight: 800; border: 2px solid #2a6478; border-radius: 4px; padding: 0.1rem 0.3rem; cursor: pointer; background: white; }
+
+        .edit-mode .section-card { outline: 2px dashed rgba(42,100,120,0.15); }
+
+        /* ib-del-btn */
+        .ib-del-btn { position: absolute; top: 6px; right: 6px; display: none; }
+        .edit-mode .ib-del-btn { display: block; }
+        .add-box-btn {
+            display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+            background: transparent; border: 2px dashed #28a745; color: #155724;
+            border-radius: 8px; padding: 0.4rem 1rem; cursor: pointer;
+            font-size: 0.8rem; font-weight: 700; width: 100%; margin-top: 0.4rem; transition: background 0.15s;
+        }
+        .add-box-btn:hover { background: #d4edda; }
+
+        @media print {
+            body { background: white; }
+            .edit-toolbar, .edit-banner, .breadcrumb { display: none !important; }
+            .section-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .rpt-header { box-shadow: none; border: 1px solid #ccc; }
+            .section-body.hidden { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Edit Toolbar -->
+    <div class="edit-toolbar">
+        <button class="et-btn et-edit" id="editToggleBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="et-btn et-export" onclick="exportHTML()">💾 Export HTML</button>
+        <button class="et-btn et-print"  onclick="window.print()">🖨️ Print</button>
+        <button class="et-btn et-reset"  onclick="resetChanges()">🔄 Reset</button>
+    </div>
+
+    <!-- Edit Banner -->
+    <div class="edit-banner">✏️ EDIT MODE — Click any cell or text to edit &nbsp;|&nbsp; ＋ Add Row to insert &nbsp;|&nbsp; × to delete</div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">C2M2 Portal</a> <span>›</span>
+        <a href="case-study.html">MVEC Case Study</a> <span>›</span>
+        <span>Asset Inventory &amp; Categorization Report</span>
+    </div>
+
+    <!-- Report Header -->
+    <div class="rpt-header">
+        <div class="rpt-header-inner">
+            <div class="rpt-icon">🗂️</div>
+            <div class="rpt-header-text">
+                <div class="rpt-category">⚡ C2M2 Audit Report &nbsp;|&nbsp; ASSET Domain</div>
+                <h1>Asset Inventory &amp; Categorization Report</h1>
+                <p>Muskingum Valley Electric Cooperative (MVEC) — Coshocton County, Ohio &nbsp;|&nbsp; Prepared for C2M2 v2.1 Self-Evaluation Exercise</p>
+                <div class="rpt-meta-pills">
+                    <span class="pill pill-blue">NIST FIPS-199</span>
+                    <span class="pill pill-blue">NIST SP 800-60</span>
+                    <span class="pill pill-yellow">C2M2 ASSET Domain</span>
+                    <span class="pill pill-red">Current MIL: 1 (Partial)</span>
+                    <span class="pill pill-gray">Exercise Document — Fictional Data</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Control -->
+    <div class="doc-control" id="docControl">
+        <div class="dc-item"><div class="dc-label">Document Title</div><div class="dc-value">Asset Inventory &amp; Categorization Report</div></div>
+        <div class="dc-item"><div class="dc-label">Organization</div><div class="dc-value">Muskingum Valley Electric Cooperative</div></div>
+        <div class="dc-item"><div class="dc-label">System Name</div><div class="dc-value">MVEC IT/OT Environment</div></div>
+        <div class="dc-item"><div class="dc-label">Prepared By</div><div class="dc-value">TechPath Solutions LLC (MSP)</div></div>
+        <div class="dc-item"><div class="dc-label">Reviewed By</div><div class="dc-value">David Harmon, General Manager</div></div>
+        <div class="dc-item"><div class="dc-label">Report Date</div><div class="dc-value">March 28, 2026</div></div>
+        <div class="dc-item"><div class="dc-label">Version</div><div class="dc-value">1.0 — Initial Draft</div></div>
+        <div class="dc-item"><div class="dc-label">Classification</div><div class="dc-value">SENSITIVE — Exercise Use Only</div></div>
+    </div>
+
+    <!-- ── SECTION 1: SCOPE & PURPOSE ── -->
+    <div class="section-label">Section 1 — Scope &amp; Purpose</div>
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">📋</span>
+            <h2>Report Scope, Purpose &amp; Methodology</h2>
+            <span class="sec-tag">SCOPE</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="info-box info">
+                <strong>Purpose</strong>
+                This Asset Inventory and Categorization Report documents all information technology (IT) and
+                operational technology (OT) assets within the MVEC system boundary. Assets are categorized
+                using NIST FIPS-199 impact levels (Confidentiality / Integrity / Availability) to establish
+                the overall system security categorization. This report supports the C2M2 ASSET domain
+                self-evaluation and serves as the foundation for risk management, access control, and
+                vulnerability management activities.
+            </div>
+            <div class="two-col">
+                <div>
+                    <h3 class="sub-h">Inventory Methodology</h3>
+                    <table>
+                        <thead><tr><th>Activity</th><th>Method</th><th>Date</th><th>Performed By</th></tr></thead>
+                        <tbody>
+                            <tr><td>IT Hardware Discovery</td><td>TechPath RMM Agent (ConnectWise Automate) + manual walkthrough</td><td>Nov 2023</td><td>TechPath Solutions</td></tr>
+                            <tr><td>OT/ICS Asset Walk-down</td><td>Physical inspection of substations and main office</td><td>Nov 2023</td><td>Kyle Zumpf, SCADA Tech</td></tr>
+                            <tr><td>Software Discovery</td><td>Manual survey; no automated software inventory tool deployed</td><td>Nov 2023</td><td>TechPath Solutions</td></tr>
+                            <tr><td>Cloud/SaaS Review</td><td>Interview with department managers</td><td>Dec 2023</td><td>David Harmon, GM</td></tr>
+                            <tr><td>Categorization Review</td><td>FIPS-199 impact analysis by asset owner</td><td>Jan 2024</td><td>TechPath Solutions</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3 class="sub-h">FIPS-199 Impact Level Definitions</h3>
+                    <table>
+                        <thead><tr><th>Level</th><th>Confidentiality</th><th>Integrity</th><th>Availability</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="cia-l">LOW</span></td><td>Limited adverse effect</td><td>Limited adverse effect</td><td>Minor disruption &lt;8 hrs</td></tr>
+                            <tr><td><span class="cia-m">MOD</span></td><td>Serious adverse effect</td><td>Serious adverse effect</td><td>Significant disruption 8–72 hrs</td></tr>
+                            <tr><td><span class="cia-h">HIGH</span></td><td>Severe/catastrophic effect</td><td>Severe/catastrophic effect</td><td>Extended disruption &gt;72 hrs</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="info-box warning" style="margin-top:1rem;">
+                        <strong>Inventory Completeness Warning</strong>
+                        This inventory was compiled from a single site visit in November 2023 and has not been
+                        formally validated by MVEC management. Shadow IT and undocumented assets are likely.
+                        No automated discovery tool was used for OT assets.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 2: ASSET TOTALS ── -->
+    <div class="section-label">Section 2 — Asset Count &amp; Categorization Summary</div>
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">📊</span>
+            <h2>Categorization Summary</h2>
+            <span class="sec-tag">SUMMARY</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="summary-grid">
+                <div class="summary-card sc-total"><div class="sc-num">47</div><div class="sc-lbl">Total Assets</div></div>
+                <div class="summary-card sc-high"><div class="sc-num">18</div><div class="sc-lbl">HIGH Impact</div></div>
+                <div class="summary-card sc-mod"><div class="sc-num">21</div><div class="sc-lbl">MODERATE Impact</div></div>
+                <div class="summary-card sc-low"><div class="sc-num">8</div><div class="sc-lbl">LOW Impact</div></div>
+                <div class="summary-card sc-high"><div class="sc-num">9</div><div class="sc-lbl">OT / ICS Assets</div></div>
+                <div class="summary-card sc-mod"><div class="sc-num">6</div><div class="sc-lbl">Servers</div></div>
+                <div class="summary-card sc-total"><div class="sc-num">10</div><div class="sc-lbl">Applications / SaaS</div></div>
+                <div class="summary-card sc-high"><div class="sc-num">3</div><div class="sc-lbl">End-of-Life Assets</div></div>
+            </div>
+            <div class="info-box danger">
+                <strong>System Overall Security Categorization: HIGH</strong>
+                Applying FIPS-199 "high watermark" principle — the overall system categorization is HIGH because
+                multiple assets (SCADA server, AMI head-end, accounting server) carry HIGH availability or
+                integrity impact ratings. Loss of the SCADA system could result in inability to monitor and
+                control the distribution grid serving ~38,200 customers.
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 3: IT HARDWARE ── -->
+    <div class="section-label">Section 3 — IT Hardware Assets</div>
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">🖥️</span>
+            <h2>IT Hardware Asset Inventory</h2>
+            <span class="sec-tag">IT HARDWARE</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <h3 class="sub-h">Servers</h3>
+            <table id="tbl-servers">
+                <thead>
+                    <tr>
+                        <th>Asset ID</th><th>Hostname</th><th>Make / Model</th><th>OS / Version</th>
+                        <th>Function</th><th>Location</th><th>Owner</th>
+                        <th title="Confidentiality">C</th><th title="Integrity">I</th><th title="Availability">A</th>
+                        <th>Overall</th><th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SRV-001</td><td>MVEC-FILESRV</td><td>Dell PowerEdge R440</td><td>Windows Server 2019 (21H2)</td>
+                        <td>Primary file server; VMware host for SRV-005, SRV-006; departmental shared drives</td>
+                        <td>Server Room, Main Office</td><td>TechPath Solutions</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td><td><span class="tag tag-yellow">Partially Patched (~6 mo lag)</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-002</td><td>MVEC-SCADA01</td><td>HP ProLiant DL360 G9</td><td>Windows Server 2016 (EOL)</td>
+                        <td>GE e-terra Habitat v2.8 SCADA application server; HMI host; operational historian</td>
+                        <td>Server Room, Main Office</td><td>Randy Fulton / TechPath</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-red">Critical Patch Lag (18+ mo); GE e-terra EOL 2021</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-003</td><td>MVEC-ACCTG</td><td>Dell OptiPlex 9020 (repurposed)</td><td>Windows Server 2012 R2 (EOS Jan 2023)</td>
+                        <td>QuickBooks Enterprise 22.0 server; payroll, AP/AR, general ledger</td>
+                        <td>Finance Office, Main Office</td><td>Gene Westfall</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-red">EOL OS — No patches since Jan 2023</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-004</td><td>MVEC-AMI-HE</td><td>Dell PowerEdge R340</td><td>Windows Server 2019</td>
+                        <td>Landis+Gyr Gridstream Command Center v8.2; AMI head-end; 14,620 smart meters</td>
+                        <td>Server Room, Main Office</td><td>Randy Fulton</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-yellow">Partially Patched; L+G app v8.2 (current v9.1)</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-005</td><td>MVEC-CIS</td><td>Virtual (VMware on SRV-001)</td><td>Windows Server 2019</td>
+                        <td>Milsoft CIS — customer billing, outage mgmt, work orders; 14,620 customer records</td>
+                        <td>Logical (hosted on SRV-001)</td><td>Carol Bynum</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-yellow">Partially Patched</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-006</td><td>MVEC-GIS</td><td>Virtual (VMware on SRV-001)</td><td>Windows Server 2019</td>
+                        <td>ESRI ArcGIS Server; distribution system GIS model; infrastructure mapping</td>
+                        <td>Logical (hosted on SRV-001)</td><td>Teresa Albright</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td><td><span class="tag tag-yellow">Partially Patched</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-h">Workstations, Laptops &amp; Mobile Devices</h3>
+            <table id="tbl-endpoints">
+                <thead>
+                    <tr>
+                        <th>Asset Type</th><th>Count</th><th>OS / Version</th><th>Primary Users</th>
+                        <th>AV / Protection</th><th>Encryption</th>
+                        <th>C</th><th>I</th><th>A</th><th>Overall</th><th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Desktop PC</td><td>6</td><td>Windows 11 Pro</td><td>Management, Finance, Engineering</td>
+                        <td>Windows Defender (not centrally managed)</td><td>Not enabled</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td><td>No AD domain; local accounts only</td>
+                    </tr>
+                    <tr>
+                        <td>Desktop PC</td><td>7</td><td>Windows 10 Pro (mixed builds)</td><td>Customer Service, Admin, Operations</td>
+                        <td>Windows Defender (not centrally managed)</td><td>Not enabled</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td><td>2 units running Win 10 21H2 (EOL)</td>
+                    </tr>
+                    <tr>
+                        <td>SCADA HMI Workstation</td><td>2</td><td>Windows 10 LTSC 2019</td><td>Kyle Zumpf, Randy Fulton (OT network)</td>
+                        <td><span class="tag tag-red">AV DISABLED (vendor recommendation)</span></td><td>Not enabled</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td>Dedicated SCADA HMI; OT network only; no internet</td>
+                    </tr>
+                    <tr>
+                        <td>Laptop</td><td>4</td><td>Windows 11 Pro</td><td>Engineering, Operations Mgr, GM (remote work)</td>
+                        <td>Windows Defender</td><td>BitLocker on 2 of 4 only</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td><td>All take work data offsite; BYOD risk; no MDM</td>
+                    </tr>
+                    <tr>
+                        <td>iPad Tablet</td><td>3</td><td>iOS 17</td><td>Field engineering, line superintendent</td>
+                        <td>N/A (iOS)</td><td>iOS default encryption</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-gray">LOW</span></td><td>Personal Apple IDs used; no MDM; access ESRI Field Maps</td>
+                    </tr>
+                    <tr>
+                        <td>Smartphone (BYOD)</td><td>9</td><td>Mixed iOS / Android</td><td>Line crew leads, all managers</td>
+                        <td>N/A</td><td>Device default</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-gray">LOW</span></td><td>M365 email access; no MDM; BYOD — no formal policy</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-h">Network Infrastructure</h3>
+            <table id="tbl-network-hw">
+                <thead>
+                    <tr><th>Asset ID</th><th>Device</th><th>Make / Model</th><th>Function</th><th>Firmware</th><th>C</th><th>I</th><th>A</th><th>Overall</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NET-001</td><td>Perimeter Firewall</td><td>Fortinet FortiGate 60E</td>
+                        <td>WAN perimeter firewall; NAT; stateful inspection for corporate LAN</td>
+                        <td>FortiOS 7.0.12 (1 minor version behind)</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-yellow">Functional; IPS signatures not enabled; rules last reviewed 2022</span></td>
+                    </tr>
+                    <tr>
+                        <td>NET-002</td><td>VPN Appliance</td><td>Cisco ASA 5505</td>
+                        <td>Remote access VPN for TechPath MSP and GE Grid Solutions SCADA support</td>
+                        <td>ASA 9.2(4)25 (End-of-Support 2017)</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-red">EOL — End-of-Support; no security patches available</span></td>
+                    </tr>
+                    <tr>
+                        <td>NET-003</td><td>Corporate LAN Switch</td><td>Cisco Catalyst 2960-X</td>
+                        <td>Core switching for corporate LAN (192.168.1.0/24); also trunks to OT switch</td>
+                        <td>IOS 15.2(7)E8</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-yellow">No VLANs configured; flat network; trunk to OT</span></td>
+                    </tr>
+                    <tr>
+                        <td>NET-004</td><td>OT/SCADA LAN Switch</td><td>Cisco Catalyst 2960</td>
+                        <td>SCADA network switching (10.0.10.0/24); connects SCADA server, AMI, HMI workstations</td>
+                        <td>IOS 15.2(4)E10</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-yellow">Layer-3 route to Corp LAN exists — no OT firewall</span></td>
+                    </tr>
+                    <tr>
+                        <td>NET-005</td><td>Wi-Fi Access Points (×2)</td><td>Netgear WAC104</td>
+                        <td>Wireless LAN — SSID: MVEC-Staff and MVEC-Guest; main office building</td>
+                        <td>Firmware V2.1.7 (home-grade device)</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td><td><span class="tag tag-red">Guest SSID not isolated from Corp LAN at switch level</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── SECTION 4: OT/ICS ASSETS ── -->
+    <div class="section-label">Section 4 — Operational Technology (OT) / ICS Assets</div>
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">⚡</span>
+            <h2>OT / ICS / SCADA Asset Inventory</h2>
+            <span class="sec-tag">OT / ICS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="info-box danger">
+                <strong>OT Asset Inventory — Limited Confidence</strong>
+                The OT asset list below was compiled during a single walk-down in November 2023. No automated
+                OT discovery tool (e.g., Claroty, Dragos, Nozomi) has been deployed. Field device firmware versions
+                were obtained from visual inspection and operator interviews. Actual installed versions may differ.
+            </div>
+            <table id="tbl-ot">
+                <thead>
+                    <tr>
+                        <th>Asset ID</th><th>Device / System</th><th>Vendor / Model</th><th>Location</th>
+                        <th>Protocol</th><th>Function</th><th>Firmware</th>
+                        <th>C</th><th>I</th><th>A</th><th>Overall</th><th>Cyber Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OT-001</td><td>SCADA Application Server</td><td>GE e-terra Habitat v2.8</td>
+                        <td>Main Office (SRV-002)</td><td>DNP3, Modbus, IEC 61968</td>
+                        <td>Supervisory control, data acquisition, HMI, operational historian</td>
+                        <td><span class="tag tag-red">EOL — Vendor support ended 2021</span></td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td>No upgrade budget; shared admin account "SCADA_ADMIN"</td>
+                    </tr>
+                    <tr>
+                        <td>OT-002</td><td>RTU — Coshocton SS-01</td><td>GE D20MX RTU</td>
+                        <td>SS-01, Coshocton</td><td>DNP3 over fiber</td>
+                        <td>Breaker status, voltage, current telemetry to SCADA; limited control</td>
+                        <td>Firmware v3.04 (current v3.06 — 2 versions behind)</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td>DNP3 SAv5 authentication not enabled</td>
+                    </tr>
+                    <tr>
+                        <td>OT-003</td><td>RTU — Warsaw SS-02</td><td>GE D20MX RTU</td>
+                        <td>SS-02, Warsaw</td><td>DNP3 over fiber</td>
+                        <td>Same as OT-002</td>
+                        <td>Firmware v3.04 (2 versions behind)</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td>DNP3 SAv5 not enabled; no encryption on fiber link</td>
+                    </tr>
+                    <tr>
+                        <td>OT-004</td><td>RTU — Newcomerstown SS-03</td><td>SEL-2414 RTU</td>
+                        <td>SS-03, Newcomerstown</td><td>DNP3 / 900 MHz radio</td>
+                        <td>Monitoring only — no remote control capability</td>
+                        <td><span class="tag tag-green">Current</span></td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td><td>Radio link unencrypted and unauthenticated</td>
+                    </tr>
+                    <tr>
+                        <td>OT-005</td><td>Protective Relays — SS-01 (×3)</td><td>SEL-351 Feeder Protection Relay</td>
+                        <td>SS-01, Coshocton</td><td>Serial (EIA-232) to RTU</td>
+                        <td>Overcurrent and ground fault protection for 3 distribution feeders</td>
+                        <td>Firmware R114-V2 (current R117-V1 — 1 version behind)</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td>No direct Ethernet; default passwords not yet changed on SS-01 relays</td>
+                    </tr>
+                    <tr>
+                        <td>OT-006</td><td>Protective Relays — SS-02 (×3)</td><td>SEL-351 Feeder Protection Relay</td>
+                        <td>SS-02, Warsaw</td><td>Serial (EIA-232) to RTU</td>
+                        <td>Same as OT-005</td>
+                        <td>Firmware R114-V2</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td><span class="tag tag-red">Default vendor passwords confirmed in use</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-007</td><td>Automated Recloser Controllers (×12)</td><td>S&amp;C Electric IntelliRupter PulseCloser</td>
+                        <td>Various field locations across service territory</td><td>DNP3 / 900 MHz radio</td>
+                        <td>Automated fault isolation and service restoration on 12 distribution feeders</td>
+                        <td>Mixed — 4 of 12 current; 8 of 12 behind 1–2 versions</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td>900 MHz radio — no encryption; older units use unencrypted protocol</td>
+                    </tr>
+                    <tr>
+                        <td>OT-008</td><td>AMI Head-End System</td><td>Landis+Gyr Gridstream Command Center v8.2</td>
+                        <td>Main Office (SRV-004)</td><td>RF Mesh (2.4 GHz), HTTPS</td>
+                        <td>Smart meter data collection, demand response, remote connect/disconnect for 14,620 meters</td>
+                        <td>v8.2 (current is v9.1 — 1 major version behind)</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td><td>RF mesh spans entire service territory; remote disconnect capability = HIGH availability risk</td>
+                    </tr>
+                    <tr>
+                        <td>OT-009</td><td>Power Quality Monitor</td><td>Dranetz HDPQ Xplorer (×1)</td>
+                        <td>SS-01, Coshocton (permanent install)</td><td>USB export (no network)</td>
+                        <td>Voltage sag/swell, flicker monitoring; data exported manually via USB</td>
+                        <td><span class="tag tag-green">Current</span></td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-l">LOW</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-gray">LOW</span></td><td>Air-gapped (USB only); low cyber risk</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── SECTION 5: SOFTWARE & APPLICATIONS ── -->
+    <div class="section-label">Section 5 — Software &amp; Application Inventory</div>
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">💾</span>
+            <h2>Software, Applications &amp; SaaS Services</h2>
+            <span class="sec-tag">SOFTWARE</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <table id="tbl-software">
+                <thead>
+                    <tr>
+                        <th>App ID</th><th>Application</th><th>Vendor</th><th>Version</th><th>Function</th>
+                        <th>Hosting</th><th>Data Classification</th><th>Auth / MFA</th>
+                        <th>C</th><th>I</th><th>A</th><th>Overall</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>APP-001</td><td>GE e-terra Habitat</td><td>GE Grid Solutions</td><td>v2.8 (EOL)</td>
+                        <td>SCADA / EMS / DMS — supervisory control of distribution grid</td>
+                        <td>On-premise (SRV-002)</td><td>OT Operational — SENSITIVE</td>
+                        <td><span class="tag tag-red">Shared account; no MFA</span></td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-002</td><td>Milsoft Utility Solutions (CIS)</td><td>Milsoft</td><td>Current</td>
+                        <td>Customer Information System — billing, outage management, work orders</td>
+                        <td>On-premise (SRV-005)</td><td>PII / Customer Data — CONFIDENTIAL</td>
+                        <td>Individual accounts; no MFA</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-003</td><td>Milsoft WindMil</td><td>Milsoft</td><td>2023</td>
+                        <td>Distribution system planning and modeling; power flow analysis</td>
+                        <td>Desktop (2 engineering PCs)</td><td>Engineering — INTERNAL</td>
+                        <td>Windows login only; no MFA</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-gray">LOW</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-004</td><td>ESRI ArcGIS Server</td><td>Esri</td><td>10.9.1</td>
+                        <td>GIS — distribution system geographic model; infrastructure mapping</td>
+                        <td>On-premise (SRV-006)</td><td>Infrastructure Mapping — SENSITIVE</td>
+                        <td>Windows auth; no MFA</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-005</td><td>Landis+Gyr Command Center</td><td>Landis+Gyr</td><td>v8.2 (current v9.1)</td>
+                        <td>AMI meter data management; demand response; remote connect/disconnect</td>
+                        <td>On-premise (SRV-004)</td><td>OT Operational — SENSITIVE</td>
+                        <td>Local accounts; no MFA</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-006</td><td>QuickBooks Enterprise 22.0</td><td>Intuit</td><td>22.0 (outdated)</td>
+                        <td>Accounting, payroll, accounts payable/receivable, general ledger</td>
+                        <td>On-premise (SRV-003, EOL OS)</td><td>Financial — CONFIDENTIAL</td>
+                        <td>Local QB accounts; no MFA</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-007</td><td>Microsoft 365 (E1 license)</td><td>Microsoft</td><td>Exchange Online / Teams / OneDrive</td>
+                        <td>Email, collaboration, cloud file storage for all 34 employees</td>
+                        <td>Cloud SaaS (Microsoft)</td><td>Business Communications — INTERNAL</td>
+                        <td><span class="tag tag-red">Password only — MFA NOT enforced</span></td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-008</td><td>Buckeye Power EMS Data Link</td><td>Buckeye Power / OSIsoft PI</td><td>N/A</td>
+                        <td>Wholesale energy metering data exchange; generation scheduling interface</td>
+                        <td>Vendor-hosted; IPsec VPN to Buckeye Power</td><td>OT Metering — SENSITIVE</td>
+                        <td>Shared service account (no individual auth)</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-009</td><td>AutoCAD LT 2022</td><td>Autodesk</td><td>2022</td>
+                        <td>Electrical/civil engineering drawings; substation layout plans</td>
+                        <td>Desktop (engineering PCs); Autodesk cloud license</td><td>Engineering — INTERNAL</td>
+                        <td>Autodesk cloud login</td>
+                        <td><span class="cia-l">LOW</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td>
+                        <td><span class="tag tag-gray">LOW</span></td>
+                    </tr>
+                    <tr>
+                        <td>APP-010</td><td>NISC SmartHub</td><td>NISC</td><td>Current (NISC-managed)</td>
+                        <td>Customer self-service portal — bill pay, outage reporting, account management</td>
+                        <td>Cloud SaaS (NISC-hosted)</td><td>PII / Customer Data — CONFIDENTIAL</td>
+                        <td>Customer-facing; admin access password only (no MFA)</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td>
+                        <td><span class="tag tag-yellow">MODERATE</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── SECTION 6: DATA ASSETS ── -->
+    <div class="section-label">Section 6 — Data Asset Classification</div>
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">🗄️</span>
+            <h2>Data Assets &amp; Classification</h2>
+            <span class="sec-tag">DATA</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="info-box warning">
+                <strong>No Formal Data Classification Policy</strong>
+                MVEC has no formal data classification policy. The classifications below reflect the
+                assessed sensitivity of each data type based on potential impact of unauthorized disclosure
+                or modification. A formal data classification policy is a gap in the ASSET and PROGRAM domains.
+            </div>
+            <table id="tbl-data">
+                <thead>
+                    <tr>
+                        <th>Data Asset</th><th>Classification</th><th>Description</th><th>System(s)</th>
+                        <th>Volume / Records</th><th>Retention</th><th>Storage Location</th>
+                        <th>C</th><th>I</th><th>A</th><th>Regulatory Obligation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Customer Account &amp; Billing Records</td><td><span class="tag tag-red">CONFIDENTIAL</span></td>
+                        <td>Names, addresses, account numbers, energy usage, payment history</td>
+                        <td>Milsoft CIS (SRV-005), NISC SmartHub</td><td>14,620 active accounts</td>
+                        <td>7 years (per Ohio utility regulations)</td><td>On-premise + NISC cloud</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td>Ohio PUC, potential CPNI</td>
+                    </tr>
+                    <tr>
+                        <td>Financial Records (AP/AR/Payroll)</td><td><span class="tag tag-red">CONFIDENTIAL</span></td>
+                        <td>Bank accounts, vendor invoices, employee payroll, general ledger</td>
+                        <td>QuickBooks Enterprise (SRV-003)</td><td>34 employee payroll records; full GL history</td>
+                        <td>7 years</td><td>On-premise only; tape backup offsite (GM's home)</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td>
+                        <td>IRS, GAAP, Ohio DOT</td>
+                    </tr>
+                    <tr>
+                        <td>OT / SCADA Operational Data</td><td><span class="tag tag-orange">SENSITIVE</span></td>
+                        <td>Real-time telemetry, breaker status, control commands, operational historian</td>
+                        <td>GE e-terra SCADA (SRV-002), RTUs (OT-002 to OT-004)</td><td>Real-time + 90-day historian</td>
+                        <td>90 days historian; real-time operational</td><td>On-premise only (no backup of SCADA historian)</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td>NERC CIP Low Impact (CIP-003-8)</td>
+                    </tr>
+                    <tr>
+                        <td>AMI Meter Data</td><td><span class="tag tag-orange">SENSITIVE</span></td>
+                        <td>15-minute interval consumption data; remote connect/disconnect command log</td>
+                        <td>Landis+Gyr Command Center (SRV-004); L+G cloud</td><td>14,620 smart meters × 15-min intervals</td>
+                        <td>13 months on-premise; longer in L+G cloud</td><td>On-premise + Landis+Gyr cloud</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td>Ohio PUC smart meter data rules</td>
+                    </tr>
+                    <tr>
+                        <td>Distribution Infrastructure GIS Data</td><td><span class="tag tag-orange">SENSITIVE</span></td>
+                        <td>Pole locations, underground cable routes, substation layouts, critical infrastructure mapping</td>
+                        <td>ESRI ArcGIS Server (SRV-006)</td><td>Full service territory — 1,140 sq mi</td>
+                        <td>Current; historical versions in AutoCAD drawings</td><td>On-premise; some in AutoCAD files on engineering PCs</td>
+                        <td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-m">MOD</span></td>
+                        <td>None specific; CISA critical infrastructure guidance</td>
+                    </tr>
+                    <tr>
+                        <td>Employee HR &amp; Personnel Records</td><td><span class="tag tag-red">CONFIDENTIAL</span></td>
+                        <td>SSNs, home addresses, performance reviews, medical/benefits data</td>
+                        <td>Shared file server (SRV-001) — HR folder; paper files</td><td>34 employees + former employees</td>
+                        <td>7 years post-termination</td><td>File server + paper (HR office)</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-m">MOD</span></td><td><span class="cia-l">LOW</span></td>
+                        <td>Ohio PIIA, ADA, FLSA</td>
+                    </tr>
+                    <tr>
+                        <td>IT System Credentials &amp; Configurations</td><td><span class="tag tag-red">RESTRICTED</span></td>
+                        <td>Server admin passwords, VPN PSKs, network device configs, SCADA credentials</td>
+                        <td>Various — many stored informally (sticky notes, shared documents)</td><td>~20 system accounts</td>
+                        <td>Current; no formal credential vault</td><td>No PAM; informal — major gap</td>
+                        <td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td><td><span class="cia-h">HIGH</span></td>
+                        <td>NERC CIP CIP-003-8</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── SECTION 7: EOL ASSETS ── -->
+    <div class="section-label">Section 7 — End-of-Life / End-of-Support Asset Register</div>
+    <div class="section-card">
+        <div class="section-card-header" onclick="toggleSection(this)">
+            <span class="sec-icon">⚠️</span>
+            <h2>End-of-Life &amp; End-of-Support Asset Register</h2>
+            <span class="sec-tag">EOL RISK</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="info-box danger">
+                <strong>Critical Finding — Multiple EOL Assets in Production</strong>
+                MVEC is operating three systems past vendor end-of-support and two OS versions with no
+                security patches available. These represent the highest cyber risk in the asset inventory.
+                EOL systems cannot be patched when new vulnerabilities are discovered.
+            </div>
+            <table id="tbl-eol">
+                <thead>
+                    <tr>
+                        <th>Asset ID</th><th>Asset Name</th><th>EOL Date</th><th>Risk</th><th>Compensating Controls</th><th>Remediation Plan</th><th>Target Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SRV-003</td><td>Windows Server 2012 R2 (MVEC-ACCTG)</td><td>Oct 14, 2023</td>
+                        <td><span class="tag tag-red">CRITICAL</span></td>
+                        <td>Network firewall provides perimeter protection; no direct internet access; access limited to 2 users</td>
+                        <td>Upgrade to Windows Server 2022; migrate QuickBooks to newer host or SaaS</td>
+                        <td>No funding allocated — TBD</td>
+                    </tr>
+                    <tr>
+                        <td>OT-001</td><td>GE e-terra Habitat v2.8 (SCADA)</td><td>Dec 31, 2021</td>
+                        <td><span class="tag tag-red">CRITICAL</span></td>
+                        <td>Air-gap from internet (partial — VPN access exists); no external connections to SCADA network except VPN</td>
+                        <td>Replace with modern SCADA/DMS platform (e.g., Survalent, OSIsoft PI, or NISC SmartGrid)</td>
+                        <td>No budget allocated; 3–5 year capital plan needed</td>
+                    </tr>
+                    <tr>
+                        <td>NET-002</td><td>Cisco ASA 5505 VPN Appliance</td><td>Aug 31, 2017</td>
+                        <td><span class="tag tag-red">CRITICAL</span></td>
+                        <td>Firewall upstream (FortiGate); limited inbound rules; PSK not shared broadly</td>
+                        <td>Replace with Fortinet FortiGate SSL-VPN or equivalent; implement MFA for all remote access</td>
+                        <td>Priority — within 6 months; ~$3,000–5,000 estimated</td>
+                    </tr>
+                    <tr>
+                        <td>Endpoints (×2)</td><td>Windows 10 Version 21H2 (EOL May 2022)</td><td>May 10, 2022</td>
+                        <td><span class="tag tag-yellow">HIGH</span></td>
+                        <td>Windows Defender running; no direct internet browsing on these units</td>
+                        <td>Windows 10 in-place upgrade to 22H2 or Windows 11; no hardware replacement needed</td>
+                        <td>Within 30 days; no cost (license included)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Asset Inventory &amp; Categorization Report — Muskingum Valley Electric Cooperative (MVEC)</strong></p>
+        <p>Fictional training document for C2M2 v2.1 self-evaluation exercise. All data is simulated.</p>
+        <p>Prepared in accordance with NIST FIPS-199 and NIST SP 800-60 Vol. II for energy sector asset categorization.</p>
+    </div>
+
+</div><!-- end .container -->
+
+<script>
+/* ── Section Toggle ── */
+function toggleSection(h) {
+    if (editMode) return;
+    const body = h.nextElementSibling;
+    const icon = h.querySelector('.toggle-icon');
+    body.classList.toggle('hidden');
+    h.classList.toggle('collapsed', body.classList.contains('hidden'));
+    icon.textContent = '▼';
+}
+
+/* ══════════════════════════════════════════
+   EDIT MODE ENGINE
+══════════════════════════════════════════ */
+const STORAGE_KEY = 'mvec_asset_inv_v1';
+let editMode = false;
+
+function toggleEditMode() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    const btn = document.getElementById('editToggleBtn');
+    if (editMode) {
+        btn.textContent = '✅ Done Editing'; btn.classList.add('active');
+        enableEditing();
+    } else {
+        btn.textContent = '✏️ Edit Mode'; btn.classList.remove('active');
+        disableEditing(); saveToStorage();
+    }
+}
+
+function enableEditing() {
+    /* Tables → editable cells + delete column + Add Row */
+    document.querySelectorAll('table').forEach(tbl => {
+        const hRow = tbl.querySelector('thead tr');
+        if (hRow && !hRow.querySelector('th.del-col')) {
+            const th = document.createElement('th'); th.className = 'del-col';
+            hRow.appendChild(th);
+        }
+        tbl.querySelectorAll('tbody tr').forEach(tr => {
+            tr.querySelectorAll('td:not(.del-col)').forEach(td => td.contentEditable = 'true');
+            if (!tr.querySelector('td.del-col')) tr.appendChild(mkDelCell(() => tr.remove()));
+        });
+        if (!tbl.nextElementSibling?.classList.contains('add-row-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-row-btn'; btn.textContent = '＋ Add Row';
+            btn.onclick = () => addTableRow(tbl); tbl.after(btn);
+        }
+    });
+    /* Document control values */
+    document.querySelectorAll('.dc-value').forEach(el => el.contentEditable = 'true');
+    /* Info-box text + delete */
+    document.querySelectorAll('.info-box').forEach(box => {
+        box.contentEditable = 'true';
+        if (!box.querySelector('.ib-del-btn')) {
+            const btn = mkDelBtn(() => box.remove());
+            btn.classList.add('ib-del-btn'); btn.contentEditable = 'false';
+            box.appendChild(btn);
+        }
+    });
+    /* Add info-box button per section-body */
+    document.querySelectorAll('.section-body').forEach(sb => {
+        if (!sb.querySelector('.add-box-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-box-btn'; btn.textContent = '＋ Add Info Box';
+            btn.onclick = () => addInfoBox(btn); sb.appendChild(btn);
+        }
+    });
+    /* Section headings */
+    document.querySelectorAll('.section-card-header h2, h3.sub-h').forEach(el => el.contentEditable = 'true');
+}
+
+function disableEditing() {
+    document.querySelectorAll('th.del-col, td.del-col').forEach(el => el.remove());
+    document.querySelectorAll('.add-row-btn, .add-box-btn').forEach(el => el.remove());
+    document.querySelectorAll('tbody td[contenteditable]').forEach(td => td.removeAttribute('contenteditable'));
+    document.querySelectorAll('.dc-value[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.querySelectorAll('.ib-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.info-box[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.querySelectorAll('.section-card-header h2[contenteditable], h3.sub-h[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+}
+
+/* ── Helpers ── */
+function mkDelBtn(fn) {
+    const b = document.createElement('button');
+    b.className = 'del-btn'; b.textContent = '×'; b.title = 'Delete';
+    b.onclick = e => { e.stopPropagation(); fn(); }; return b;
+}
+function mkDelCell(fn) {
+    const td = document.createElement('td'); td.className = 'del-col';
+    td.appendChild(mkDelBtn(fn)); return td;
+}
+function addTableRow(tbl) {
+    const hRow = tbl.querySelector('thead tr');
+    const cols = hRow ? [...hRow.cells].filter(c => !c.classList.contains('del-col')).length : 4;
+    const tr = document.createElement('tr');
+    for (let i = 0; i < cols; i++) {
+        const td = document.createElement('td'); td.contentEditable = 'true'; td.textContent = 'Click to edit';
+        tr.appendChild(td);
+    }
+    tr.appendChild(mkDelCell(() => tr.remove()));
+    tbl.querySelector('tbody').appendChild(tr);
+    tr.cells[0].focus();
+}
+function addInfoBox(addBtn) {
+    const box = document.createElement('div'); box.className = 'info-box info';
+    box.contentEditable = 'true';
+    box.innerHTML = '<strong>Heading</strong> Enter your notes here.';
+    const del = mkDelBtn(() => box.remove()); del.className += ' ib-del-btn'; del.contentEditable = 'false';
+    box.appendChild(del); addBtn.before(box); box.focus();
+}
+
+/* ── Storage ── */
+function saveToStorage() {
+    try { localStorage.setItem(STORAGE_KEY, document.querySelector('.container').innerHTML); } catch(e) {}
+}
+function resetChanges() {
+    if (confirm('Reset all edits and restore original report?')) {
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+        if (editMode) { editMode = false; document.body.classList.remove('edit-mode'); }
+        location.reload();
+    }
+}
+
+/* ── Export ── */
+function exportHTML() {
+    const wasEditing = editMode;
+    if (wasEditing) { editMode = false; document.body.classList.remove('edit-mode'); disableEditing(); }
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelector('.edit-toolbar')?.remove();
+    clone.querySelector('.edit-banner')?.remove();
+    clone.querySelector('body')?.classList.remove('edit-mode');
+    const blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type:'text/html'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'mvec-asset-inventory-report.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    if (wasEditing) { editMode = true; document.body.classList.add('edit-mode'); enableEditing(); }
+}
+</script>
+</body>
+</html>
