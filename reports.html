@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Reports | C2M2 Program Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* ── Back nav ── */
+        .back-nav {
+            margin-bottom: 1.5rem;
+        }
+        .back-nav a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.2s;
+        }
+        .back-nav a:hover { color: white; }
+
+        /* ── Header ── */
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 2.5rem 2rem;
+            background: rgba(255,255,255,0.97);
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1a3a4a, #2a6478, #28a745, #17a2b8, #ffc107);
+        }
+        .header .page-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #e8f4f8;
+            border: 1px solid #b0d4e3;
+            color: #1a3a4a;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            color: #1a3a4a;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .header h1 span { color: #2a6478; }
+        .header .subtitle {
+            font-size: 1.05rem;
+            color: #666;
+            font-weight: 300;
+            max-width: 760px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* ── Role intro box ── */
+        .role-box {
+            background: rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 14px;
+            padding: 1.6rem 2rem;
+            color: rgba(255,255,255,0.92);
+            margin-bottom: 2.5rem;
+            backdrop-filter: blur(4px);
+            display: flex;
+            gap: 1.2rem;
+            align-items: flex-start;
+        }
+        .role-box .role-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+        .role-box h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: white;
+        }
+        .role-box p {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            opacity: 0.88;
+        }
+
+        /* ── Section label ── */
+        .section-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 1rem;
+        }
+
+        /* ── Report cards grid ── */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .report-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 16px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+        .report-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border-color: #2a6478;
+        }
+        .report-card:hover::before {
+            background: linear-gradient(90deg, #1a3a4a, #2a6478, #17a2b8);
+        }
+
+        .report-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .report-card-icon {
+            font-size: 2.2rem;
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .report-card-icon.asset    { background: #e8f5e9; }
+        .report-card-icon.access   { background: #e3f2fd; }
+        .report-card-icon.vuln     { background: #fce4ec; }
+        .report-card-icon.maintain { background: #fff8e1; }
+        .report-card-icon.gap      { background: #ede7f6; }
+
+        .report-card-meta { flex: 1; }
+        .report-domain-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-asset    { background: #d4edda; color: #155724; }
+        .badge-access   { background: #d1ecf1; color: #0c5460; }
+        .badge-threat   { background: #f8d7da; color: #721c24; }
+        .badge-maintain { background: #fff3cd; color: #856404; }
+        .badge-risk     { background: #e2d9f3; color: #432874; }
+
+        .report-card-meta h3 {
+            font-size: 1.15rem;
+            color: #1a3a4a;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .report-card-meta .report-subtitle {
+            font-size: 0.82rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 0.2rem;
+        }
+
+        .report-description {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.65;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .report-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.2rem;
+        }
+        .report-tag {
+            background: #e8f4f8;
+            color: #1a3a4a;
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            border: 1px solid #b0d4e3;
+        }
+
+        .report-open-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            background: linear-gradient(135deg, #1a3a4a, #2a6478);
+            color: white;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 700;
+            padding: 0.65rem 1.4rem;
+            border-radius: 25px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(42,100,120,0.3);
+            align-self: flex-start;
+        }
+        .report-open-btn:hover {
+            background: linear-gradient(135deg, #2a6478, #17a2b8);
+            box-shadow: 0 6px 20px rgba(42,100,120,0.5);
+            transform: translateY(-2px);
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            color: rgba(255,255,255,0.85);
+            margin-top: 2rem;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .footer p { margin-bottom: 0.4rem; font-size: 0.9rem; }
+        .footer .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 0.25rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.8rem; }
+            .reports-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .role-box { flex-direction: column; gap: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Back nav -->
+    <div class="back-nav">
+        <a href="index.html">← Back to Portal Home</a>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="page-label">📊 C2M2 Program Portal</div>
+        <h1>C2M2 <span>Assessment</span> Reports</h1>
+        <p class="subtitle">Structured audit reports that document your organization's cybersecurity posture across key C2M2 domains — providing the evidence base for maturity scoring, gap identification, and remediation planning.</p>
+    </div>
+
+    <!-- Role of Reports intro -->
+    <div class="role-box">
+        <div class="role-icon">💡</div>
+        <div>
+            <h3>The Role of Reports in C2M2 Implementation</h3>
+            <p>Reports are the evidentiary core of any C2M2 self-evaluation. While the framework defines <em>what</em> good cybersecurity practice looks like, reports capture <em>where your organization stands today</em>. Each report translates operational data — asset inventories, user access logs, vulnerability scan results, patch records — into structured evidence aligned with specific C2M2 domains and MIL levels. They enable evaluators to validate maturity claims with documented proof, help leadership understand current risk exposure, and provide the baseline from which gap analysis and remediation planning flow. Without well-maintained reports, MIL attainment scores remain assertions rather than defensible findings.</p>
+        </div>
+    </div>
+
+    <!-- Report Cards -->
+    <div class="section-label">Available Reports — MVEC Case Study</div>
+    <div class="reports-grid">
+
+        <!-- Asset Inventory -->
+        <div class="report-card">
+            <div class="report-card-header">
+                <div class="report-card-icon asset">📦</div>
+                <div class="report-card-meta">
+                    <span class="report-domain-badge badge-asset">ASSET Domain · ACM</span>
+                    <h3>Asset Inventory &amp; Categorization Report</h3>
+                    <div class="report-subtitle">IT/OT Asset Register with FIPS-199 CIA Impact Ratings</div>
+                </div>
+            </div>
+            <p class="report-description">A complete inventory of MVEC's IT and OT assets with system categorization, FIPS-199 Confidentiality / Integrity / Availability impact ratings, end-of-life and end-of-support flags, and a categorization summary. Supports C2M2 ACM-1 through ACM-3 practice evidence and provides the foundation for all other domain assessments. Editable, printable, and exportable.</p>
+            <div class="report-tags">
+                <span class="report-tag">IT Assets</span>
+                <span class="report-tag">OT Assets</span>
+                <span class="report-tag">FIPS-199</span>
+                <span class="report-tag">EOL/EOS Flags</span>
+                <span class="report-tag">CIA Ratings</span>
+                <span class="report-tag">ACM-1 – ACM-3</span>
+            </div>
+            <a href="report-asset-inventory.html" class="report-open-btn">📄 Open Report</a>
+        </div>
+
+        <!-- Access Control Matrix -->
+        <div class="report-card">
+            <div class="report-card-header">
+                <div class="report-card-icon access">🔐</div>
+                <div class="report-card-meta">
+                    <span class="report-domain-badge badge-access">ACCESS Domain · IAM</span>
+                    <h3>Access Control Matrix</h3>
+                    <div class="report-subtitle">User Accounts, Privileges &amp; Vendor Remote Access</div>
+                </div>
+            </div>
+            <p class="report-description">MVEC's full user account inventory and system access rights matrix covering IT systems, OT/SCADA platforms, and cloud services. Documents privileged and shared accounts, vendor remote access sessions, OT device default credentials, and multi-factor authentication coverage. Includes a C2M2 ACCESS domain MIL 1–3 practice assessment with evidence mappings and identified gaps.</p>
+            <div class="report-tags">
+                <span class="report-tag">User Accounts</span>
+                <span class="report-tag">Privileged Access</span>
+                <span class="report-tag">MFA Coverage</span>
+                <span class="report-tag">Vendor Remote Access</span>
+                <span class="report-tag">OT Credentials</span>
+                <span class="report-tag">IAM-1 – IAM-3</span>
+            </div>
+            <a href="report-access-control.html" class="report-open-btn">📄 Open Report</a>
+        </div>
+
+        <!-- Vulnerability Scan Report -->
+        <div class="report-card">
+            <div class="report-card-header">
+                <div class="report-card-icon vuln">🛡️</div>
+                <div class="report-card-meta">
+                    <span class="report-domain-badge badge-threat">THREAT Domain · TVM</span>
+                    <h3>Vulnerability Scan Report</h3>
+                    <div class="report-subtitle">Nessus IT Scan + Manual OT Review Findings</div>
+                </div>
+            </div>
+            <p class="report-description">Combines Nessus credentialed IT scan results with a manual OT/ICS vulnerability review: 9 Critical and 18 High findings, CISA Known Exploited Vulnerability (KEV) catalog exposure analysis, OT-specific vulnerabilities including insecure DNP3 configuration, end-of-life SCADA software, and default device passwords. Includes a C2M2 THREAT domain MIL assessment and prioritized remediation guidance.</p>
+            <div class="report-tags">
+                <span class="report-tag">9 Critical Findings</span>
+                <span class="report-tag">18 High Findings</span>
+                <span class="report-tag">CISA KEV</span>
+                <span class="report-tag">OT/ICS</span>
+                <span class="report-tag">DNP3</span>
+                <span class="report-tag">TVM-1 – TVM-3</span>
+            </div>
+            <a href="report-vulnerability.html" class="report-open-btn">📄 Open Report</a>
+        </div>
+
+        <!-- Maintenance Report -->
+        <div class="report-card">
+            <div class="report-card-header">
+                <div class="report-card-icon maintain">🔧</div>
+                <div class="report-card-meta">
+                    <span class="report-domain-badge badge-maintain">ASSET Domain · ACM</span>
+                    <h3>Maintenance Report</h3>
+                    <div class="report-subtitle">Patch Status, Firmware Currency &amp; Vendor SLAs</div>
+                </div>
+            </div>
+            <p class="report-description">Documents MVEC's IT and OT patch currency, firmware version tracking, end-of-life and end-of-support asset register with risk ratings, vendor maintenance SLA compliance, and the 2025 maintenance calendar. Maps patch and lifecycle management activities against C2M2 ASSET domain ACM practices to produce a MIL-level assessment with evidence status and open findings.</p>
+            <div class="report-tags">
+                <span class="report-tag">Patch Status</span>
+                <span class="report-tag">Firmware Currency</span>
+                <span class="report-tag">EOL/EOS Register</span>
+                <span class="report-tag">Vendor SLAs</span>
+                <span class="report-tag">2025 Calendar</span>
+                <span class="report-tag">ACM Practices</span>
+            </div>
+            <a href="report-maintenance.html" class="report-open-btn">📄 Open Report</a>
+        </div>
+
+        <!-- Gap Analysis & POA&M -->
+        <div class="report-card">
+            <div class="report-card-header">
+                <div class="report-card-icon gap">🗺️</div>
+                <div class="report-card-meta">
+                    <span class="report-domain-badge badge-risk">All Domains · Program</span>
+                    <h3>Gap Analysis &amp; POA&amp;M</h3>
+                    <div class="report-subtitle">Current vs. Target MIL Gaps &amp; Remediation Plan</div>
+                </div>
+            </div>
+            <p class="report-description">Cross-domain gap analysis comparing current MIL attainment scores against target maturity levels across all 10 C2M2 domains. Identifies unmet practices, ranks gaps by risk impact, and populates a Plan of Action &amp; Milestones (POA&amp;M) tracker with ownership assignments, resource estimates, and target completion dates. The central planning artifact for a C2M2 remediation program.</p>
+            <div class="report-tags">
+                <span class="report-tag">10 Domains</span>
+                <span class="report-tag">MIL Gap Scoring</span>
+                <span class="report-tag">POA&amp;M Tracker</span>
+                <span class="report-tag">Risk Prioritization</span>
+                <span class="report-tag">Remediation Planning</span>
+                <span class="report-tag">All MIL Levels</span>
+            </div>
+            <a href="gap-analysis.html" class="report-open-btn">📄 Open Report</a>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p><strong>Cybersecurity Capability Maturity Model (C2M2) Program</strong></p>
+        <p>Developed by the U.S. Department of Energy (DOE) Office of Cybersecurity, Energy Security, and Emergency Response (CESER)</p>
+        <p>C2M2 Version 2.1 | Self-Evaluation Reference Portal</p>
+        <p style="margin-top:0.5rem; font-size:0.82rem; opacity:0.7;">For educational and workshop use only. Always verify against the official C2M2 v2.1 model document from DOE.</p>
+        <span class="version-badge">⚡ Energy Sector Cybersecurity | Last updated: March 2026</span>
+    </div>
+</div>
+</body>
+</html>
