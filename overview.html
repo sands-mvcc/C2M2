@@ -14,6 +14,7 @@
             color: #333;
         }
         .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
         .back-link {
             display: inline-block;
             color: white;
@@ -23,74 +24,208 @@
             opacity: 0.9;
         }
         .back-link:hover { opacity: 1; text-decoration: underline; }
+
+        /* ── Page Header ── */
         .page-header {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 2rem;
+            background: rgba(255,255,255,0.97);
+            border-radius: 16px;
+            padding: 2.2rem 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; }
-        .page-header p { color: #666; font-size: 1.1rem; }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1a3a4a, #2a6478, #28a745, #17a2b8, #ffc107);
+        }
+        .page-header h1 { font-size: 2.2rem; color: #1a3a4a; margin-bottom: 0.5rem; font-weight: 800; }
+        .page-header p { color: #666; font-size: 1.05rem; }
+
+        /* ── Cards ── */
         .card {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.97);
             border-radius: 15px;
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-        .card h2 { font-size: 1.6rem; color: #1a3a4a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #2a6478; }
-        .card h3 { font-size: 1.2rem; color: #1a3a4a; margin: 1.2rem 0 0.5rem; }
-        .card p { color: #555; line-height: 1.7; margin-bottom: 0.8rem; }
-        .card ul { padding-left: 1.5rem; color: #555; line-height: 1.8; }
+        .card h2 {
+            font-size: 1.55rem;
+            color: #1a3a4a;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #2a6478;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .card h3 { font-size: 1.1rem; color: #1a3a4a; margin: 1.2rem 0 0.5rem; }
+        .card p { color: #555; line-height: 1.75; margin-bottom: 0.8rem; }
+        .card ul { padding-left: 1.5rem; color: #555; line-height: 1.85; }
         .card li { margin-bottom: 0.4rem; }
+
+        /* ── Animated stat boxes ── */
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.2rem;
         }
         .info-box {
-            background: #f0f7fa;
-            border-radius: 10px;
-            padding: 1.5rem;
+            background: linear-gradient(135deg, #f0f7fa, #e4f1f6);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
             border-left: 4px solid #2a6478;
             text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .info-box .num { font-size: 2.5rem; font-weight: 700; color: #1a3a4a; }
-        .info-box .label { font-size: 0.9rem; color: #666; margin-top: 0.3rem; }
+        .info-box:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(42,100,120,0.18); }
+        .info-box .num { font-size: 2.6rem; font-weight: 800; color: #1a3a4a; line-height: 1; }
+        .info-box .label { font-size: 0.85rem; color: #666; margin-top: 0.4rem; font-weight: 500; }
+
+        /* ── Accordion (domains list) ── */
+        .accordion-item {
+            border: 1px solid #d0e8f0;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+            overflow: hidden;
+        }
+        .accordion-trigger {
+            width: 100%;
+            background: #f0f7fa;
+            border: none;
+            padding: 0.85rem 1.1rem;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a3a4a;
+            transition: background 0.2s;
+        }
+        .accordion-trigger:hover { background: #daeef5; }
+        .accordion-trigger .arrow {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        .accordion-trigger.open .arrow { transform: rotate(180deg); }
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.25s;
+            background: white;
+            padding: 0 1.1rem;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.7;
+        }
+        .accordion-body.open { padding: 0.85rem 1.1rem; }
+
+        /* ── Sector grid & interactive badges ── */
         .sector-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
             gap: 1rem;
             margin-top: 1rem;
         }
         .sector-badge {
             background: #e8f4f8;
-            border-radius: 10px;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 1.2rem 0.8rem;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: #1a3a4a;
-            font-weight: 500;
-            border: 1px solid #b0d4e3;
+            font-weight: 600;
+            border: 2px solid #b0d4e3;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            position: relative;
+            user-select: none;
         }
-        .sector-badge .icon { font-size: 1.8rem; display: block; margin-bottom: 0.4rem; }
-        .timeline { margin-top: 1rem; }
-        .timeline-item { display: flex; gap: 1rem; margin-bottom: 1.2rem; align-items: flex-start; }
+        .sector-badge:hover {
+            background: #1a3a4a;
+            color: white;
+            border-color: #1a3a4a;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(26,58,74,0.28);
+        }
+        .sector-badge:hover .icon { filter: none; }
+        .sector-badge .icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+        .sector-badge .learn-more {
+            display: block;
+            font-size: 0.72rem;
+            margin-top: 0.35rem;
+            opacity: 0.65;
+            font-weight: 500;
+        }
+        .sector-badge:hover .learn-more { opacity: 0.85; color: #a8d8e8; }
+
+        /* ── Evaluation comparison grid ── */
+        .eval-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-top: 1.2rem;
+        }
+        .eval-box {
+            background: #f0f7fa;
+            border-radius: 12px;
+            padding: 1.3rem;
+            border-top: 4px solid #2a6478;
+        }
+        .eval-box.independent { border-top-color: #1a3a4a; }
+        .eval-box h4 { color: #1a3a4a; font-size: 1rem; margin-bottom: 0.6rem; }
+        .eval-box ul { padding-left: 1.2rem; color: #555; font-size: 0.9rem; line-height: 1.75; }
+
+        /* ── Timeline ── */
+        .timeline { margin-top: 1rem; position: relative; padding-left: 1.5rem; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.45rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 2px;
+            background: linear-gradient(to bottom, #1a3a4a, #2a6478, #17a2b8);
+            border-radius: 2px;
+        }
+        .timeline-item { display: flex; gap: 1rem; margin-bottom: 1.4rem; align-items: flex-start; position: relative; }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.08rem;
+            top: 0.55rem;
+            width: 10px;
+            height: 10px;
+            background: #2a6478;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #2a6478;
+        }
         .timeline-year {
             background: #1a3a4a;
             color: white;
-            padding: 0.3rem 0.7rem;
+            padding: 0.3rem 0.75rem;
             border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.83rem;
+            font-weight: 700;
             white-space: nowrap;
-            min-width: 60px;
+            min-width: 62px;
             text-align: center;
+            flex-shrink: 0;
         }
-        .timeline-text { color: #555; line-height: 1.6; font-size: 0.95rem; }
+        .timeline-text { color: #555; line-height: 1.65; font-size: 0.93rem; padding-top: 0.15rem; }
+
+        /* ── Footer ── */
         .footer {
             text-align: center;
             padding: 1.5rem;
@@ -98,10 +233,141 @@
             border-radius: 15px;
             color: white;
             margin-top: 2rem;
+            font-size: 0.9rem;
         }
+        .footer p { margin-bottom: 0.3rem; opacity: 0.85; }
+
+        /* ════════════════════════════════
+           SECTOR MODAL
+        ════════════════════════════════ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,25,35,0.65);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            backdrop-filter: blur(4px);
+            animation: fadeInOverlay 0.2s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal {
+            background: white;
+            border-radius: 18px;
+            max-width: 680px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+            animation: slideUpModal 0.28s cubic-bezier(0.34, 1.3, 0.64, 1);
+            position: relative;
+        }
+        @keyframes slideUpModal {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            padding: 1.8rem 1.8rem 1.2rem;
+            border-bottom: 1px solid #e8f0f4;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            position: relative;
+        }
+        .modal-header-icon {
+            font-size: 3rem;
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(135deg, #e8f4f8, #d0eaf4);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 2px solid #b0d4e3;
+        }
+        .modal-header-text { flex: 1; }
+        .modal-header-text .modal-sector-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #2a6478;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+        }
+        .modal-header-text h2 { font-size: 1.5rem; color: #1a3a4a; font-weight: 800; }
+        .modal-header-text .modal-tagline {
+            font-size: 0.9rem;
+            color: #777;
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #f0f7fa;
+            border: 1px solid #d0e8f0;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+        .modal-close:hover { background: #1a3a4a; color: white; border-color: #1a3a4a; }
+
+        .modal-body { padding: 1.5rem 1.8rem 1.8rem; }
+        .modal-body p { color: #555; line-height: 1.75; margin-bottom: 0.9rem; font-size: 0.95rem; }
+
+        .modal-section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #2a6478;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 1.2rem 0 0.5rem;
+        }
+        .modal-body ul { padding-left: 1.3rem; color: #555; font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.9rem; }
+        .modal-body li { margin-bottom: 0.3rem; }
+
+        .modal-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+        .modal-tag {
+            background: #e8f4f8;
+            color: #1a3a4a;
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid #b0d4e3;
+        }
+
+        .modal-c2m2-bar {
+            background: linear-gradient(135deg, #1a3a4a, #2a6478);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-top: 1.2rem;
+            color: white;
+        }
+        .modal-c2m2-bar strong { font-size: 0.85rem; display: block; margin-bottom: 0.4rem; opacity: 0.9; }
+        .modal-c2m2-bar p { color: rgba(255,255,255,0.82); font-size: 0.88rem; margin: 0; line-height: 1.6; }
+
         @media (max-width: 768px) {
             .container { padding: 1rem; }
             .page-header h1 { font-size: 1.8rem; }
+            .eval-grid { grid-template-columns: 1fr; }
+            .modal-header { flex-direction: column; gap: 0.8rem; }
         }
     </style>
 </head>
@@ -114,8 +380,9 @@
         <p>Cybersecurity Capability Maturity Model — Version 2.1</p>
     </div>
 
+    <!-- What is C2M2 -->
     <div class="card">
-        <h2>What is C2M2?</h2>
+        <h2>📖 What is C2M2?</h2>
         <p>The <strong>Cybersecurity Capability Maturity Model (C2M2)</strong> is a voluntary framework developed by the U.S. Department of Energy (DOE) to help organizations evaluate and improve their cybersecurity capabilities. It provides a structured way to measure the maturity of cybersecurity practices across ten domains using a three-level maturity scale.</p>
         <p>C2M2 is designed to be sector-agnostic but is especially relevant to <strong>electricity, oil and natural gas, and other critical infrastructure sectors</strong>. Unlike compliance frameworks that define a binary pass/fail, C2M2 acknowledges that cybersecurity is a continuous journey and helps organizations identify where they are and prioritize where to go next.</p>
 
@@ -139,74 +406,206 @@
         </div>
     </div>
 
+    <!-- Who Should Use C2M2 -->
     <div class="card">
-        <h2>Who Should Use C2M2?</h2>
-        <p>C2M2 is applicable to any organization that operates or relies on technology to deliver critical services. It is especially suited for:</p>
+        <h2>🏢 Who Should Use C2M2?</h2>
+        <p>C2M2 is applicable to any organization that operates or relies on technology to deliver critical services. Click any sector below to learn about its unique cybersecurity landscape, regulatory environment, and how C2M2 applies.</p>
         <div class="sector-grid">
-            <div class="sector-badge"><span class="icon">⚡</span>Electric Utilities</div>
-            <div class="sector-badge"><span class="icon">🛢️</span>Oil & Natural Gas</div>
-            <div class="sector-badge"><span class="icon">💧</span>Water Systems</div>
-            <div class="sector-badge"><span class="icon">🏭</span>Industrial / OT</div>
-            <div class="sector-badge"><span class="icon">🏥</span>Healthcare</div>
-            <div class="sector-badge"><span class="icon">🏦</span>Financial Services</div>
-            <div class="sector-badge"><span class="icon">🏛️</span>Government</div>
-            <div class="sector-badge"><span class="icon">🔭</span>Research Institutions</div>
+            <div class="sector-badge" onclick="openModal('electric')">
+                <span class="icon">⚡</span>
+                Electric Utilities
+                <span class="learn-more">Click to learn more →</span>
+            </div>
+            <div class="sector-badge" onclick="openModal('oil')">
+                <span class="icon">🛢️</span>
+                Oil &amp; Natural Gas
+                <span class="learn-more">Click to learn more →</span>
+            </div>
+            <div class="sector-badge" onclick="openModal('water')">
+                <span class="icon">💧</span>
+                Water Systems
+                <span class="learn-more">Click to learn more →</span>
+            </div>
+            <div class="sector-badge" onclick="openModal('industrial')">
+                <span class="icon">🏭</span>
+                Industrial / OT
+                <span class="learn-more">Click to learn more →</span>
+            </div>
+            <div class="sector-badge" onclick="openModal('healthcare')">
+                <span class="icon">🏥</span>
+                Healthcare
+                <span class="learn-more">Click to learn more →</span>
+            </div>
+            <div class="sector-badge" onclick="openModal('financial')">
+                <span class="icon">🏦</span>
+                Financial Services
+                <span class="learn-more">Click to learn more →</span>
+            </div>
+            <div class="sector-badge" onclick="openModal('government')">
+                <span class="icon">🏛️</span>
+                Government
+                <span class="learn-more">Click to learn more →</span>
+            </div>
+            <div class="sector-badge" onclick="openModal('research')">
+                <span class="icon">🔭</span>
+                Research Institutions
+                <span class="learn-more">Click to learn more →</span>
+            </div>
         </div>
     </div>
 
+    <!-- How C2M2 is Structured -->
     <div class="card">
-        <h2>How C2M2 is Structured</h2>
-        <p>C2M2 organizes cybersecurity activities into <strong>ten domains</strong>, each representing a functional area of cybersecurity management. Within each domain, practices are grouped into <strong>objectives</strong> and assigned to <strong>Maturity Indicator Levels (MIL 1–3)</strong>.</p>
-        <h3>Domain Structure</h3>
-        <ul>
-            <li><strong>ASSET</strong> — Asset, Change, and Configuration Management</li>
-            <li><strong>THREAT</strong> — Threat and Vulnerability Management</li>
-            <li><strong>RISK</strong> — Risk Management</li>
-            <li><strong>ACCESS</strong> — Identity and Access Management</li>
-            <li><strong>SITUATION</strong> — Situational Awareness</li>
-            <li><strong>RESPONSE</strong> — Event and Incident Response, Continuity of Operations</li>
-            <li><strong>THIRD-PARTIES</strong> — Third-Party Risk Management</li>
-            <li><strong>WORKFORCE</strong> — Workforce Management</li>
-            <li><strong>ARCHITECTURE</strong> — Cybersecurity Architecture</li>
-            <li><strong>PROGRAM</strong> — Cybersecurity Program Management</li>
-        </ul>
-        <h3>MIL Progression</h3>
+        <h2>🗂️ How C2M2 is Structured</h2>
+        <p>C2M2 organizes cybersecurity activities into <strong>ten domains</strong>, each representing a functional area of cybersecurity management. Within each domain, practices are grouped into <strong>objectives</strong> and assigned to <strong>Maturity Indicator Levels (MIL 1–3)</strong>. Click any domain below to expand its description.</p>
+
+        <div style="margin-top: 1rem;">
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>🗂️ ASSET — Asset, Change, and Configuration Management</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Identifies and manages IT and OT assets throughout their lifecycle. Practices cover inventory maintenance, configuration baselines, change management processes, and software/hardware lifecycle controls. A foundational domain — without knowing what you have, you cannot protect it.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>🛡️ THREAT — Threat and Vulnerability Management</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Addresses the identification, analysis, and remediation of threats and vulnerabilities. Covers vulnerability scanning, threat intelligence consumption, patch management, and penetration testing. Directly ties to tools like Nessus, Tenable, and CISA's Known Exploited Vulnerabilities (KEV) catalog.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>⚖️ RISK — Risk Management</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Establishes the organization's risk management strategy and processes. Includes risk identification, analysis, response planning, and risk acceptance criteria. Ties cybersecurity risk into enterprise risk management frameworks and executive decision-making.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>🔑 ACCESS — Identity and Access Management</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Governs who can access which systems and under what conditions. Covers user provisioning/deprovisioning, privileged access management (PAM), multi-factor authentication (MFA), remote access controls, and OT device credentials. A top ransomware entry-point domain.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>👁️ SITUATION — Situational Awareness</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Ensures the organization can detect, log, and understand cybersecurity events across IT and OT environments. Encompasses SIEM deployment, log management, network monitoring, and anomaly detection. Critical for both early threat detection and post-incident forensics.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>🚨 RESPONSE — Event and Incident Response, Continuity of Operations</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Covers the organization's ability to respond to and recover from cybersecurity events. Includes incident response plans, playbooks, communication trees, tabletop exercises, disaster recovery, and business continuity planning (BCP/COOP). Ties to NIST SP 800-61.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>🤝 THIRD-PARTIES — Third-Party Risk Management</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Manages cybersecurity risks introduced by vendors, contractors, and service providers. Covers supplier risk assessments, contractual cybersecurity requirements, remote access controls for vendors, and supply chain integrity — a growing attack surface highlighted by incidents like SolarWinds.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>👷 WORKFORCE — Workforce Management</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Ensures that people with cybersecurity responsibilities are identified, trained, and held accountable. Covers role-based security awareness training, background checks, cybersecurity staffing, performance metrics, and insider threat programs.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>🏗️ ARCHITECTURE — Cybersecurity Architecture</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Addresses the design and implementation of technical security controls across IT and OT networks. Covers network segmentation, IT/OT demarcation (DMZ, firewalls), encryption, secure remote access architecture, and Zero Trust principles. New in C2M2 v2.0.
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>📋 PROGRAM — Cybersecurity Program Management</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-body">
+                    Focuses on the governance and management structure of the overall cybersecurity program. Includes policy framework, executive sponsorship, cybersecurity budget, performance metrics, audit and review processes, and alignment of the cybersecurity program with business objectives.
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 1.4rem;">MIL Progression</h3>
         <p>Each domain can independently achieve MIL 0 (not performed) through MIL 3 (optimized). Achieving a MIL level in one domain does not require achieving the same level in other domains — organizations can have uneven maturity profiles.</p>
     </div>
 
+    <!-- Self vs Independent Evaluation -->
     <div class="card">
-        <h2>Self-Evaluation vs. Independent Evaluation</h2>
-        <h3>Self-Evaluation</h3>
-        <p>Organizations may conduct a <strong>C2M2 self-evaluation</strong> using the DOE-provided toolkits and facilitation guides. A self-evaluation involves subject matter experts across the organization rating their own implementation of practices. Results are internal and used to guide improvement planning.</p>
-        <h3>Independent Evaluation</h3>
-        <p>A <strong>third-party (independent) evaluation</strong> provides an objective assessment and may be required by sector regulators or contractual agreements. An independent evaluator reviews evidence, conducts interviews, and validates practice implementation against C2M2 criteria.</p>
-        <h3>Key Differences</h3>
-        <ul>
-            <li>Self-evaluation is internal, voluntary, and lower cost</li>
-            <li>Independent evaluation is evidence-driven and externally validated</li>
-            <li>Neither evaluation results in a pass/fail — both produce a maturity profile</li>
-            <li>Evaluations are point-in-time; organizations should repeat them periodically</li>
-        </ul>
+        <h2>🔍 Self-Evaluation vs. Independent Evaluation</h2>
+        <p>C2M2 supports two evaluation modes. Both produce a maturity profile rather than a pass/fail result.</p>
+        <div class="eval-grid">
+            <div class="eval-box">
+                <h4>🏢 Self-Evaluation</h4>
+                <ul>
+                    <li>Conducted internally by subject matter experts</li>
+                    <li>Uses DOE-provided toolkits and facilitation guides</li>
+                    <li>Results are internal — used to guide improvement planning</li>
+                    <li>Lower cost; faster to complete</li>
+                    <li>Ideal for initial baseline assessments</li>
+                    <li>May have unconscious bias toward over-scoring</li>
+                </ul>
+            </div>
+            <div class="eval-box independent">
+                <h4>🔎 Independent Evaluation</h4>
+                <ul>
+                    <li>Conducted by a qualified third-party evaluator</li>
+                    <li>Involves evidence review, staff interviews, and site observation</li>
+                    <li>Results are objective and externally validated</li>
+                    <li>May be required by regulators or contractual agreements</li>
+                    <li>Higher cost; requires preparation and evidence collection</li>
+                    <li>Produces a defensible maturity score for stakeholders</li>
+                </ul>
+            </div>
+        </div>
+        <p style="margin-top:1rem; font-size:0.9rem; color:#777;">Neither evaluation type results in a pass/fail. Both are point-in-time assessments — organizations should repeat them periodically to track improvement.</p>
     </div>
 
+    <!-- Version History -->
     <div class="card">
-        <h2>C2M2 Version History</h2>
+        <h2>📅 C2M2 Version History</h2>
         <div class="timeline">
             <div class="timeline-item">
                 <span class="timeline-year">2012</span>
-                <div class="timeline-text"><strong>C2M2 v1.0</strong> — Original model released by DOE targeting the electricity subsector.</div>
+                <div class="timeline-text"><strong>C2M2 v1.0</strong> — Original model released by DOE, initially targeting the electricity subsector as a voluntary self-evaluation tool.</div>
             </div>
             <div class="timeline-item">
                 <span class="timeline-year">2014</span>
-                <div class="timeline-text"><strong>ES-C2M2 / ONG-C2M2</strong> — Separate sector-specific supplements released for Electricity Subsector and Oil & Natural Gas subsector.</div>
+                <div class="timeline-text"><strong>ES-C2M2 / ONG-C2M2</strong> — Separate sector-specific supplements released for the Electricity Subsector (ES-C2M2) and Oil &amp; Natural Gas subsector (ONG-C2M2), reflecting distinct OT threat landscapes.</div>
             </div>
             <div class="timeline-item">
                 <span class="timeline-year">2019</span>
-                <div class="timeline-text"><strong>C2M2 v1.1</strong> — Minor revision with clarifications and alignment to NIST CSF updates.</div>
+                <div class="timeline-text"><strong>C2M2 v1.1</strong> — Minor revision incorporating clarifications, editorial updates, and improved alignment with the NIST Cybersecurity Framework (CSF) 1.0.</div>
             </div>
             <div class="timeline-item">
                 <span class="timeline-year">2022</span>
-                <div class="timeline-text"><strong>C2M2 v2.0 / v2.1</strong> — Major revision consolidating sector supplements, expanding to 10 domains, adding Supply Chain and Architecture domains, and aligning with NIST CSF 1.1 and NERC CIP.</div>
+                <div class="timeline-text"><strong>C2M2 v2.0 / v2.1</strong> — Major revision consolidating the sector supplements into a single cross-sector model, expanding to 10 domains (adding Supply Chain / Third-Party and Cybersecurity Architecture), aligning with NIST CSF 1.1 and NERC CIP, and significantly expanding OT-specific practices.</div>
             </div>
         </div>
     </div>
@@ -216,5 +615,409 @@
         <p>Source: U.S. Department of Energy, Office of Cybersecurity, Energy Security, and Emergency Response (CESER)</p>
     </div>
 </div>
+
+<!-- ════════════════════════════════════════
+     SECTOR MODALS
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+    <div class="modal" id="modalBox">
+        <div class="modal-header">
+            <div class="modal-header-icon" id="modalIcon"></div>
+            <div class="modal-header-text">
+                <div class="modal-sector-label">C2M2 Target Sector</div>
+                <h2 id="modalTitle"></h2>
+                <div class="modal-tagline" id="modalTagline"></div>
+            </div>
+            <button class="modal-close" onclick="closeModal()" title="Close">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+/* ──────────────────────────────
+   Sector data
+────────────────────────────── */
+const sectors = {
+    electric: {
+        icon: '⚡',
+        title: 'Electric Utilities',
+        tagline: 'Generation, Transmission & Distribution — The Grid\'s Cyber Frontier',
+        body: `
+            <p>Electric utilities are among the most critical targets in the national cybersecurity landscape. They operate a complex blend of <strong>IT systems</strong> (billing, customer portals, ERP) and <strong>OT systems</strong> (SCADA, Energy Management Systems, DERMS, substation automation), often across hundreds of geographically dispersed facilities.</p>
+
+            <div class="modal-section-title">Key Cybersecurity Challenges</div>
+            <ul>
+                <li>Legacy OT and ICS equipment with 20–40 year lifespans and no patch pathway</li>
+                <li>IT/OT convergence introducing internet-facing risk into historically isolated control systems</li>
+                <li>Distributed infrastructure: thousands of substations, feeders, and remote facilities</li>
+                <li>Increasing integration of Distributed Energy Resources (DERs), smart meters, and grid-edge devices</li>
+                <li>Nation-state adversaries (Volt Typhoon, Sandworm) actively targeting grid infrastructure</li>
+            </ul>
+
+            <div class="modal-section-title">Regulatory Environment</div>
+            <ul>
+                <li><strong>NERC CIP</strong> (Critical Infrastructure Protection) standards — mandatory for bulk electric system operators</li>
+                <li><strong>TSA Security Directives</strong> for pipeline and transmission operators (post-Colonial Pipeline)</li>
+                <li><strong>FERC Order 887</strong> — internal network security monitoring for transmission operators</li>
+                <li><strong>DOE CESER</strong> programs including C2M2 (originally the ES-C2M2)</li>
+            </ul>
+
+            <div class="modal-section-title">Notable Incidents</div>
+            <ul>
+                <li><strong>Ukraine Power Grid (2015, 2016)</strong> — BlackEnergy/Industroyer malware caused coordinated blackouts affecting 230,000+ customers</li>
+                <li><strong>Volt Typhoon (2023–2024)</strong> — Chinese APT pre-positioned in U.S. electric utilities for potential disruption</li>
+                <li><strong>Vermont Electric (2016)</strong> — Malware associated with Russian threat actors found on utility laptop</li>
+            </ul>
+
+            <div class="modal-c2m2-bar">
+                <strong>C2M2 Origin Domain</strong>
+                <p>C2M2 was originally developed as the <em>Electricity Subsector C2M2 (ES-C2M2)</em> specifically for this sector. Key domains for electric utilities: ASSET (substation device inventories), ARCHITECTURE (IT/OT segmentation), ACCESS (privileged remote access to substations), and SITUATION (OT network monitoring).</p>
+            </div>
+            <div class="modal-tags">
+                <span class="modal-tag">NERC CIP</span><span class="modal-tag">SCADA</span><span class="modal-tag">OT Security</span>
+                <span class="modal-tag">Grid Cybersecurity</span><span class="modal-tag">FERC</span><span class="modal-tag">ICS</span>
+            </div>`
+    },
+
+    oil: {
+        icon: '🛢️',
+        title: 'Oil & Natural Gas',
+        tagline: 'Pipeline, Refinery & Offshore Operations — OT at Scale',
+        body: `
+            <p>The oil and natural gas (ONG) sector encompasses upstream (exploration, production), midstream (pipelines, storage), and downstream (refining, distribution) operations. Each segment relies heavily on industrial control systems for real-time process management, safety instrumentation, and remote site monitoring.</p>
+
+            <div class="modal-section-title">Key Cybersecurity Challenges</div>
+            <ul>
+                <li>Geographically dispersed and often unmanned remote facilities (pipelines, compressor stations, offshore platforms)</li>
+                <li>Safety Instrumented Systems (SIS) that, if compromised, can cause physical harm or environmental damage</li>
+                <li>High reliance on third-party operational technology vendors and remote maintenance</li>
+                <li>Long asset lifespans and slow patch cycles for SCADA/DCS platforms</li>
+                <li>Unique IT/OT convergence risk: corporate networks connected to pipeline control rooms</li>
+            </ul>
+
+            <div class="modal-section-title">Regulatory Environment</div>
+            <ul>
+                <li><strong>TSA Pipeline Security Directives SD-01 through SD-03</strong> (2021–2022) — mandatory following Colonial Pipeline; require incident reporting, patching, and network segmentation</li>
+                <li><strong>CISA and DOE joint guidance</strong> on ONG cybersecurity</li>
+                <li><strong>API Standard 1164</strong> — Pipeline SCADA security guidance</li>
+                <li><strong>ONG-C2M2</strong> was the predecessor to the current cross-sector C2M2 v2.1</li>
+            </ul>
+
+            <div class="modal-section-title">Notable Incidents</div>
+            <ul>
+                <li><strong>Colonial Pipeline (May 2021)</strong> — DarkSide ransomware attack disrupted 5,500 miles of pipeline; caused fuel shortages across the U.S. East Coast</li>
+                <li><strong>Triton/TRISIS Malware (2017)</strong> — Targeted Schneider Electric Triconex Safety Systems at a Saudi petrochemical plant; designed to disable safety shutdowns</li>
+                <li><strong>Halliburton (2024)</strong> — Ransomware disrupted operations and customer-facing systems at the oil field services giant</li>
+            </ul>
+
+            <div class="modal-c2m2-bar">
+                <strong>C2M2 in Oil &amp; Natural Gas</strong>
+                <p>The ONG-C2M2 supplement (2014) formed one of the two pillars of the current C2M2 v2.1. Key domains: THIRD-PARTIES (vendor remote access to SCADA), RESPONSE (OT incident response playbooks), ARCHITECTURE (pipeline control room segmentation), and THREAT (SIS patch management).</p>
+            </div>
+            <div class="modal-tags">
+                <span class="modal-tag">TSA Directives</span><span class="modal-tag">Pipeline SCADA</span><span class="modal-tag">SIS Security</span>
+                <span class="modal-tag">Colonial Pipeline</span><span class="modal-tag">ONG-C2M2</span><span class="modal-tag">DCS</span>
+            </div>`
+    },
+
+    water: {
+        icon: '💧',
+        title: 'Water Systems',
+        tagline: 'Drinking Water & Wastewater Treatment — Public Health on the Line',
+        body: `
+            <p>Water and wastewater utilities operate some of the most understaffed and underfunded critical infrastructure in the United States. They depend on OT systems to manage chemical dosing, pump operations, filtration, and distribution pressure — processes where a cyberattack could directly affect public health and safety.</p>
+
+            <div class="modal-section-title">Key Cybersecurity Challenges</div>
+            <ul>
+                <li>Many systems are small utilities with fewer than 5 IT staff and no dedicated cybersecurity personnel</li>
+                <li>OT systems (PLCs, HMIs, SCADA) often exposed to the internet or managed via consumer-grade remote access tools</li>
+                <li>Aging infrastructure with legacy control systems lacking authentication controls</li>
+                <li>Physical/cyber convergence: attackers can alter chemical levels, disrupt pumps, or contaminate supply</li>
+                <li>Limited budgets for security tools, training, or incident response capabilities</li>
+            </ul>
+
+            <div class="modal-section-title">Regulatory Environment</div>
+            <ul>
+                <li><strong>America's Water Infrastructure Act (AWIA) 2018</strong> — requires water systems serving 3,300+ people to conduct risk and resilience assessments and create Emergency Response Plans</li>
+                <li><strong>EPA Cybersecurity Action Plan</strong> (2023) — directs states to evaluate water system cybersecurity during sanitary surveys</li>
+                <li><strong>CISA Water Sector Cybersecurity Guidance</strong> and sector-specific advisories</li>
+                <li><strong>WaterISAC</strong> — sector information sharing and analysis center</li>
+            </ul>
+
+            <div class="modal-section-title">Notable Incidents</div>
+            <ul>
+                <li><strong>Oldsmar, FL (February 2021)</strong> — Attacker accessed a water treatment plant HMI via TeamViewer and attempted to increase sodium hydroxide (lye) concentration by 111× — caught by an alert operator</li>
+                <li><strong>Kansas Water Facility (2021)</strong> — Former employee used remote access to tamper with treatment processes after termination</li>
+                <li><strong>CISA/FBI/EPA Advisory (2024)</strong> — Warned that Volt Typhoon and Iranian IRGC-affiliated groups were actively targeting U.S. water systems</li>
+            </ul>
+
+            <div class="modal-c2m2-bar">
+                <strong>C2M2 for Water Systems</strong>
+                <p>C2M2 is well-suited for water utilities because it scales from small organizations (MIL 1 baseline) to large metropolitan systems (MIL 3). Priority domains: ACCESS (remote access controls, shared credentials elimination), ASSET (OT device inventory), ARCHITECTURE (network segmentation between IT and SCADA), and WORKFORCE (security awareness for plant operators).</p>
+            </div>
+            <div class="modal-tags">
+                <span class="modal-tag">AWIA 2018</span><span class="modal-tag">OT/SCADA</span><span class="modal-tag">EPA</span>
+                <span class="modal-tag">WaterISAC</span><span class="modal-tag">PLC Security</span><span class="modal-tag">Small Utilities</span>
+            </div>`
+    },
+
+    industrial: {
+        icon: '🏭',
+        title: 'Industrial / OT',
+        tagline: 'Manufacturing, Chemical & Process Industries — The Operational Technology Frontier',
+        body: `
+            <p>The industrial and operational technology sector spans discrete manufacturing, continuous process industries (chemical, pharmaceutical, food &amp; beverage), and general OT environments not covered by sector-specific frameworks. These organizations rely on ICS, SCADA, DCS, PLCs, and HMIs to automate physical processes where availability and safety are paramount.</p>
+
+            <div class="modal-section-title">Key Cybersecurity Challenges</div>
+            <ul>
+                <li>The <strong>Purdue Model</strong> of industrial network architecture is increasingly difficult to maintain as IT/OT convergence accelerates</li>
+                <li>OT systems were designed for reliability and safety, not security — most lack authentication, encryption, or patching mechanisms</li>
+                <li>Ransomware causing production shutdowns with cascading supply chain consequences</li>
+                <li>Insecure industrial protocols (Modbus, DNP3, Profinet) used without integrity controls</li>
+                <li>Remote access for vendor support creates persistent backdoors into production environments</li>
+            </ul>
+
+            <div class="modal-section-title">Regulatory Environment</div>
+            <ul>
+                <li><strong>NIST SP 800-82</strong> — Guide to OT Security (Rev. 3, 2023) — the foundational OT security reference</li>
+                <li><strong>IEC 62443</strong> — International standard for industrial cybersecurity; defines zones, conduits, and security levels</li>
+                <li><strong>CISA ICS-CERT advisories</strong> — continuous vulnerability disclosures for ICS products</li>
+                <li>Sector-specific regulations (FDA for pharma, EPA for chemical facilities, CFATS for high-risk chemicals)</li>
+            </ul>
+
+            <div class="modal-section-title">Notable Incidents</div>
+            <ul>
+                <li><strong>Norsk Hydro (2019)</strong> — LockerGoga ransomware forced the aluminum giant to switch to manual operations globally; caused ~$71M in losses</li>
+                <li><strong>JBS Foods (2021)</strong> — REvil ransomware shut down beef and poultry processing plants across the U.S., Canada, and Australia</li>
+                <li><strong>Stuxnet (2010)</strong> — Landmark ICS attack that destroyed Iranian uranium centrifuges — redefined nation-state OT threat expectations</li>
+            </ul>
+
+            <div class="modal-c2m2-bar">
+                <strong>C2M2 in Industrial/OT Environments</strong>
+                <p>C2M2 v2.1 substantially expanded OT-specific practices compared to v1.x. The ARCHITECTURE domain addresses IT/OT segmentation and DMZ design. ASSET domain covers OT device lifecycle. THREAT domain maps to ICS vulnerability management. RESPONSE domain includes OT-specific incident playbooks.</p>
+            </div>
+            <div class="modal-tags">
+                <span class="modal-tag">IEC 62443</span><span class="modal-tag">NIST SP 800-82</span><span class="modal-tag">Purdue Model</span>
+                <span class="modal-tag">ICS/SCADA</span><span class="modal-tag">PLC Security</span><span class="modal-tag">OT Ransomware</span>
+            </div>`
+    },
+
+    healthcare: {
+        icon: '🏥',
+        title: 'Healthcare',
+        tagline: 'Hospitals, Health Systems & Medical Devices — Patient Safety at Risk',
+        body: `
+            <p>Healthcare cybersecurity has moved from a compliance concern to a patient safety emergency. Modern hospitals rely on interconnected clinical systems, electronic health records, networked medical devices, and cloud platforms — creating a vast attack surface where system outages directly affect care delivery and patient outcomes.</p>
+
+            <div class="modal-section-title">Key Cybersecurity Challenges</div>
+            <ul>
+                <li>The <strong>Internet of Medical Things (IoMT)</strong>: thousands of networked devices (infusion pumps, imaging systems, patient monitors) with limited patching capability</li>
+                <li>Electronic Health Records (EHR) systems are high-value ransomware targets due to operational dependency</li>
+                <li>Legacy clinical systems running end-of-life operating systems that cannot be patched</li>
+                <li>24/7 operations make maintenance windows and security updates difficult to schedule</li>
+                <li>Sensitive patient data (PHI) subject to HIPAA with significant breach notification and penalty exposure</li>
+            </ul>
+
+            <div class="modal-section-title">Regulatory Environment</div>
+            <ul>
+                <li><strong>HIPAA Security Rule</strong> — requires administrative, physical, and technical safeguards for electronic PHI</li>
+                <li><strong>HITECH Act</strong> — strengthened HIPAA enforcement with tiered penalties up to $1.9M per violation category per year</li>
+                <li><strong>FDA Medical Device Cybersecurity Guidance (2023)</strong> — requires cybersecurity by design for new devices; manufacturers must provide Software Bills of Materials (SBOM)</li>
+                <li><strong>HHS HC3</strong> (Health Sector Cybersecurity Coordination Center) — sector-specific threat intelligence and advisories</li>
+            </ul>
+
+            <div class="modal-section-title">Notable Incidents</div>
+            <ul>
+                <li><strong>Change Healthcare (Feb 2024)</strong> — ALPHV/BlackCat ransomware disrupted healthcare claims processing for weeks; affected ~1/3 of U.S. patient records (~100M people)</li>
+                <li><strong>Universal Health Services (2020)</strong> — Ryuk ransomware forced 400 U.S. hospitals to revert to paper records; estimated $67M loss</li>
+                <li><strong>Düsseldorf University Hospital (2020)</strong> — Ransomware-related outage contributed to a patient death — the first documented ransomware-linked fatality</li>
+            </ul>
+
+            <div class="modal-c2m2-bar">
+                <strong>C2M2 in Healthcare</strong>
+                <p>Healthcare organizations can use C2M2 to complement HIPAA compliance. HIPAA defines <em>what</em> must be protected; C2M2 defines <em>how mature</em> the protection program is. Key domains: ACCESS (privileged EHR access, shared workstation credentials), ASSET (IoMT device inventory), THIRD-PARTIES (EHR vendor risk), and RESPONSE (ransomware incident response plans).</p>
+            </div>
+            <div class="modal-tags">
+                <span class="modal-tag">HIPAA</span><span class="modal-tag">IoMT</span><span class="modal-tag">EHR Security</span>
+                <span class="modal-tag">FDA Medical Devices</span><span class="modal-tag">HC3</span><span class="modal-tag">Patient Safety</span>
+            </div>`
+    },
+
+    financial: {
+        icon: '🏦',
+        title: 'Financial Services',
+        tagline: 'Banks, Insurance & Capital Markets — Systemic Risk at Scale',
+        body: `
+            <p>Financial services organizations are perennial top targets for cybercriminals and nation-state actors. Beyond direct financial theft, attacks on large financial institutions carry systemic risk — a successful disruption can ripple through payment systems, credit markets, and public confidence in the financial system.</p>
+
+            <div class="modal-section-title">Key Cybersecurity Challenges</div>
+            <ul>
+                <li>Highly complex, interconnected technology ecosystems built through decades of mergers and acquisitions</li>
+                <li>24/7 transaction processing requirements leave minimal windows for patching and maintenance</li>
+                <li>Mobile and online banking vastly expanded the customer-facing attack surface</li>
+                <li>Third-party fintech integrations and open banking APIs introduce new supply chain risk</li>
+                <li>Insider threats and wire fraud remain persistent vectors despite strong perimeter controls</li>
+            </ul>
+
+            <div class="modal-section-title">Regulatory Environment</div>
+            <ul>
+                <li><strong>FFIEC Cybersecurity Assessment Tool (CAT)</strong> — a maturity model framework directly analogous to C2M2, applicable to banks and credit unions</li>
+                <li><strong>GLBA Safeguards Rule</strong> (2023 update) — requires financial institutions to implement information security programs</li>
+                <li><strong>SEC Cybersecurity Disclosure Rules (2023)</strong> — require public companies to disclose material cyber incidents within 4 business days</li>
+                <li><strong>PCI DSS v4.0</strong> — payment card data security standards for any card-processing entity</li>
+                <li><strong>DORA (EU, 2025)</strong> — Digital Operational Resilience Act mandates cyber resilience testing for EU financial entities</li>
+            </ul>
+
+            <div class="modal-section-title">Notable Incidents</div>
+            <ul>
+                <li><strong>SWIFT Banking Network (2016)</strong> — Attackers stole $81M from Bangladesh Bank by submitting fraudulent SWIFT transfer requests</li>
+                <li><strong>Capital One (2019)</strong> — Misconfigured WAF allowed exfiltration of 106M customer records; $80M regulatory fine</li>
+                <li><strong>MOVEit (2023)</strong> — Mass exploitation of MOVEit file transfer software affected hundreds of financial institutions and financial service providers</li>
+            </ul>
+
+            <div class="modal-c2m2-bar">
+                <strong>C2M2 in Financial Services</strong>
+                <p>For financial institutions already using the FFIEC CAT, C2M2 offers a complementary OT-aware maturity lens — especially relevant for institutions with physical branch operations, ATM networks, or payment processing infrastructure. C2M2 RISK and THIRD-PARTIES domains map closely to FFIEC CAT's Cyber Risk Management and Oversight domain and Third-Party Risk Management category.</p>
+            </div>
+            <div class="modal-tags">
+                <span class="modal-tag">FFIEC CAT</span><span class="modal-tag">GLBA</span><span class="modal-tag">PCI DSS</span>
+                <span class="modal-tag">SEC Rules</span><span class="modal-tag">SWIFT Security</span><span class="modal-tag">DORA</span>
+            </div>`
+    },
+
+    government: {
+        icon: '🏛️',
+        title: 'Government',
+        tagline: 'Federal, State, Local & Tribal — Public Services & National Security',
+        body: `
+            <p>Government entities at every level — federal agencies, state and local governments, defense contractors, and tribal nations — manage sensitive citizen data, administer critical public services, and in many cases directly control or regulate physical infrastructure. They are high-priority targets for nation-state espionage, hacktivism, and ransomware.</p>
+
+            <div class="modal-section-title">Key Cybersecurity Challenges</div>
+            <ul>
+                <li>Deeply fragmented IT landscapes: decades of legacy systems, siloed agencies, and inconsistent procurement practices</li>
+                <li>State and local governments often operate with resources far below federal standards</li>
+                <li>Handling of <strong>Controlled Unclassified Information (CUI)</strong> subject to NIST SP 800-171 and CMMC requirements</li>
+                <li>Political transitions can disrupt cybersecurity program continuity and leadership</li>
+                <li>Public records laws and transparency requirements create tension with need-to-know principles</li>
+            </ul>
+
+            <div class="modal-section-title">Regulatory Environment</div>
+            <ul>
+                <li><strong>FISMA (Federal Information Security Modernization Act)</strong> — requires federal agencies to implement information security programs aligned with NIST standards</li>
+                <li><strong>FedRAMP</strong> — cloud security authorization program for federal agency cloud adoptions</li>
+                <li><strong>CMMC 2.0</strong> — Cybersecurity Maturity Model Certification for DoD contractors handling CUI</li>
+                <li><strong>CISA Binding Operational Directives (BODs)</strong> — mandatory cybersecurity requirements for federal civilian agencies</li>
+                <li><strong>EO 14028</strong> (2021) — Executive Order on Improving the Nation's Cybersecurity</li>
+            </ul>
+
+            <div class="modal-section-title">Notable Incidents</div>
+            <ul>
+                <li><strong>SolarWinds/Sunburst (2020)</strong> — Russian SVR supply chain attack compromised 9 federal agencies and ~100 private companies via Orion software update</li>
+                <li><strong>OPM Data Breach (2015)</strong> — Chinese APT exfiltrated security clearance records of 21.5 million federal employees and contractors</li>
+                <li><strong>Atlanta Ransomware (2018)</strong> — SamSam ransomware disrupted city services for weeks; $2.6M in response costs</li>
+            </ul>
+
+            <div class="modal-c2m2-bar">
+                <strong>C2M2 and Government</strong>
+                <p>Federal agencies use FISMA/NIST SP 800-53 as their primary framework, but C2M2 provides a maturity lens that complements control-based frameworks. It is especially valuable for government-owned utilities, DOE national laboratories, and agencies managing OT/ICS. C2M2 maps well to NIST CSF, which CISA promotes for all government entities including state and local.</p>
+            </div>
+            <div class="modal-tags">
+                <span class="modal-tag">FISMA</span><span class="modal-tag">CMMC</span><span class="modal-tag">NIST SP 800-53</span>
+                <span class="modal-tag">FedRAMP</span><span class="modal-tag">CUI</span><span class="modal-tag">EO 14028</span>
+            </div>`
+    },
+
+    research: {
+        icon: '🔭',
+        title: 'Research Institutions',
+        tagline: 'Universities, National Labs & R&D Organizations — IP and Data at Risk',
+        body: `
+            <p>Research institutions occupy a unique cybersecurity position: they pursue an open culture of collaboration and knowledge sharing while simultaneously handling some of the nation's most sensitive intellectual property, federally funded research data, and export-controlled technical information. This tension makes them both high-value targets and challenging environments to secure.</p>
+
+            <div class="modal-section-title">Key Cybersecurity Challenges</div>
+            <ul>
+                <li>Open academic culture conflicts with security principles like need-to-know and least privilege</li>
+                <li>Highly decentralized IT governance — individual departments often manage their own systems</li>
+                <li>Large, transient user populations (students, visiting researchers, international collaborators) complicate identity management</li>
+                <li>Export Administration Regulations (EAR) and ITAR compliance for controlled research topics</li>
+                <li>DOE National Labs, NIH and NSF grantees must meet CUI requirements (NIST SP 800-171) for federally funded research</li>
+            </ul>
+
+            <div class="modal-section-title">Regulatory Environment</div>
+            <ul>
+                <li><strong>NIST SP 800-171</strong> — required for any institution handling Controlled Unclassified Information (CUI) under federal contracts</li>
+                <li><strong>CMMC 2.0</strong> — applies to research institutions holding DoD contracts or grants involving CUI</li>
+                <li><strong>NSF, NIH, and DOE cybersecurity requirements</strong> — increasingly embedded in grant and contract terms</li>
+                <li><strong>Export Administration Regulations (EAR) / ITAR</strong> — govern access to controlled technical data and research by foreign nationals</li>
+                <li><strong>FERPA</strong> — protects student education records at universities</li>
+            </ul>
+
+            <div class="modal-section-title">Notable Incidents</div>
+            <ul>
+                <li><strong>MIT Lincoln Laboratory / DOE National Labs</strong> — DOE Office of Inspector General reports consistently identify persistent nation-state targeting of lab research networks</li>
+                <li><strong>University of California (2020)</strong> — UC San Francisco paid $1.14M ransom to Netwalker after encrypted servers disrupted COVID-19 research</li>
+                <li><strong>FBI/CISA Advisory (2022)</strong> — Warned that Chinese MSS-affiliated actors were targeting U.S. universities conducting semiconductor, aerospace, and biotech research</li>
+            </ul>
+
+            <div class="modal-c2m2-bar">
+                <strong>C2M2 in Research Institutions</strong>
+                <p>DOE national laboratories (Argonne, Oak Ridge, Pacific Northwest, etc.) are natural candidates for C2M2 given their DOE sponsorship. For universities, C2M2 provides a maturity framework to build toward NIST SP 800-171 compliance. Priority domains: ACCESS (controlling foreign national access to CUI systems), THIRD-PARTIES (research collaboration agreements), WORKFORCE (researcher security awareness training), and PROGRAM (CUI program governance).</p>
+            </div>
+            <div class="modal-tags">
+                <span class="modal-tag">NIST SP 800-171</span><span class="modal-tag">CUI</span><span class="modal-tag">CMMC</span>
+                <span class="modal-tag">EAR/ITAR</span><span class="modal-tag">DOE National Labs</span><span class="modal-tag">IP Protection</span>
+            </div>`
+    }
+};
+
+/* ──────────────────────────────
+   Modal controls
+────────────────────────────── */
+function openModal(key) {
+    const s = sectors[key];
+    if (!s) return;
+    document.getElementById('modalIcon').textContent = s.icon;
+    document.getElementById('modalTitle').textContent = s.title;
+    document.getElementById('modalTagline').textContent = s.tagline;
+    document.getElementById('modalBody').innerHTML = s.body;
+    document.getElementById('modalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+});
+
+/* ──────────────────────────────
+   Accordion
+────────────────────────────── */
+function toggleAccordion(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.accordion-body.open').forEach(b => {
+        b.classList.remove('open');
+        b.style.maxHeight = null;
+    });
+    document.querySelectorAll('.accordion-trigger.open').forEach(b => b.classList.remove('open'));
+
+    if (!isOpen) {
+        body.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+        btn.classList.add('open');
+    }
+}
+</script>
 </body>
 </html>
