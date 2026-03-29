@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study: Midstream Pipeline Operator | C2M2 Portal</title>
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-bg: #1a1a1a;
+            --border-color: #000000;
+            --gap-red: #c62828;
+            --edit-gold: #ffd700;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; line-height: 1.6; color: #333; background: #fff; margin: 0; padding: 0; }
+        .no-print { position: sticky; top: 0; background: #f8f9fa; padding: 10px 20px; border-bottom: 2px solid #ddd; display: flex; gap: 15px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .container { max-width: 1150px; margin: 0 auto; padding: 40px 20px; }
+        
+        header { border-bottom: 4px solid var(--primary-green); padding-bottom: 20px; margin-bottom: 30px; }
+        .badge { background: var(--primary-green); color: white; padding: 4px 12px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        h1 { color: var(--dark-bg); margin: 15px 0; border-left: 10px solid var(--primary-green); padding-left: 15px; }
+        h2 { background: var(--dark-bg); color: white; padding: 12px 15px; margin: 40px 0 20px 0; border-radius: 4px; }
+        h3 { border-bottom: 2px solid var(--primary-green); display: inline-block; padding-right: 20px; margin-top: 30px; }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #fff; font-size: 0.95em; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; vertical-align: top; }
+        th { background: #f2f2f2; font-weight: bold; color: #333; text-transform: uppercase; font-size: 0.85em; }
+        
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: #f9f9f9; border-left: 4px solid var(--primary-green); padding: 15px; border: 1px solid #eee; border-left: 4px solid var(--primary-green); }
+        .stat-card strong { display: block; font-size: 0.75em; color: #666; text-transform: uppercase; }
+
+        .gap-box { background: #fff5f5; border: 1px solid var(--gap-red); padding: 20px; margin: 20px 0; border-radius: 4px; }
+        .gap-box h4 { color: var(--gap-red); margin-top: 0; text-transform: uppercase; }
+
+        /* Edit Mode UI */
+        .btn { padding: 10px 20px; cursor: pointer; font-weight: bold; border: 1px solid #ccc; }
+        .btn-main { background: var(--primary-green); color: white; border: none; }
+        .btn-active { background: var(--edit-gold); border-color: #cca300; }
+        .editing [contenteditable="true"] { outline: 2px dashed var(--edit-gold); background: #fffdec; padding: 2px; }
+        .row-tool { display: none; }
+        .editing .row-tool { display: inline-block; }
+        .add-btn { background: #eee; border: 1px dashed #999; width: 100%; padding: 10px; cursor: pointer; margin-top: 10px; }
+        .del-btn { background: var(--gap-red); color: white; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer; }
+
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body id="caseBody">
+
+<div class="no-print">
+    <button id="editBtn" class="btn" onclick="toggleEdit()">✏️ Enable Edit Mode</button>
+    <button class="btn btn-main" onclick="exportHTML()">💾 Export Final HTML</button>
+    <div id="status" style="align-self:center; font-style:italic; color:#666;">Read-Only Mode</div>
+</div>
+
+<div class="container">
+    <header>
+        <div style="font-size: 0.9em; color:#666;">C2M2 Training Portal | Sector: Oil & Natural Gas</div>
+        <span class="badge">Fictional Case Study for Assessment</span>
+        <h1 contenteditable="true">Midstream Pipeline Operator (MPO)</h1>
+        <p contenteditable="true">Strategic Gathering & Transmission — Appalachian Basin (PA, OH, WV)</p>
+    </header>
+
+    <div class="summary-grid">
+        <div class="stat-card"><strong>Miles of Pipe</strong><span contenteditable="true">280 High-Pressure Steel</span></div>
+        <div class="stat-card"><strong>Compressor Stations</strong><span contenteditable="true">4 Mainline / 2 Remote</span></div>
+        <div class="stat-card"><strong>Staffing</strong><span contenteditable="true">62 FTE / 1 IT Manager</span></div>
+        <div class="stat-card"><strong>Compliance</strong><span contenteditable="true">TSA SD-02D / PHMSA</span></div>
+    </div>
+
+    <section>
+        <h2>🏢 Section 1 — Organization Profile</h2>
+        <table id="profileTable">
+            <tr>
+                <th>Legal Name</th><td contenteditable="true">Midstream Pipeline Operator, LLC</td>
+                <th>Founded</th><td contenteditable="true">2012 (Private Equity)</td>
+            </tr>
+            <tr>
+                <th>Headquarters</th><td contenteditable="true">700 Energy Way, Morgantown, WV</td>
+                <th>Annual Revenue</th><td contenteditable="true">$142 Million (FY2025)</td>
+            </tr>
+            <tr>
+                <th>Primary Contact</th><td contenteditable="true">Frank Miller, Director of Ops</td>
+                <th>IT/Cyber Contact</th><td contenteditable="true">Sarah Chen, IT Manager</td>
+            </tr>
+        </table>
+        <h3>Business Mission</h3>
+        <p contenteditable="true">MPO provides high-pressure transmission of "wet" and "dry" natural gas from wellpad gathering points to major interstate pipeline interconnects. The company operates 24/7/365, managing critical energy infrastructure that feeds three regional power plants and several municipal gas local distribution companies (LDCs).</p>
+    </section>
+
+    <section>
+        <h2>🏭 Section 2 — Facilities & Service Territory</h2>
+        <table id="facTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Function</th>
+                    <th>Physical Security</th>
+                    <th class="row-tool">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td contenteditable="true">FAC-01</td>
+                    <td contenteditable="true">Morgantown GCC</td>
+                    <td contenteditable="true">Primary Gas Control Center & HQ</td>
+                    <td contenteditable="true">Badge Access, Security Desk (Day only)</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">FAC-02</td>
+                    <td contenteditable="true">St. Clairsville Station</td>
+                    <td contenteditable="true">Mainline Compression (4 Turbines)</td>
+                    <td contenteditable="true">Fenced, Remote CCTV (No Analytics)</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">FAC-03</td>
+                    <td contenteditable="true">Washington County Hub</td>
+                    <td contenteditable="true">Pigging Facility & Liquid Knockout</td>
+                    <td contenteditable="true">Standard Padlocks, No Alarm</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="add-btn row-tool" onclick="addRow('facTable')">+ Add Facility</button>
+    </section>
+
+    <section>
+        <h2>👥 Section 3 — Workforce & Org Structure</h2>
+        <p contenteditable="true">MPO employs 62 staff. The IT department consists of one manager (Sarah Chen) who handles all corporate laptops, email, and the SCADA network. Field technicians handle local PLC maintenance but have no formal cybersecurity training.</p>
+        <table id="staffTable">
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Count</th>
+                    <th>Cybersecurity Responsibility</th>
+                    <th class="row-tool">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td contenteditable="true">IT Manager</td>
+                    <td contenteditable="true">1</td>
+                    <td contenteditable="true">Everything (Firewalls, Servers, PC Support)</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">Gas Controllers</td>
+                    <td contenteditable="true">5</td>
+                    <td contenteditable="true">Monitoring Only; Shared Login "GCC_ADMIN"</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="add-btn row-tool" onclick="addRow('staffTable')">+ Add Staff Group</button>
+    </section>
+
+    <section>
+        <h2>⚡ Section 4 — Asset Inventory (IT & OT)</h2>
+        <table id="assetTable">
+            <thead>
+                <tr>
+                    <th>Asset ID</th>
+                    <th>System Name</th>
+                    <th>OS / Hardware</th>
+                    <th>Network Segment</th>
+                    <th>Risk Factor</th>
+                    <th class="row-tool">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td contenteditable="true">SRV-SCADA-01</td>
+                    <td contenteditable="true">Ignition Server</td>
+                    <td contenteditable="true">Win Server 2019</td>
+                    <td contenteditable="true">DMZ (Dual-Homed)</td>
+                    <td contenteditable="true">Connected to Corp LAN and Field</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">SRV-HIST-01</td>
+                    <td contenteditable="true">Data Historian</td>
+                    <td contenteditable="true">Win Server 2012 R2</td>
+                    <td contenteditable="true">Corp LAN</td>
+                    <td contenteditable="true">End-of-Life OS; Unpatched</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">PLC-ST-01</td>
+                    <td contenteditable="true">Allen-Bradley</td>
+                    <td contenteditable="true">ControlLogix 5580</td>
+                    <td contenteditable="true">Field OT</td>
+                    <td contenteditable="true">Default Vendor Passwords</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="add-btn row-tool" onclick="addRow('assetTable')">+ Add Asset</button>
+    </section>
+
+    <section>
+        <h2>🛡️ Section 5 — Security Controls & 3rd Parties</h2>
+        <div class="gap-box">
+            <h4 contenteditable="true">Network Architecture Gap</h4>
+            <p contenteditable="true">The field network relies on 900MHz unencrypted radio for two remote valve sites and unencrypted satellite (VSAT) links for the main compressor stations. All SCADA traffic (Modbus/TCP) is sent in cleartext across these links.</p>
+        </div>
+        <table id="vendorTable">
+            <thead>
+                <tr>
+                    <th>Vendor</th>
+                    <th>Service</th>
+                    <th>Remote Access Method</th>
+                    <th>Risk Rating</th>
+                    <th class="row-tool">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td contenteditable="true">Automation Pros</td>
+                    <td contenteditable="true">SCADA Integrator</td>
+                    <td contenteditable="true">Always-on VPN (No MFA)</td>
+                    <td contenteditable="true">CRITICAL</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">SkyLink Sat</td>
+                    <td contenteditable="true">Satellite ISP</td>
+                    <td contenteditable="true">Carrier Level</td>
+                    <td contenteditable="true">MEDIUM</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>📋 Section 6 — Indicative C2M2 Assessment</h2>
+        <p>Based on initial discovery, the following maturity levels have been assigned:</p>
+        <table id="c2m2Table">
+            <thead>
+                <tr>
+                    <th>C2M2 Domain</th>
+                    <th>Score</th>
+                    <th>Primary Deficiency</th>
+                    <th class="row-tool">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td contenteditable="true">ASSET (Asset Management)</td>
+                    <td><select class="mil-sel"><option>MIL 0</option><option selected>MIL 1</option><option>MIL 2</option></select></td>
+                    <td contenteditable="true">No formal inventory of field radio/modem hardware.</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">ACCESS (Access Control)</td>
+                    <td><select class="mil-sel"><option selected>MIL 0</option><option>MIL 1</option><option>MIL 2</option></select></td>
+                    <td contenteditable="true">Shared local admin accounts on all HMI workstations.</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">THREAT (Threat Mgmt)</td>
+                    <td><select class="mil-sel"><option selected>MIL 0</option><option>MIL 1</option><option>MIL 2</option></select></td>
+                    <td contenteditable="true">No logs collected from OT network; no SIEM.</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">RESPONSE (Incident Resp)</td>
+                    <td><select class="mil-sel"><option>MIL 0</option><option selected>MIL 1</option><option>MIL 2</option></select></td>
+                    <td contenteditable="true">No cyber-specific IR plan; only safety/leak plans.</td>
+                    <td class="row-tool"><button class="del-btn" onclick="delRow(this)">X</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<script>
+    let isEditing = false;
+
+    function toggleEdit() {
+        isEditing = !isEditing;
+        const body = document.getElementById('caseBody');
+        const btn = document.getElementById('editBtn');
+        const status = document.getElementById('status');
+        const elements = document.querySelectorAll('[contenteditable]');
+
+        if (isEditing) {
+            body.classList.add('editing');
+            btn.innerText = "🔒 Lock & Save View";
+            btn.classList.add('btn-active');
+            status.innerText = "EDIT MODE ACTIVE - Click any field to modify.";
+            elements.forEach(el => el.setAttribute('contenteditable', 'true'));
+        } else {
+            body.classList.remove('editing');
+            btn.innerText = "✏️ Enable Edit Mode";
+            btn.classList.remove('btn-active');
+            status.innerText = "Read-Only Mode";
+            elements.forEach(el => el.setAttribute('contenteditable', 'false'));
+        }
+    }
+
+    function addRow(tableId) {
+        const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        const colCount = table.parentNode.rows[0].cells.length;
+
+        for (let i = 0; i < colCount; i++) {
+            let cell = newRow.insertCell(i);
+            if (i === colCount - 1) {
+                cell.className = "row-tool";
+                cell.innerHTML = '<button class="del-btn" onclick="delRow(this)">X</button>';
+            } else {
+                cell.contentEditable = "true";
+                cell.innerText = "New Entry";
+            }
+        }
+    }
+
+    function delRow(btn) {
+        const row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    function exportHTML() {
+        if (isEditing) toggleEdit(); // Close edit mode before saving
+        const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: "text/html" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "case-study-gas-detailed.html";
+        a.click();
+    }
+</script>
+
+</body>
+</html>
