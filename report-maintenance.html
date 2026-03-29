@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintenance Report — MVEC C2M2 Audit Report</title>
+<style>
+  /* ── Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #0a1628;
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .report-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d2137 100%);
+    border-bottom: 3px solid #10b981;
+    padding: 2rem 2.5rem 1.5rem;
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+  .report-badge {
+    background: rgba(16,185,129,.15);
+    border: 1px solid rgba(16,185,129,.4);
+    border-radius: 6px; padding: .3rem .8rem;
+    font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+    color: #6ee7b7; text-transform: uppercase;
+  }
+  .report-title { margin-top: .6rem; font-size: 1.9rem; font-weight: 700; color: #f1f5f9; line-height: 1.2; }
+  .report-subtitle { margin-top: .3rem; font-size: 1rem; color: #6ee7b7; }
+  .doc-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .5rem; margin-top: 1.2rem; }
+  .meta-item { background: rgba(255,255,255,.05); border-radius: 6px; padding: .5rem .9rem; }
+  .meta-label { font-size: .68rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; }
+  .meta-value { font-size: .88rem; color: #e2e8f0; font-weight: 600; margin-top: .15rem; }
+
+  /* ── Edit Toolbar ── */
+  .edit-toolbar {
+    position: fixed; top: 12px; right: 16px; z-index: 9999;
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
+  }
+  .et-btn {
+    padding: .45rem 1rem; border: none; border-radius: 6px;
+    font-size: .82rem; font-weight: 600; cursor: pointer; transition: opacity .15s;
+  }
+  .et-btn:hover { opacity: .85; }
+  .et-edit   { background: #2563eb; color: #fff; }
+  .et-edit.active { background: #16a34a; }
+  .et-export { background: #0e7490; color: #fff; }
+  .et-print  { background: #7c3aed; color: #fff; }
+  .et-reset  { background: #b91c1c; color: #fff; }
+  .edit-banner {
+    display: none;
+    background: #16a34a; color: #fff;
+    text-align: center; padding: .4rem; font-size: .82rem; font-weight: 600;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .edit-mode .edit-banner { display: block; }
+
+  /* ── Main Layout ── */
+  .report-body { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* ── Section Cards ── */
+  .section-card {
+    background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  .section-header {
+    background: linear-gradient(90deg, rgba(16,185,129,.2) 0%, rgba(16,185,129,.05) 100%);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: .8rem;
+  }
+  .section-icon { font-size: 1.3rem; }
+  .section-title { font-size: 1.1rem; font-weight: 700; color: #6ee7b7; }
+  .section-body { padding: 1.5rem; }
+
+  /* ── Summary Stats ── */
+  .stat-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+  .stat-box {
+    flex: 1 1 150px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    text-align: center;
+  }
+  .stat-num { font-size: 2rem; font-weight: 700; color: #34d399; }
+  .stat-num.warn { color: #fbbf24; }
+  .stat-num.danger { color: #f87171; }
+  .stat-lbl { font-size: .75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-top: .2rem; }
+
+  /* ── Tables ── */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  thead tr { background: rgba(16,185,129,.2); }
+  th { padding: .6rem .8rem; text-align: left; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #6ee7b7; border-bottom: 1px solid rgba(255,255,255,.12); white-space: nowrap; }
+  td { padding: .55rem .8rem; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+  tr:hover td { background: rgba(255,255,255,.03); }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block; padding: .15rem .55rem; border-radius: 4px;
+    font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap;
+  }
+  .b-crit  { background: rgba(239,68,68,.2);    color: #fca5a5; border: 1px solid rgba(239,68,68,.45); }
+  .b-high  { background: rgba(251,146,60,.18);  color: #fb923c; border: 1px solid rgba(251,146,60,.35); }
+  .b-med   { background: rgba(234,179,8,.18);   color: #fbbf24; border: 1px solid rgba(234,179,8,.35); }
+  .b-low   { background: rgba(34,197,94,.18);   color: #4ade80; border: 1px solid rgba(34,197,94,.35); }
+  .b-ok    { background: rgba(34,197,94,.18);   color: #4ade80; border: 1px solid rgba(34,197,94,.35); }
+  .b-warn  { background: rgba(234,179,8,.18);   color: #fbbf24; border: 1px solid rgba(234,179,8,.35); }
+  .b-eol   { background: rgba(239,68,68,.25);   color: #fca5a5; border: 2px solid rgba(239,68,68,.6); }
+  .b-na    { background: rgba(100,116,139,.18); color: #94a3b8; border: 1px solid rgba(100,116,139,.35); }
+  .b-sched { background: rgba(59,130,246,.18);  color: #93c5fd; border: 1px solid rgba(59,130,246,.35); }
+  .b-over  { background: rgba(239,68,68,.2);    color: #fca5a5; border: 1px solid rgba(239,68,68,.45); }
+  .b-comp  { background: rgba(34,197,94,.18);   color: #4ade80; border: 1px solid rgba(34,197,94,.35); }
+  .b-pend  { background: rgba(234,179,8,.18);   color: #fbbf24; border: 1px solid rgba(234,179,8,.35); }
+  .b-none  { background: rgba(239,68,68,.25);   color: #fca5a5; border: 2px solid rgba(239,68,68,.5); }
+  .b-vendor { background: rgba(168,85,247,.18); color: #c084fc; border: 1px solid rgba(168,85,247,.35); }
+  .b-it    { background: rgba(59,130,246,.18);  color: #93c5fd; border: 1px solid rgba(59,130,246,.35); }
+  .b-ot    { background: rgba(245,158,11,.18);  color: #fcd34d; border: 1px solid rgba(245,158,11,.35); }
+  .b-mil0  { background: rgba(239,68,68,.18);   color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+  .b-mil1  { background: rgba(251,146,60,.18);  color: #fb923c; border: 1px solid rgba(251,146,60,.3); }
+  .b-mil2  { background: rgba(234,179,8,.18);   color: #fbbf24; border: 1px solid rgba(234,179,8,.3); }
+  .b-mil3  { background: rgba(34,197,94,.18);   color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+
+  /* ── Info / Finding boxes ── */
+  .info-box {
+    border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: .8rem;
+    font-size: .84rem; line-height: 1.6; border-left: 4px solid;
+  }
+  .info-box.info   { background: rgba(59,130,246,.1);  border-color: #3b82f6; color: #bfdbfe; }
+  .info-box.warn   { background: rgba(234,179,8,.1);   border-color: #ca8a04; color: #fde68a; }
+  .info-box.crit   { background: rgba(239,68,68,.12);  border-color: #dc2626; color: #fecaca; }
+  .info-box.ok     { background: rgba(34,197,94,.1);   border-color: #16a34a; color: #bbf7d0; }
+  .info-box strong { font-weight: 700; }
+
+  /* ── Finding severity rows ── */
+  .sev-crit td { border-left: 3px solid #dc2626; }
+  .sev-high td { border-left: 3px solid #ea580c; }
+  .sev-med  td { border-left: 3px solid #ca8a04; }
+  .sev-low  td { border-left: 3px solid #16a34a; }
+
+  /* ── MIL Assessment table ── */
+  .mil-table td:first-child { font-weight: 700; font-size: .75rem; }
+  .mil-table td:nth-child(2) { font-size: .78rem; color: #cbd5e1; }
+  .mil-table td:last-child { text-align: center; }
+
+  /* ── Edit-mode UI ── */
+  [contenteditable="true"] { outline: 1px dashed rgba(16,185,129,.5); border-radius: 3px; min-width: 20px; }
+  [contenteditable="true"]:focus { outline: 2px solid #10b981; background: rgba(16,185,129,.08); }
+  .del-btn {
+    display: none;
+    background: #dc2626; color: #fff; border: none; border-radius: 4px;
+    font-size: .7rem; font-weight: 700; cursor: pointer; padding: .1rem .4rem; margin-left: 4px;
+    vertical-align: middle; line-height: 1.4;
+  }
+  .del-col { width: 32px; text-align: center; }
+  .del-col .del-btn { display: inline-block; }
+  .add-row-btn, .add-info-btn {
+    display: none;
+    margin-top: .6rem;
+    background: rgba(16,185,129,.2); color: #6ee7b7;
+    border: 1px dashed #10b981; border-radius: 6px;
+    padding: .35rem .9rem; font-size: .78rem; cursor: pointer;
+  }
+  .add-row-btn:hover, .add-info-btn:hover { background: rgba(16,185,129,.35); }
+  .edit-mode .del-btn     { display: inline-block; }
+  .edit-mode .add-row-btn,
+  .edit-mode .add-info-btn { display: inline-block; }
+
+  /* ── Utility ── */
+  .mono { font-family: 'Consolas', 'Courier New', monospace; font-size: .8rem; }
+  .text-muted { color: #64748b; font-size: .78rem; }
+  .mt-1 { margin-top: .5rem; }
+  .mt-2 { margin-top: 1rem; }
+  p { margin-bottom: .5rem; }
+
+  /* ── Breadcrumb ── */
+  .breadcrumb {
+    padding: .6rem 2.5rem;
+    font-size: .8rem;
+    background: rgba(0,0,0,.2);
+    color: #94a3b8;
+  }
+  .breadcrumb a { color: #6ee7b7; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; color: #1e293b; }
+    .report-header { background: #1e3a5f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .edit-toolbar, .edit-banner, .add-row-btn, .add-info-btn, .del-btn, .del-col { display: none !important; }
+    .section-card { break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ EDIT TOOLBAR ══ -->
+<div class="edit-toolbar">
+  <button class="et-btn et-edit" id="editToggleBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+  <button class="et-btn et-export" onclick="exportHTML()">💾 Export HTML</button>
+  <button class="et-btn et-print" onclick="window.print()">🖨️ Print</button>
+  <button class="et-btn et-reset" onclick="resetChanges()">🔄 Reset</button>
+</div>
+<div class="edit-banner">✏️ EDIT MODE ACTIVE — Click any cell or text to edit. Use + buttons to add rows. Use × to delete.</div>
+
+<!-- ══ BREADCRUMB ══ -->
+<div class="breadcrumb"><a href="index.html">C2M2 Portal</a> › <a href="case-study.html">MVEC Case Study</a> › Maintenance Report</div>
+
+<!-- ══ REPORT HEADER ══ -->
+<div class="report-header">
+  <div class="header-top">
+    <div>
+      <div class="report-badge">C2M2 Audit Report · ASSET &amp; ARCH Domains</div>
+      <div class="report-title">Maintenance Report</div>
+      <div class="report-subtitle">Muskingum Valley Electric Cooperative (MVEC) — IT/OT Maintenance &amp; Patch Management Assessment</div>
+    </div>
+  </div>
+  <div class="doc-meta">
+    <div class="meta-item"><div class="meta-label">Organization</div><div class="meta-value">Muskingum Valley Electric Cooperative</div></div>
+    <div class="meta-item"><div class="meta-label">Report ID</div><div class="meta-value">MVEC-MNT-2025-001</div></div>
+    <div class="meta-item"><div class="meta-label">Assessment Date</div><div class="meta-value">March 28, 2025</div></div>
+    <div class="meta-item"><div class="meta-label">Prepared By</div><div class="meta-value">IT Department / C2M2 Assessor</div></div>
+    <div class="meta-item"><div class="meta-label">Classification</div><div class="meta-value">SENSITIVE — Internal Use Only</div></div>
+    <div class="meta-item"><div class="meta-label">C2M2 Domains</div><div class="meta-value">ASSET (ACM) · ARCH (CAM)</div></div>
+  </div>
+</div>
+
+<!-- ══ REPORT BODY ══ -->
+<div class="report-body" id="mainContainer">
+
+  <!-- ── 1. Scope & Purpose ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🎯</span>
+      <span class="section-title">1. Scope &amp; Purpose</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box info">
+        <strong>Purpose:</strong> This Maintenance Report documents the current state of maintenance activities for all MVEC IT and OT assets, including patch management, firmware updates, vendor support status, scheduled maintenance windows, and end-of-life/end-of-support (EOL/EOS) exposure. It supports evaluation of C2M2 ASSET domain practices ACM-1d and ACM-3 (asset maintenance) and ARCH domain practices CAM-1 and CAM-2.
+      </div>
+      <div class="info-box warn">
+        <strong>Scope:</strong> All production IT systems (servers, endpoints, network devices) and OT/ICS assets (SCADA/HMI, RTUs, protective relays, AMI head-end, automated reclosers). Laboratory, test, and spare equipment are out of scope. Maintenance of physical facilities and vehicles is out of scope.
+      </div>
+      <div class="info-box crit">
+        <strong>Key Risk:</strong> MVEC currently operates <strong>two EOL/unsupported systems in production</strong> — the GE e-terra SCADA platform (EOL 2021) and Windows Server 2012 R2 (EOL October 2023). Neither system is receiving security patches. No formal patch management program exists for IT or OT.
+      </div>
+      <button class="add-info-btn" onclick="addInfoBox(this)">+ Add Info Box</button>
+    </div>
+  </div>
+
+  <!-- ── 2. Maintenance Summary ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <span class="section-title">2. Maintenance Summary</span>
+    </div>
+    <div class="section-body">
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num">47</div><div class="stat-lbl">Total Assets In-Scope</div></div>
+        <div class="stat-box"><div class="stat-num warn">12</div><div class="stat-lbl">Overdue Maintenance</div></div>
+        <div class="stat-box"><div class="stat-num danger">2</div><div class="stat-lbl">EOL — No Vendor Support</div></div>
+        <div class="stat-box"><div class="stat-num danger">3</div><div class="stat-lbl">EOS — Limited Support</div></div>
+        <div class="stat-box"><div class="stat-num warn">0</div><div class="stat-lbl">Formal Patch Program</div></div>
+        <div class="stat-box"><div class="stat-num">4</div><div class="stat-lbl">Active Vendor SLAs</div></div>
+      </div>
+      <div class="info-box warn">
+        <strong>Maintenance Program Status:</strong> MVEC has no documented patch management policy or formal maintenance schedule. IT maintenance is largely reactive and delegated to TechPath MSP under a monthly SLA. OT maintenance is performed on an ad-hoc basis during planned outages. No change management process exists for firmware updates.
+      </div>
+      <button class="add-info-btn" onclick="addInfoBox(this)">+ Add Info Box</button>
+    </div>
+  </div>
+
+  <!-- ── 3. Server & IT Infrastructure Maintenance ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🖥️</span>
+      <span class="section-title">3. Server &amp; IT Infrastructure Maintenance</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-servers">
+          <thead>
+            <tr>
+              <th>Asset ID</th><th>Hostname</th><th>OS / Firmware</th><th>Last Patched</th>
+              <th>Patch Status</th><th>Vendor Support</th><th>Maintainer</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">SRV-001</td><td>FILESRV</td>
+              <td>Windows Server 2019 Standard</td>
+              <td>Feb 2025</td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td><span class="badge b-ok">Supported (2029)</span></td>
+              <td>TechPath MSP</td>
+              <td>Auto Windows Update; monthly review</td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">SRV-002</td><td>SCADA01</td>
+              <td>Windows Server 2016 (SCADA host)</td>
+              <td>Sep 2024</td>
+              <td><span class="badge b-warn">6 Months Behind</span></td>
+              <td><span class="badge b-ok">Supported (2027)</span></td>
+              <td>GE Grid Solutions</td>
+              <td><strong>CRITICAL:</strong> Patching requires GE approval &amp; scheduled outage; no patch window defined for 2025</td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">SRV-003</td><td>ACCTG</td>
+              <td>Windows Server 2012 R2 <span class="badge b-eol">EOL</span></td>
+              <td>Oct 2023</td>
+              <td><span class="badge b-over">17+ Months Behind</span></td>
+              <td><span class="badge b-eol">EOL — No Patches</span></td>
+              <td>TechPath MSP</td>
+              <td><strong>CRITICAL:</strong> No security patches available post-EOL; holds NISC billing data (HIGH confidentiality)</td>
+            </tr>
+            <tr>
+              <td class="mono">SRV-004</td><td>AMI-HE</td>
+              <td>Ubuntu 20.04 LTS + Landis+Gyr v8.2</td>
+              <td>Jan 2025</td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td><span class="badge b-ok">Supported (2025)</span></td>
+              <td>Landis+Gyr / TechPath</td>
+              <td>LTS end Apr 2025; upgrade to 22.04 LTS planned Q3 2025</td>
+            </tr>
+            <tr>
+              <td class="mono">SRV-005</td><td>CIS</td>
+              <td>Windows Server 2019 + NISC iVUE</td>
+              <td>Feb 2025</td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td><span class="badge b-ok">Supported (2029)</span></td>
+              <td>NISC / TechPath</td>
+              <td>NISC manages application updates on contract schedule</td>
+            </tr>
+            <tr>
+              <td class="mono">SRV-006</td><td>GIS</td>
+              <td>Windows Server 2019 + ESRI ArcGIS</td>
+              <td>Feb 2025</td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td><span class="badge b-ok">Supported (2029)</span></td>
+              <td>TechPath MSP</td>
+              <td>ArcGIS license renewal due June 2025</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-servers'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 4. Endpoint Maintenance ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">💻</span>
+      <span class="section-title">4. Endpoint Maintenance</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-endpoints">
+          <thead>
+            <tr>
+              <th>Group / Asset</th><th>Count</th><th>OS</th><th>Avg Patch Age</th>
+              <th>Status</th><th>Antivirus</th><th>Managed By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Office Workstations</td><td>14</td>
+              <td>Windows 10 Pro (22H2)</td>
+              <td>~30 days</td>
+              <td><span class="badge b-ok">Mostly Current</span></td>
+              <td>Microsoft Defender (managed)</td>
+              <td>TechPath MSP (RMM)</td>
+            </tr>
+            <tr class="sev-med">
+              <td>Field Laptops</td><td>6</td>
+              <td>Windows 10 Pro (21H2)</td>
+              <td>~90 days</td>
+              <td><span class="badge b-warn">Irregular</span></td>
+              <td>Microsoft Defender (unmanaged)</td>
+              <td>Individual users — no RMM agent</td>
+            </tr>
+            <tr>
+              <td>SCADA Engineering WS</td><td>2</td>
+              <td>Windows 10 LTSC 2019</td>
+              <td>180 days</td>
+              <td><span class="badge b-warn">Deferred</span></td>
+              <td>None — vendor prohibition</td>
+              <td>GE Grid Solutions guidance</td>
+            </tr>
+            <tr class="sev-high">
+              <td>HMI Consoles (OT zone)</td><td>2</td>
+              <td>Windows 7 Embedded <span class="badge b-eol">EOL 2020</span></td>
+              <td>Never</td>
+              <td><span class="badge b-eol">EOL — Unsupported</span></td>
+              <td>None</td>
+              <td>No patch path; hardware-locked to GE platform</td>
+            </tr>
+            <tr>
+              <td>Network Printer / MFP</td><td>3</td>
+              <td>Embedded firmware</td>
+              <td>Unknown</td>
+              <td><span class="badge b-warn">Unknown</span></td>
+              <td>N/A</td>
+              <td>Not included in current maintenance program</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-endpoints'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 5. Network Device Maintenance ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🌐</span>
+      <span class="section-title">5. Network Device Maintenance</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-network">
+          <thead>
+            <tr>
+              <th>Asset ID</th><th>Device</th><th>Model / Firmware</th><th>Last Updated</th>
+              <th>Status</th><th>Vendor Support</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="sev-med">
+              <td class="mono">NET-001</td><td>Perimeter Firewall</td>
+              <td>Cisco ASA 5506-X / 9.16(4)</td>
+              <td>Aug 2024</td>
+              <td><span class="badge b-warn">7 Months Behind</span></td>
+              <td><span class="badge b-warn">EoSW Mar 2025</span></td>
+              <td>ASA 5506-X reached End of SW Maintenance March 2025; IOS 9.18 available but untested</td>
+            </tr>
+            <tr>
+              <td class="mono">NET-002</td><td>Core LAN Switch</td>
+              <td>Cisco Catalyst 2960-X / 15.2(7)E9</td>
+              <td>Dec 2024</td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td><span class="badge b-warn">EoL Jan 2027</span></td>
+              <td>Nearing EoL; replacement budgeted for FY 2026</td>
+            </tr>
+            <tr>
+              <td class="mono">NET-003</td><td>OT Network Switch</td>
+              <td>Hirschmann RS20 / HiOS 8.0</td>
+              <td>Mar 2023</td>
+              <td><span class="badge b-warn">24 Months Behind</span></td>
+              <td><span class="badge b-ok">Supported</span></td>
+              <td>HiOS 9.x available; OT change window required; no planned window</td>
+            </tr>
+            <tr>
+              <td class="mono">NET-004</td><td>Corp Wi-Fi AP (×4)</td>
+              <td>Ubiquiti UniFi AP-AC-Pro / 6.5.54</td>
+              <td>Jan 2025</td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td><span class="badge b-ok">Supported</span></td>
+              <td>Auto-update via UniFi controller; TechPath managed</td>
+            </tr>
+            <tr>
+              <td class="mono">NET-005</td><td>VPN Concentrator</td>
+              <td>Cisco ASA 5506-X (VPN module) / 9.16(4)</td>
+              <td>Aug 2024</td>
+              <td><span class="badge b-warn">7 Months Behind</span></td>
+              <td><span class="badge b-warn">EoSW Mar 2025</span></td>
+              <td>Same device as NET-001; TechPath VPN tunnel for remote access</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-network'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 6. OT/ICS Asset Maintenance ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">⚡</span>
+      <span class="section-title">6. OT/ICS Asset Maintenance</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box warn">
+        <strong>OT Maintenance Policy Gap:</strong> MVEC has no documented OT maintenance policy or firmware management procedure. OT device changes are made informally during planned outages by GE Grid Solutions field technicians or by MVEC's SCADA Engineer (Dobrowski). No change management tickets or maintenance logs are maintained.
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-ot">
+          <thead>
+            <tr>
+              <th>Asset ID</th><th>Asset / Description</th><th>Vendor</th><th>Firmware / Version</th>
+              <th>Last Maintenance</th><th>Vendor Support</th><th>Maintenance Status</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="sev-crit">
+              <td class="mono">OT-001</td><td>SCADA Platform (e-terra)</td><td>GE Grid Solutions</td>
+              <td>v3.2.1 <span class="badge b-eol">EOL 2021</span></td>
+              <td>Jun 2022</td>
+              <td><span class="badge b-eol">No Support</span></td>
+              <td><span class="badge b-eol">EOL — No Patches</span></td>
+              <td><strong>CRITICAL:</strong> GE ended support 2021; no security patches available; migration cost est. $380K–$520K; no budget approved</td>
+            </tr>
+            <tr class="sev-high">
+              <td class="mono">OT-002</td><td>RTU — Main Substation</td><td>GE Grid Solutions</td>
+              <td>D20MX FW 2.12</td>
+              <td>Apr 2023</td>
+              <td><span class="badge b-warn">Limited</span></td>
+              <td><span class="badge b-warn">Overdue (23 mo)</span></td>
+              <td>FW 2.17 available; requires GE on-site or VPN session; no window scheduled</td>
+            </tr>
+            <tr class="sev-high">
+              <td class="mono">OT-003</td><td>RTU — Sub-Substation</td><td>GE Grid Solutions</td>
+              <td>D20MX FW 2.12</td>
+              <td>Apr 2023</td>
+              <td><span class="badge b-warn">Limited</span></td>
+              <td><span class="badge b-warn">Overdue (23 mo)</span></td>
+              <td>Same as OT-002; treated as identical unit for maintenance purposes</td>
+            </tr>
+            <tr>
+              <td class="mono">OT-004</td><td>Master Clock (SEL-2414)</td><td>SEL</td>
+              <td>FW R302-V1</td>
+              <td>Nov 2024</td>
+              <td><span class="badge b-ok">Supported</span></td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td>Annual firmware review per SEL application guide</td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">OT-005</td><td>Protective Relay — SS-01</td><td>SEL</td>
+              <td>SEL-351 FW R510</td>
+              <td>Jan 2024</td>
+              <td><span class="badge b-ok">Supported</span></td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td>Passwords changed from default on SS-01; annual relay testing performed</td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">OT-006</td><td>Protective Relay — SS-02</td><td>SEL</td>
+              <td>SEL-351 FW R510</td>
+              <td>Mar 2023</td>
+              <td><span class="badge b-ok">Supported</span></td>
+              <td><span class="badge b-warn">Overdue (24 mo)</span></td>
+              <td><strong>CRITICAL:</strong> Confirmed default factory password still active; annual relay test also overdue</td>
+            </tr>
+            <tr>
+              <td class="mono">OT-007</td><td>Automated Reclosers (×12)</td><td>S&amp;C Electric</td>
+              <td>IntelliRupter v4.1</td>
+              <td>Various 2023–2024</td>
+              <td><span class="badge b-ok">Supported</span></td>
+              <td><span class="badge b-ok">Mostly Current</span></td>
+              <td>S&amp;C field technicians perform firmware updates during scheduled outages; 3 units still on v3.9</td>
+            </tr>
+            <tr>
+              <td class="mono">OT-008</td><td>AMI Head-End (Landis+Gyr)</td><td>Landis+Gyr</td>
+              <td>Gridstream AIM v8.2</td>
+              <td>Jan 2025</td>
+              <td><span class="badge b-ok">Supported</span></td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td>Under active support contract; quarterly update calls with Landis+Gyr TAC</td>
+            </tr>
+            <tr>
+              <td class="mono">OT-009</td><td>Power Quality Analyzer</td><td>Dranetz</td>
+              <td>HDPQ v3.4</td>
+              <td>Oct 2024</td>
+              <td><span class="badge b-ok">Supported</span></td>
+              <td><span class="badge b-ok">Current</span></td>
+              <td>Air-gapped; standalone unit; no network connectivity</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-ot'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 7. Vendor Maintenance Agreements ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <span class="section-title">7. Vendor Maintenance Agreements &amp; SLAs</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-vendors">
+          <thead>
+            <tr>
+              <th>Vendor</th><th>Systems Covered</th><th>Contract Type</th><th>Response SLA</th>
+              <th>Expiration</th><th>Status</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TechPath Solutions</td>
+              <td>All IT (servers, endpoints, network, M365)</td>
+              <td>Managed Services (MSP)</td>
+              <td>4-hr remote / 8-hr on-site</td>
+              <td>Dec 31, 2025</td>
+              <td><span class="badge b-ok">Active</span></td>
+              <td>Monthly flat-fee; covers patching, monitoring, helpdesk; OT explicitly excluded</td>
+            </tr>
+            <tr>
+              <td>GE Grid Solutions</td>
+              <td>SCADA (e-terra), RTUs (D20MX)</td>
+              <td>T&amp;M (no active support contract)</td>
+              <td>Best-effort; no SLA</td>
+              <td>N/A</td>
+              <td><span class="badge b-warn">No SLA</span></td>
+              <td>Support contract lapsed 2022; GE e-terra EOL prevents new support agreement; hourly billing for field work</td>
+            </tr>
+            <tr>
+              <td>NISC</td>
+              <td>iVUE CIS / billing platform</td>
+              <td>Software Maintenance &amp; Support</td>
+              <td>24-hr critical / 5-day standard</td>
+              <td>Sep 30, 2025</td>
+              <td><span class="badge b-ok">Active</span></td>
+              <td>Annual renewal; includes quarterly application updates and hosted training</td>
+            </tr>
+            <tr>
+              <td>Landis+Gyr</td>
+              <td>Gridstream AMI Head-End (SRV-004)</td>
+              <td>Software Support &amp; Maintenance</td>
+              <td>Next business day</td>
+              <td>Mar 31, 2026</td>
+              <td><span class="badge b-ok">Active</span></td>
+              <td>Includes firmware updates and Gridstream Connect portal access</td>
+            </tr>
+            <tr>
+              <td>SEL (Schweitzer Engineering)</td>
+              <td>SEL-351 Relays, SEL-2414 Clock</td>
+              <td>Per-incident (no annual contract)</td>
+              <td>Per-incident</td>
+              <td>N/A</td>
+              <td><span class="badge b-na">Per Incident</span></td>
+              <td>SEL firmware and manuals freely available; no subscription required; MVEC self-maintains</td>
+            </tr>
+            <tr>
+              <td>Cisco SmartNet</td>
+              <td>ASA 5506-X, Catalyst 2960-X</td>
+              <td>SmartNet (expired)</td>
+              <td>N/A — expired</td>
+              <td>Expired Jun 2023</td>
+              <td><span class="badge b-over">Expired</span></td>
+              <td>No active TAC support; TAC access and IOS updates unavailable without renewal</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-vendors'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 8. Scheduled Maintenance Calendar ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📅</span>
+      <span class="section-title">8. Scheduled Maintenance Calendar (2025)</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box warn">
+        <strong>Gap:</strong> MVEC has no formal annual maintenance calendar. The schedule below reflects known vendor-scheduled activities and items identified during this assessment. No change management or maintenance window policy is documented.
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-calendar">
+          <thead>
+            <tr>
+              <th>Target Date</th><th>Asset(s)</th><th>Activity</th><th>Maintainer</th>
+              <th>Outage Required</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Q1 2025 (overdue)</td><td>SRV-002 (SCADA01)</td>
+              <td>Windows Server 2016 cumulative patches</td>
+              <td>GE Grid Solutions + IT</td>
+              <td><span class="badge b-warn">Yes — planned outage</span></td>
+              <td><span class="badge b-over">Overdue</span></td>
+            </tr>
+            <tr>
+              <td>Apr 2025</td><td>SRV-004 (AMI-HE)</td>
+              <td>Ubuntu OS upgrade 20.04 → 22.04 LTS</td>
+              <td>Landis+Gyr / TechPath</td>
+              <td><span class="badge b-warn">Yes — 2–4 hr window</span></td>
+              <td><span class="badge b-sched">Scheduled</span></td>
+            </tr>
+            <tr>
+              <td>Q2 2025</td><td>SRV-003 (ACCTG)</td>
+              <td>OS migration: Win 2012 R2 → Win 2022</td>
+              <td>TechPath MSP</td>
+              <td><span class="badge b-warn">Yes — weekend window</span></td>
+              <td><span class="badge b-pend">Pending Approval</span></td>
+            </tr>
+            <tr>
+              <td>Q2 2025</td><td>OT-006 (SEL-351 SS-02)</td>
+              <td>Default password remediation + annual relay test</td>
+              <td>MVEC SCADA Eng.</td>
+              <td><span class="badge b-ok">No</span></td>
+              <td><span class="badge b-pend">Pending — CRITICAL</span></td>
+            </tr>
+            <tr>
+              <td>Q2 2025</td><td>NET-003 (OT Switch)</td>
+              <td>HiOS firmware update 8.0 → 9.x</td>
+              <td>TechPath + MVEC OT</td>
+              <td><span class="badge b-warn">Yes — brief OT outage</span></td>
+              <td><span class="badge b-pend">Pending Window</span></td>
+            </tr>
+            <tr>
+              <td>Q3 2025</td><td>OT-002, OT-003 (D20MX RTUs)</td>
+              <td>RTU firmware update FW 2.12 → 2.17</td>
+              <td>GE Grid Solutions</td>
+              <td><span class="badge b-warn">Yes — substation outage</span></td>
+              <td><span class="badge b-sched">Tentative</span></td>
+            </tr>
+            <tr>
+              <td>Q3 2025</td><td>OT-007 (3× IntelliRupter v3.9)</td>
+              <td>Firmware update v3.9 → v4.1</td>
+              <td>S&amp;C Electric</td>
+              <td><span class="badge b-warn">Yes — line sectionalizing</span></td>
+              <td><span class="badge b-sched">Scheduled (S&amp;C)</span></td>
+            </tr>
+            <tr>
+              <td>Q4 2025</td><td>NET-001/NET-005 (ASA)</td>
+              <td>Evaluate firewall replacement (Cisco Firepower or Fortinet)</td>
+              <td>TechPath MSP</td>
+              <td><span class="badge b-warn">Yes — outage</span></td>
+              <td><span class="badge b-pend">Pending Budget</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-calendar'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 9. EOL / EOS Register ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <span class="section-title">9. End-of-Life / End-of-Support Asset Register</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-eol">
+          <thead>
+            <tr>
+              <th>Asset ID</th><th>Asset</th><th>EOL / EOS Date</th><th>Severity</th>
+              <th>Compensating Control</th><th>Migration Plan</th><th>Est. Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="sev-crit">
+              <td class="mono">OT-001</td><td>GE e-terra SCADA platform</td>
+              <td>Dec 2021</td>
+              <td><span class="badge b-crit">Critical</span></td>
+              <td>Network isolation (partial); no patches available</td>
+              <td>No approved plan; options analysis in FY 2026 budget request</td>
+              <td>$380K–$520K</td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">SRV-003</td><td>Windows Server 2012 R2</td>
+              <td>Oct 2023</td>
+              <td><span class="badge b-crit">Critical</span></td>
+              <td>Firewall ACL; no direct internet access; backups current</td>
+              <td>OS migration to Win 2022 — Q2 2025 pending board approval</td>
+              <td>$4,200 (TechPath est.)</td>
+            </tr>
+            <tr class="sev-high">
+              <td class="mono">Endpoints ×2</td><td>Windows 7 Embedded (HMI consoles)</td>
+              <td>Jan 2020</td>
+              <td><span class="badge b-high">High</span></td>
+              <td>OT network isolation; no internet access; physical access controls</td>
+              <td>Hardware replacement required with SCADA platform migration</td>
+              <td>Bundled in SCADA migration cost</td>
+            </tr>
+            <tr class="sev-med">
+              <td class="mono">NET-001/005</td><td>Cisco ASA 5506-X (SW Maintenance)</td>
+              <td>Mar 2025</td>
+              <td><span class="badge b-med">Medium</span></td>
+              <td>Current IOS version has no known critical CVEs; monitored</td>
+              <td>Replacement firewall evaluation Q4 2025</td>
+              <td>$8,000–$15,000</td>
+            </tr>
+            <tr class="sev-med">
+              <td class="mono">NET-002</td><td>Cisco Catalyst 2960-X</td>
+              <td>Jan 2027</td>
+              <td><span class="badge b-med">Medium</span></td>
+              <td>Currently supported; monitoring EoL approach</td>
+              <td>Replacement budgeted FY 2026</td>
+              <td>$6,500–$9,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-eol'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 10. Maintenance Findings & Gaps ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🔍</span>
+      <span class="section-title">10. Maintenance Findings &amp; Gaps</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-findings">
+          <thead>
+            <tr>
+              <th>Finding ID</th><th>Description</th><th>Severity</th><th>Affected Assets</th>
+              <th>C2M2 Practice</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="sev-crit">
+              <td class="mono">MNT-01</td>
+              <td>GE e-terra SCADA platform is EOL with no available security patches and no approved migration plan</td>
+              <td><span class="badge b-crit">Critical</span></td>
+              <td>OT-001, SRV-002 (host)</td>
+              <td>ACM-1d, ARCH-CAM-1</td>
+              <td><span class="badge b-over">Open</span></td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">MNT-02</td>
+              <td>Windows Server 2012 R2 (ACCTG) is EOL; hosts HIGH-confidentiality billing data; 17+ months behind on patches</td>
+              <td><span class="badge b-crit">Critical</span></td>
+              <td>SRV-003</td>
+              <td>ACM-1d</td>
+              <td><span class="badge b-pend">Remediation Q2 2025</span></td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">MNT-03</td>
+              <td>No documented patch management policy or procedure for IT or OT systems</td>
+              <td><span class="badge b-crit">Critical</span></td>
+              <td>All systems</td>
+              <td>ACM-3, PROGRAM-1</td>
+              <td><span class="badge b-over">Open — Policy gap</span></td>
+            </tr>
+            <tr class="sev-high">
+              <td class="mono">MNT-04</td>
+              <td>HMI consoles running Windows 7 Embedded (EOL 2020); no patch path without full SCADA platform replacement</td>
+              <td><span class="badge b-high">High</span></td>
+              <td>HMI-001, HMI-002</td>
+              <td>ACM-1d, ARCH-CAM-1</td>
+              <td><span class="badge b-over">Open — Blocked on SCADA migration</span></td>
+            </tr>
+            <tr class="sev-high">
+              <td class="mono">MNT-05</td>
+              <td>SCADA01 (SRV-002) is 6+ months behind on cumulative patches; GE approval delays prevent timely patching</td>
+              <td><span class="badge b-high">High</span></td>
+              <td>SRV-002</td>
+              <td>ACM-1d</td>
+              <td><span class="badge b-sched">Patch window TBD Q1/Q2 2025</span></td>
+            </tr>
+            <tr class="sev-high">
+              <td class="mono">MNT-06</td>
+              <td>Cisco SmartNet contracts expired June 2023; no TAC access or IOS update rights for ASA or Catalyst</td>
+              <td><span class="badge b-high">High</span></td>
+              <td>NET-001, NET-002, NET-005</td>
+              <td>ACM-1d</td>
+              <td><span class="badge b-pend">Renewal or replacement Q4 2025</span></td>
+            </tr>
+            <tr class="sev-high">
+              <td class="mono">MNT-07</td>
+              <td>6 field laptops not enrolled in RMM tool; patch compliance unknown; no AV management</td>
+              <td><span class="badge b-high">High</span></td>
+              <td>Field laptops ×6</td>
+              <td>ACM-1, ACM-2</td>
+              <td><span class="badge b-over">Open</span></td>
+            </tr>
+            <tr class="sev-med">
+              <td class="mono">MNT-08</td>
+              <td>OT network switch (Hirschmann RS20) firmware 24 months behind; no OT change window defined</td>
+              <td><span class="badge b-med">Medium</span></td>
+              <td>NET-003</td>
+              <td>ACM-1d</td>
+              <td><span class="badge b-pend">Planned Q2 2025</span></td>
+            </tr>
+            <tr class="sev-med">
+              <td class="mono">MNT-09</td>
+              <td>GE D20MX RTU firmware 23 months behind; FW 2.17 available but no window scheduled</td>
+              <td><span class="badge b-med">Medium</span></td>
+              <td>OT-002, OT-003</td>
+              <td>ACM-1d</td>
+              <td><span class="badge b-sched">Tentative Q3 2025</span></td>
+            </tr>
+            <tr class="sev-med">
+              <td class="mono">MNT-10</td>
+              <td>No maintenance records or change logs maintained for OT devices; audit trail unavailable</td>
+              <td><span class="badge b-med">Medium</span></td>
+              <td>All OT assets</td>
+              <td>ACM-3, SITUATE-SA-2</td>
+              <td><span class="badge b-over">Open — Process gap</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-findings'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 11. C2M2 MIL Assessment ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📈</span>
+      <span class="section-title">11. C2M2 Asset Management (ACM) — Maintenance Practices Assessment</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-mil" class="mil-table">
+          <thead>
+            <tr><th>Practice ID</th><th>Practice Description</th><th>MIL Rating</th><th>Rationale</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">ACM-1a</td>
+              <td>Establish and maintain an asset inventory</td>
+              <td><span class="badge b-mil1">MIL 1</span></td>
+              <td>Informal inventory exists; not formally maintained or reviewed on schedule</td>
+            </tr>
+            <tr>
+              <td class="mono">ACM-1b</td>
+              <td>Prioritize assets based on criticality</td>
+              <td><span class="badge b-mil1">MIL 1</span></td>
+              <td>SCADA recognized as critical informally; no documented criticality tiering</td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">ACM-1d</td>
+              <td>Manage asset vulnerabilities through patching / upgrades</td>
+              <td><span class="badge b-mil0">MIL 0</span></td>
+              <td>No patch management program; two EOL systems in production; multiple overdue updates</td>
+            </tr>
+            <tr class="sev-med">
+              <td class="mono">ACM-2a</td>
+              <td>Establish configuration baselines for assets</td>
+              <td><span class="badge b-mil0">MIL 0</span></td>
+              <td>No documented configuration baselines for IT or OT assets</td>
+            </tr>
+            <tr class="sev-crit">
+              <td class="mono">ACM-3a</td>
+              <td>Implement a configuration management process</td>
+              <td><span class="badge b-mil0">MIL 0</span></td>
+              <td>No change management process; OT changes made informally; no maintenance logs</td>
+            </tr>
+            <tr>
+              <td class="mono">ACM-3b</td>
+              <td>Address identified vulnerabilities</td>
+              <td><span class="badge b-mil1">MIL 1</span></td>
+              <td>Some remediation actions are being planned (SRV-003 migration, relay passwords)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="info-box crit mt-2">
+        <strong>Overall Maintenance MIL Rating: MIL 0 / MIL 1 boundary.</strong> MVEC demonstrates ad-hoc awareness of maintenance needs but lacks the documented policies, procedures, and program management infrastructure to achieve consistent MIL 1 (Performed) across ACM practices related to maintenance. The absence of a patch management program is the primary gap.
+      </div>
+      <button class="add-info-btn" onclick="addInfoBox(this)">+ Add Info Box</button>
+    </div>
+  </div>
+
+  <!-- ── 12. Remediation Roadmap ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🗺️</span>
+      <span class="section-title">12. Remediation Roadmap</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-remediation">
+          <thead>
+            <tr><th>Priority</th><th>Action</th><th>Owner</th><th>Target Date</th><th>Est. Cost</th><th>MIL Impact</th></tr>
+          </thead>
+          <tbody>
+            <tr class="sev-crit">
+              <td><span class="badge b-crit">P1 — Immediate</span></td>
+              <td>Remediate default passwords on SEL-351 relay at SS-02 (MNT-03 related)</td>
+              <td>MVEC SCADA Eng. (Dobrowski)</td>
+              <td>Within 30 days</td>
+              <td>$0 (staff time)</td>
+              <td>ACM-1d ↑</td>
+            </tr>
+            <tr class="sev-crit">
+              <td><span class="badge b-crit">P1 — 30 Days</span></td>
+              <td>Document and publish a Patch Management Policy covering IT and OT systems</td>
+              <td>IT Manager (Harmon) + TechPath</td>
+              <td>Apr 2025</td>
+              <td>~$2,000 (consulting)</td>
+              <td>ACM-3a, PROGRAM ↑</td>
+            </tr>
+            <tr class="sev-crit">
+              <td><span class="badge b-crit">P1 — 60 Days</span></td>
+              <td>Enroll field laptops in TechPath RMM; enforce patch and AV baseline</td>
+              <td>TechPath MSP</td>
+              <td>May 2025</td>
+              <td>Included in MSP contract</td>
+              <td>ACM-1, ACM-2 ↑</td>
+            </tr>
+            <tr class="sev-high">
+              <td><span class="badge b-high">P2 — 90 Days</span></td>
+              <td>Complete OS migration SRV-003 (Win 2012 R2 → Win 2022)</td>
+              <td>TechPath MSP</td>
+              <td>Jun 2025</td>
+              <td>$4,200</td>
+              <td>ACM-1d ↑</td>
+            </tr>
+            <tr class="sev-high">
+              <td><span class="badge b-high">P2 — 90 Days</span></td>
+              <td>Schedule and execute SCADA01 (SRV-002) patch window with GE Grid Solutions</td>
+              <td>IT Mgr + GE Grid</td>
+              <td>Jun 2025</td>
+              <td>~$3,000 (GE T&amp;M)</td>
+              <td>ACM-1d ↑</td>
+            </tr>
+            <tr class="sev-high">
+              <td><span class="badge b-high">P2 — 120 Days</span></td>
+              <td>Update OT network switch (NET-003) firmware; define recurring OT change window policy</td>
+              <td>TechPath + MVEC OT</td>
+              <td>Jul 2025</td>
+              <td>$1,500 (labor)</td>
+              <td>ACM-1d, ACM-3 ↑</td>
+            </tr>
+            <tr class="sev-med">
+              <td><span class="badge b-med">P3 — 180 Days</span></td>
+              <td>Renew or replace Cisco SmartNet / ASA hardware; evaluate next-gen firewall</td>
+              <td>IT Mgr + TechPath</td>
+              <td>Sep 2025</td>
+              <td>$8,000–$15,000</td>
+              <td>ACM-1d ↑</td>
+            </tr>
+            <tr class="sev-med">
+              <td><span class="badge b-med">P3 — 180 Days</span></td>
+              <td>Implement OT maintenance log / change register in ticketing system</td>
+              <td>MVEC SCADA Eng.</td>
+              <td>Sep 2025</td>
+              <td>$0 (process change)</td>
+              <td>ACM-3, SITUATE ↑</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-na">Long-Term</span></td>
+              <td>Commission SCADA platform replacement study (e-terra EOL) and begin board budget process</td>
+              <td>GM (Bynum) + Board</td>
+              <td>FY 2026</td>
+              <td>$380K–$520K</td>
+              <td>OT-001 EOL remediation</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-remediation'))">+ Add Row</button>
+    </div>
+  </div>
+
+</div><!-- /report-body -->
+
+<script>
+/* ══ Storage ══ */
+const STORAGE_KEY = 'mvec_maintenance_v1';
+let editMode = false;
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) document.getElementById('mainContainer').innerHTML = saved;
+});
+
+/* ══ Toggle Edit Mode ══ */
+function toggleEditMode() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode', editMode);
+  const btn = document.getElementById('editToggleBtn');
+  if (editMode) {
+    btn.textContent = '💾 Save & Exit Edit';
+    btn.classList.add('active');
+    enableEditing();
+  } else {
+    btn.textContent = '✏️ Edit Mode';
+    btn.classList.remove('active');
+    disableEditing();
+    saveToStorage();
+  }
+}
+
+function enableEditing() {
+  /* Tables: editable cells + delete column */
+  document.querySelectorAll('#mainContainer table').forEach(tbl => {
+    const hRow = tbl.querySelector('thead tr');
+    if (hRow) {
+      const dh = document.createElement('th');
+      dh.className = 'del-col'; dh.textContent = '';
+      hRow.appendChild(dh);
+    }
+    tbl.querySelectorAll('tbody tr').forEach(row => {
+      row.querySelectorAll('td').forEach(td => { td.contentEditable = 'true'; });
+      const dc = mkDelCell(() => row.remove());
+      row.appendChild(dc);
+    });
+  });
+  /* Info boxes */
+  document.querySelectorAll('#mainContainer .info-box').forEach(box => {
+    box.contentEditable = 'true';
+    const d = mkDelBtn(() => box.remove());
+    d.contentEditable = 'false';
+    box.appendChild(d);
+  });
+}
+
+function disableEditing() {
+  document.querySelectorAll('#mainContainer .del-col').forEach(el => el.remove());
+  document.querySelectorAll('#mainContainer .del-btn').forEach(el => el.remove());
+  document.querySelectorAll('#mainContainer [contenteditable="true"]').forEach(el => {
+    el.removeAttribute('contenteditable');
+  });
+}
+
+function mkDelBtn(fn) {
+  const b = document.createElement('button');
+  b.className = 'del-btn'; b.textContent = '×';
+  b.onclick = (e) => { e.stopPropagation(); fn(); };
+  return b;
+}
+
+function mkDelCell(fn) {
+  const td = document.createElement('td');
+  td.className = 'del-col';
+  td.appendChild(mkDelBtn(fn));
+  return td;
+}
+
+function addTableRow(tbl) {
+  const hRow = tbl.querySelector('thead tr');
+  const colCount = [...hRow.cells].filter(c => !c.classList.contains('del-col')).length;
+  const tr = document.createElement('tr');
+  for (let i = 0; i < colCount; i++) {
+    const td = document.createElement('td');
+    td.contentEditable = 'true'; td.textContent = '—';
+    tr.appendChild(td);
+  }
+  if (editMode) tr.appendChild(mkDelCell(() => tr.remove()));
+  tbl.querySelector('tbody').appendChild(tr);
+}
+
+function addInfoBox(addBtn) {
+  const box = document.createElement('div');
+  box.className = 'info-box info';
+  box.contentEditable = 'true';
+  box.textContent = 'New note — click to edit.';
+  const d = mkDelBtn(() => box.remove());
+  d.contentEditable = 'false';
+  box.appendChild(d);
+  addBtn.parentNode.insertBefore(box, addBtn);
+}
+
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEY, document.getElementById('mainContainer').innerHTML);
+}
+
+function resetChanges() {
+  if (confirm('Reset all changes and reload original report data?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+function exportHTML() {
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelector('.edit-toolbar')?.remove();
+  clone.querySelector('.edit-banner')?.remove();
+  clone.querySelectorAll('.add-row-btn, .add-info-btn, .del-btn, .del-col').forEach(el => el.remove());
+  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  const blob = new Blob(['<!DOCTYPE html>' + clone.outerHTML], { type: 'text/html' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'MVEC-Maintenance-Report.html'; a.click();
+}
+</script>
+</body>
+</html>
