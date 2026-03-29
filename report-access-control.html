@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Access Control Matrix — MVEC C2M2 Audit Report</title>
+<style>
+  /* ── Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #0a1628;
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .report-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d2137 100%);
+    border-bottom: 3px solid #3b82f6;
+    padding: 2rem 2.5rem 1.5rem;
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+  .report-badge {
+    background: rgba(59,130,246,.15);
+    border: 1px solid rgba(59,130,246,.4);
+    border-radius: 6px;
+    padding: .3rem .8rem;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: #93c5fd;
+    text-transform: uppercase;
+  }
+  .report-title { margin-top: .6rem; font-size: 1.9rem; font-weight: 700; color: #f1f5f9; line-height: 1.2; }
+  .report-subtitle { margin-top: .3rem; font-size: 1rem; color: #7dd3fc; }
+  .doc-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .5rem; margin-top: 1.2rem; }
+  .meta-item { background: rgba(255,255,255,.05); border-radius: 6px; padding: .5rem .9rem; }
+  .meta-label { font-size: .68rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; }
+  .meta-value { font-size: .88rem; color: #e2e8f0; font-weight: 600; margin-top: .15rem; }
+
+  /* ── Edit Toolbar ── */
+  .edit-toolbar {
+    position: fixed; top: 12px; right: 16px; z-index: 9999;
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
+  }
+  .et-btn {
+    padding: .45rem 1rem; border: none; border-radius: 6px;
+    font-size: .82rem; font-weight: 600; cursor: pointer; transition: opacity .15s;
+  }
+  .et-btn:hover { opacity: .85; }
+  .et-edit   { background: #2563eb; color: #fff; }
+  .et-edit.active { background: #16a34a; }
+  .et-export { background: #0e7490; color: #fff; }
+  .et-print  { background: #7c3aed; color: #fff; }
+  .et-reset  { background: #b91c1c; color: #fff; }
+
+  .edit-banner {
+    display: none;
+    background: #16a34a; color: #fff;
+    text-align: center; padding: .4rem; font-size: .82rem; font-weight: 600;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .edit-mode .edit-banner { display: block; }
+
+  /* ── Main Layout ── */
+  .report-body { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* ── Section Cards ── */
+  .section-card {
+    background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  .section-header {
+    background: linear-gradient(90deg, rgba(37,99,235,.2) 0%, rgba(37,99,235,.05) 100%);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: .8rem;
+  }
+  .section-icon { font-size: 1.3rem; }
+  .section-title { font-size: 1.1rem; font-weight: 700; color: #93c5fd; }
+  .section-body { padding: 1.5rem; }
+
+  /* ── Summary Stats ── */
+  .stat-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+  .stat-box {
+    flex: 1 1 160px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    text-align: center;
+  }
+  .stat-num { font-size: 2rem; font-weight: 700; color: #60a5fa; }
+  .stat-lbl { font-size: .75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-top: .2rem; }
+
+  /* ── Tables ── */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  thead tr { background: rgba(37,99,235,.25); }
+  th { padding: .6rem .8rem; text-align: left; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #93c5fd; border-bottom: 1px solid rgba(255,255,255,.12); white-space: nowrap; }
+  td { padding: .55rem .8rem; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+  tr:hover td { background: rgba(255,255,255,.03); }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block; padding: .15rem .55rem; border-radius: 4px;
+    font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap;
+  }
+  .b-yes   { background: rgba(34,197,94,.18);  color: #4ade80; border: 1px solid rgba(34,197,94,.35); }
+  .b-no    { background: rgba(239,68,68,.18);   color: #f87171; border: 1px solid rgba(239,68,68,.35); }
+  .b-ro    { background: rgba(234,179,8,.18);   color: #fbbf24; border: 1px solid rgba(234,179,8,.35); }
+  .b-rw    { background: rgba(59,130,246,.18);  color: #93c5fd; border: 1px solid rgba(59,130,246,.35); }
+  .b-adm   { background: rgba(168,85,247,.18);  color: #c084fc; border: 1px solid rgba(168,85,247,.35); }
+  .b-crit  { background: rgba(239,68,68,.2);    color: #fca5a5; border: 1px solid rgba(239,68,68,.45); }
+  .b-high  { background: rgba(251,146,60,.18);  color: #fb923c; border: 1px solid rgba(251,146,60,.35); }
+  .b-med   { background: rgba(234,179,8,.18);   color: #fbbf24; border: 1px solid rgba(234,179,8,.35); }
+  .b-low   { background: rgba(34,197,94,.18);   color: #4ade80; border: 1px solid rgba(34,197,94,.35); }
+  .b-shared { background: rgba(239,68,68,.25);  color: #fca5a5; border: 2px solid rgba(239,68,68,.6); }
+  .b-priv  { background: rgba(168,85,247,.25);  color: #e879f9; border: 1px solid rgba(168,85,247,.5); }
+  .b-mfa   { background: rgba(20,184,166,.18);  color: #5eead4; border: 1px solid rgba(20,184,166,.35); }
+  .b-nomfa { background: rgba(239,68,68,.18);   color: #f87171; border: 1px solid rgba(239,68,68,.35); }
+  .b-svc   { background: rgba(100,116,139,.18); color: #94a3b8; border: 1px solid rgba(100,116,139,.35); }
+  .b-ext   { background: rgba(245,158,11,.18);  color: #fcd34d; border: 1px solid rgba(245,158,11,.35); }
+
+  /* Access cell shorthands in matrix */
+  .ac-adm  { color: #c084fc; font-weight: 700; }
+  .ac-rw   { color: #93c5fd; }
+  .ac-ro   { color: #fbbf24; }
+  .ac-n    { color: #475569; }
+
+  /* ── Info / Finding boxes ── */
+  .info-box {
+    border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: .8rem; font-size: .84rem; line-height: 1.6;
+    border-left: 4px solid;
+  }
+  .info-box.info   { background: rgba(59,130,246,.1);  border-color: #3b82f6; color: #bfdbfe; }
+  .info-box.warn   { background: rgba(234,179,8,.1);   border-color: #ca8a04; color: #fde68a; }
+  .info-box.crit   { background: rgba(239,68,68,.12);  border-color: #dc2626; color: #fecaca; }
+  .info-box.ok     { background: rgba(34,197,94,.1);   border-color: #16a34a; color: #bbf7d0; }
+  .info-box strong { font-weight: 700; }
+
+  /* ── Finding rows ── */
+  .finding-row td:first-child { font-weight: 700; }
+  .sev-crit td { border-left: 3px solid #dc2626; }
+  .sev-high td { border-left: 3px solid #ea580c; }
+  .sev-med  td { border-left: 3px solid #ca8a04; }
+
+  /* ── Edit-mode UI ── */
+  [contenteditable="true"] { outline: 1px dashed rgba(59,130,246,.5); border-radius: 3px; min-width: 20px; }
+  [contenteditable="true"]:focus { outline: 2px solid #3b82f6; background: rgba(59,130,246,.08); }
+  .del-btn {
+    display: none;
+    background: #dc2626; color: #fff; border: none; border-radius: 4px;
+    font-size: .7rem; font-weight: 700; cursor: pointer; padding: .1rem .4rem; margin-left: 4px;
+    vertical-align: middle; line-height: 1.4;
+  }
+  .del-col { width: 32px; text-align: center; }
+  .del-col .del-btn { display: inline-block; }
+  .add-row-btn, .add-info-btn {
+    display: none;
+    margin-top: .6rem;
+    background: rgba(37,99,235,.3); color: #93c5fd;
+    border: 1px dashed #3b82f6; border-radius: 6px;
+    padding: .35rem .9rem; font-size: .78rem; cursor: pointer;
+  }
+  .add-row-btn:hover, .add-info-btn:hover { background: rgba(37,99,235,.5); }
+  .edit-mode .del-btn    { display: inline-block; }
+  .edit-mode .add-row-btn,
+  .edit-mode .add-info-btn { display: inline-block; }
+
+  /* ── Utility ── */
+  .mono { font-family: 'Consolas', 'Courier New', monospace; font-size: .8rem; }
+  .text-muted { color: #64748b; font-size: .78rem; }
+  .mt-1 { margin-top: .5rem; }
+  .mt-2 { margin-top: 1rem; }
+  p { margin-bottom: .5rem; }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; color: #1e293b; }
+    .report-header { background: #1e3a5f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .edit-toolbar, .edit-banner, .add-row-btn, .add-info-btn, .del-btn, .del-col { display: none !important; }
+    .section-card { break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ EDIT TOOLBAR ══ -->
+<div class="edit-toolbar">
+  <button class="et-btn et-edit" id="editToggleBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+  <button class="et-btn et-export" onclick="exportHTML()">💾 Export HTML</button>
+  <button class="et-btn et-print" onclick="window.print()">🖨️ Print</button>
+  <button class="et-btn et-reset" onclick="resetChanges()">🔄 Reset</button>
+</div>
+
+<div class="edit-banner">✏️ EDIT MODE ACTIVE — Click any cell or text to edit. Use + buttons to add rows. Use × to delete.</div>
+
+<!-- ══ REPORT HEADER ══ -->
+<div class="report-header">
+  <div class="header-top">
+    <div>
+      <div class="report-badge">C2M2 Audit Report · ACCESS Domain</div>
+      <div class="report-title">Access Control Matrix</div>
+      <div class="report-subtitle">Muskingum Valley Electric Cooperative (MVEC) — Identity &amp; Access Management Assessment</div>
+    </div>
+  </div>
+  <div class="doc-meta">
+    <div class="meta-item"><div class="meta-label">Organization</div><div class="meta-value">Muskingum Valley Electric Cooperative</div></div>
+    <div class="meta-item"><div class="meta-label">Report ID</div><div class="meta-value">MVEC-ACM-2025-001</div></div>
+    <div class="meta-item"><div class="meta-label">Assessment Date</div><div class="meta-value">March 28, 2025</div></div>
+    <div class="meta-item"><div class="meta-label">Prepared By</div><div class="meta-value">IT Department / C2M2 Assessor</div></div>
+    <div class="meta-item"><div class="meta-label">Classification</div><div class="meta-value">SENSITIVE — Internal Use Only</div></div>
+    <div class="meta-item"><div class="meta-label">C2M2 Domain</div><div class="meta-value">ACCESS (Identity &amp; Access Management)</div></div>
+  </div>
+</div>
+
+<!-- ══ REPORT BODY ══ -->
+<div class="report-body" id="mainContainer">
+
+  <!-- ── 1. Scope & Purpose ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🎯</span>
+      <span class="section-title">1. Scope &amp; Purpose</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box info">
+        <strong>Purpose:</strong> This Access Control Matrix documents all user accounts, system access rights, privileged accounts, shared/generic accounts, and third-party access arrangements for MVEC. It supports evaluation of the C2M2 ACCESS domain (Identity &amp; Access Management) at MIL 1–3 and maps known gaps against NERC CIP-007-6 and NIST SP 800-53 AC controls.
+      </div>
+      <div class="info-box warn">
+        <strong>Scope:</strong> All MVEC information systems including corporate IT (Active Directory-equivalent local accounts), operational technology (SCADA/HMI, AMI head-end, RTUs), and third-party remote access pathways. Contractor and vendor accounts are included. Physical access controls are out of scope for this report.
+      </div>
+      <button class="add-info-btn" onclick="addInfoBox(this)">+ Add Info Box</button>
+    </div>
+  </div>
+
+  <!-- ── 2. IAM Summary ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <span class="section-title">2. IAM Summary</span>
+    </div>
+    <div class="section-body">
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" id="s-total">22</div><div class="stat-lbl">Total Accounts</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-user">12</div><div class="stat-lbl">Named User Accounts</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-priv">5</div><div class="stat-lbl">Privileged Accounts</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-shared">3</div><div class="stat-lbl">Shared/Generic Accts</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-svc">2</div><div class="stat-lbl">Service Accounts</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-3p">3</div><div class="stat-lbl">Third-Party Accounts</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-mfa" style="color:#f87171">0%</div><div class="stat-lbl">MFA Coverage</div></div>
+      </div>
+      <div class="info-box crit">
+        <strong>Critical Finding:</strong> MVEC has <strong>zero MFA deployment</strong> across all systems. No centralized identity provider (Active Directory, LDAP, SSO) exists. Accounts are managed locally on each system with no unified provisioning or de-provisioning workflow.
+      </div>
+      <button class="add-info-btn" onclick="addInfoBox(this)">+ Add Info Box</button>
+    </div>
+  </div>
+
+  <!-- ── 3. User Account Inventory ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">👤</span>
+      <span class="section-title">3. User Account Inventory</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box info">
+        <strong>Note:</strong> All accounts are local OS/application accounts. No enterprise directory (AD/LDAP) is in use. Password policies are applied per-system with no central enforcement. Account provisioning/de-provisioning is manual and undocumented.
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-users">
+          <thead>
+            <tr>
+              <th>Account ID</th><th>Full Name</th><th>Role / Title</th><th>Department</th>
+              <th>Account Type</th><th>MFA</th><th>Last PW Change</th><th>Status</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">harmon.d</td><td>Dale Harmon</td><td>General Manager</td><td>Executive</td><td><span class="badge b-priv">Privileged</span></td><td><span class="badge b-nomfa">None</span></td><td>2024-01-15</td><td><span class="badge b-yes">Active</span></td><td>Full admin on Corp LAN; local admin on SCADA workstation</td></tr>
+            <tr><td class="mono">fulton.r</td><td>Randy Fulton</td><td>Operations Manager</td><td>Operations</td><td><span class="badge b-priv">Privileged</span></td><td><span class="badge b-nomfa">None</span></td><td>2024-03-10</td><td><span class="badge b-yes">Active</span></td><td>Read/Write SCADA; approves switching orders</td></tr>
+            <tr><td class="mono">albright.c</td><td>Carol Albright</td><td>Office Manager / Billing</td><td>Finance</td><td><span class="badge b-ro">Standard</span></td><td><span class="badge b-nomfa">None</span></td><td>2024-02-28</td><td><span class="badge b-yes">Active</span></td><td>CIS billing full access; QuickBooks admin</td></tr>
+            <tr><td class="mono">bynum.t</td><td>Terry Bynum</td><td>Lead Lineman</td><td>Field Ops</td><td><span class="badge b-ro">Standard</span></td><td><span class="badge b-nomfa">None</span></td><td>2023-11-05</td><td><span class="badge b-yes">Active</span></td><td>SCADA read-only; GIS read; tablet field access</td></tr>
+            <tr><td class="mono">westfall.m</td><td>Mark Westfall</td><td>Lineman / Crew Lead</td><td>Field Ops</td><td><span class="badge b-ro">Standard</span></td><td><span class="badge b-nomfa">None</span></td><td>2023-09-18</td><td><span class="badge b-yes">Active</span></td><td>GIS read; tablet field access; no SCADA</td></tr>
+            <tr><td class="mono">dobrowski.k</td><td>Kurt Dobrowski</td><td>IT / OT Admin</td><td>IT</td><td><span class="badge b-priv">Privileged</span></td><td><span class="badge b-nomfa">None</span></td><td>2024-06-01</td><td><span class="badge b-yes">Active</span></td><td>Local admin on all servers; SCADA full admin; primary IT contact</td></tr>
+            <tr><td class="mono">zumpf.b</td><td>Barbara Zumpf</td><td>Customer Service Rep</td><td>Customer Svc</td><td><span class="badge b-ro">Standard</span></td><td><span class="badge b-nomfa">None</span></td><td>2024-01-22</td><td><span class="badge b-yes">Active</span></td><td>CIS read/write; M365 standard; no OT access</td></tr>
+            <tr><td class="mono">pryor.j</td><td>Jim Pryor</td><td>Staking Tech / Engineer</td><td>Engineering</td><td><span class="badge b-ro">Standard</span></td><td><span class="badge b-nomfa">None</span></td><td>2023-12-10</td><td><span class="badge b-yes">Active</span></td><td>GIS full access; AutoCAD; no OT access</td></tr>
+            <tr><td class="mono">techpath.admin</td><td>TechPath MSP (shared)</td><td>Managed IT Admin</td><td>Vendor</td><td><span class="badge b-priv">Privileged</span></td><td><span class="badge b-nomfa">None</span></td><td>Unknown</td><td><span class="badge b-yes">Active</span></td><td>Always-on VPN; local admin on all IT servers; shared credential</td></tr>
+            <tr><td class="mono">techpath.help</td><td>TechPath MSP (helpdesk)</td><td>Managed IT Helpdesk</td><td>Vendor</td><td><span class="badge b-ro">Standard</span></td><td><span class="badge b-nomfa">None</span></td><td>Unknown</td><td><span class="badge b-yes">Active</span></td><td>M365 support access; shared credential among TechPath staff</td></tr>
+            <tr><td class="mono">ge.scada</td><td>GE Grid Solutions (VPN)</td><td>SCADA Vendor Support</td><td>Vendor</td><td><span class="badge b-priv">Privileged</span></td><td><span class="badge b-nomfa">None</span></td><td>Unknown</td><td><span class="badge b-yes">Active</span></td><td>Dedicated site-to-site VPN; SCADA maintenance access; no MFA; always-on</td></tr>
+            <tr><td class="mono">nisc.portal</td><td>NISC (billing SaaS)</td><td>Billing System Vendor</td><td>Vendor</td><td><span class="badge b-svc">Service</span></td><td><span class="badge b-nomfa">None</span></td><td>2022-05-10</td><td><span class="badge b-yes">Active</span></td><td>API service account for CIS ↔ NISC portal sync</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-users'))">+ Add Account</button>
+    </div>
+  </div>
+
+  <!-- ── 4. System Access Rights Matrix ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🔐</span>
+      <span class="section-title">4. System Access Rights Matrix</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box info">
+        <strong>Legend:</strong>
+        <span class="badge b-adm">ADMIN</span> full administrative access &nbsp;|&nbsp;
+        <span class="badge b-rw">R/W</span> read &amp; write &nbsp;|&nbsp;
+        <span class="badge b-ro">R/O</span> read only &nbsp;|&nbsp;
+        <span class="badge b-no">—</span> no access
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-matrix">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Corp LAN / File Server</th>
+              <th>M365 / Email</th>
+              <th>CIS (Billing)</th>
+              <th>GIS / AutoCAD</th>
+              <th>SCADA / HMI</th>
+              <th>AMI Head-End</th>
+              <th>QuickBooks</th>
+              <th>NISC Portal</th>
+              <th>Buckeye EMS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">harmon.d</td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-ro">R/O</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-ro">R/O</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-ro">R/O</span></td></tr>
+            <tr><td class="mono">fulton.r</td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-ro">R/O</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-rw">R/W</span></td></tr>
+            <tr><td class="mono">albright.c</td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-no">—</span></td></tr>
+            <tr><td class="mono">bynum.t</td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-ro">R/O</span></td><td><span class="badge b-ro">R/O</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td></tr>
+            <tr><td class="mono">westfall.m</td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-ro">R/O</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td></tr>
+            <tr><td class="mono">dobrowski.k</td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td></tr>
+            <tr><td class="mono">zumpf.b</td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-ro">R/O</span></td><td><span class="badge b-no">—</span></td></tr>
+            <tr><td class="mono">pryor.j</td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td></tr>
+            <tr><td class="mono">techpath.admin</td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td></tr>
+            <tr><td class="mono">techpath.help</td><td><span class="badge b-ro">R/O</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td></tr>
+            <tr><td class="mono">ge.scada</td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td></tr>
+            <tr><td class="mono">nisc.portal</td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-rw">R/W</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-no">—</span></td><td><span class="badge b-adm">ADMIN</span></td><td><span class="badge b-no">—</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-matrix'))">+ Add Row</button>
+    </div>
+  </div>
+
+  <!-- ── 5. Privileged Accounts Register ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🛡️</span>
+      <span class="section-title">5. Privileged Accounts Register</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box warn">
+        <strong>Finding:</strong> No Privileged Access Management (PAM) tool is deployed. Privileged accounts share the same login pathway as standard users with no additional authentication step. Session recording of privileged activity does not exist.
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-priv">
+          <thead>
+            <tr>
+              <th>Account</th><th>Name / Entity</th><th>Systems with Admin</th>
+              <th>MFA</th><th>Dedicated Admin Acct</th><th>Session Recorded</th><th>Review Frequency</th><th>Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">harmon.d</td><td>Dale Harmon</td><td>Corp LAN, M365, CIS, SCADA</td><td><span class="badge b-nomfa">None</span></td><td><span class="badge b-no">No</span></td><td><span class="badge b-no">No</span></td><td>Annual</td><td><span class="badge b-high">HIGH</span></td></tr>
+            <tr><td class="mono">fulton.r</td><td>Randy Fulton</td><td>SCADA/HMI, AMI, Buckeye EMS</td><td><span class="badge b-nomfa">None</span></td><td><span class="badge b-no">No</span></td><td><span class="badge b-no">No</span></td><td>Annual</td><td><span class="badge b-high">HIGH</span></td></tr>
+            <tr><td class="mono">dobrowski.k</td><td>Kurt Dobrowski</td><td>All IT servers, SCADA, AMI, GIS, CIS</td><td><span class="badge b-nomfa">None</span></td><td><span class="badge b-no">No</span></td><td><span class="badge b-no">No</span></td><td>Annual</td><td><span class="badge b-crit">CRITICAL</span></td></tr>
+            <tr><td class="mono">techpath.admin</td><td>TechPath MSP (shared)</td><td>All IT servers, M365, CIS, GIS</td><td><span class="badge b-nomfa">None</span></td><td><span class="badge b-yes">Yes (vendor)</span></td><td><span class="badge b-no">No</span></td><td>None / Unknown</td><td><span class="badge b-crit">CRITICAL</span></td></tr>
+            <tr><td class="mono">ge.scada</td><td>GE Grid Solutions</td><td>SCADA/HMI (full admin)</td><td><span class="badge b-nomfa">None</span></td><td><span class="badge b-yes">Yes (vendor)</span></td><td><span class="badge b-no">No</span></td><td>None / Unknown</td><td><span class="badge b-crit">CRITICAL</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-priv'))">+ Add Account</button>
+    </div>
+  </div>
+
+  <!-- ── 6. Shared / Generic Accounts ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <span class="section-title">6. Shared &amp; Generic Accounts</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box crit">
+        <strong>Critical Finding:</strong> Multiple shared accounts exist with no individual accountability. The SCADA_ADMIN account is the most critical — it is the primary operational account used for SCADA/HMI control actions and is shared among multiple operators. This account cannot be attributed to any individual user action in logs.
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-shared">
+          <thead>
+            <tr>
+              <th>Account ID</th><th>System(s)</th><th>Purpose</th><th>Users with Access</th>
+              <th>Password Changed</th><th>Justification on File</th><th>Risk</th><th>Recommended Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono"><span class="badge b-shared">SCADA_ADMIN</span></td>
+              <td>GE e-terra SCADA/HMI, SRV-002</td>
+              <td>Primary SCADA operational account; used for all HMI control actions</td>
+              <td>harmon.d, fulton.r, dobrowski.k, ge.scada vendor</td>
+              <td><span class="badge b-no">Never (factory)</span></td>
+              <td><span class="badge b-no">No</span></td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+              <td>Immediate: create individual named accounts; disable shared account</td>
+            </tr>
+            <tr>
+              <td class="mono"><span class="badge b-shared">techpath.admin</span></td>
+              <td>All IT servers, CIS, GIS, M365</td>
+              <td>MSP managed IT administration — shared by all TechPath technicians</td>
+              <td>Multiple TechPath staff (count unknown)</td>
+              <td>Unknown — never confirmed changed</td>
+              <td><span class="badge b-no">No formal MOU</span></td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+              <td>Require named accounts per technician; implement MOU; enable logging</td>
+            </tr>
+            <tr>
+              <td class="mono"><span class="badge b-shared">techpath.help</span></td>
+              <td>M365, Corp LAN (read)</td>
+              <td>Helpdesk support — shared by TechPath helpdesk staff</td>
+              <td>Multiple TechPath helpdesk staff</td>
+              <td>Unknown</td>
+              <td><span class="badge b-no">No formal MOU</span></td>
+              <td><span class="badge b-high">HIGH</span></td>
+              <td>Require named accounts; scope access per ticket/session</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-shared'))">+ Add Account</button>
+    </div>
+  </div>
+
+  <!-- ── 7. Service Accounts ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <span class="section-title">7. Service Accounts</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-svc">
+          <thead>
+            <tr>
+              <th>Account ID</th><th>System</th><th>Purpose</th>
+              <th>Credential Mgmt</th><th>Least Privilege</th><th>Review Status</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">nisc.portal</td>
+              <td>CIS ↔ NISC SaaS Portal</td>
+              <td>API sync: billing data between on-prem CIS and NISC hosted portal</td>
+              <td><span class="badge b-no">Hardcoded in config</span></td>
+              <td><span class="badge b-med">Partial</span></td>
+              <td>Not reviewed since deployment (2022)</td>
+              <td>Credential stored in plaintext config file on SRV-003; password last changed 2022-05-10</td>
+            </tr>
+            <tr>
+              <td class="mono">ami.svc</td>
+              <td>AMI Head-End (SRV-004) ↔ SCADA</td>
+              <td>Automated data exchange between AMI head-end and SCADA historian</td>
+              <td><span class="badge b-no">Hardcoded in app</span></td>
+              <td><span class="badge b-no">No — excess rights</span></td>
+              <td>Never reviewed</td>
+              <td>Account has SCADA R/W access despite only needing read for meter data push; excess privilege</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-svc'))">+ Add Account</button>
+    </div>
+  </div>
+
+  <!-- ── 8. Third-Party / Vendor Access ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🌐</span>
+      <span class="section-title">8. Third-Party &amp; Vendor Remote Access</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box warn">
+        <strong>Finding:</strong> Both vendor remote access connections are always-on (no just-in-time access). Neither connection requires MFA. Access is not monitored in real time and no session recording is in place for either vendor.
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-vendor">
+          <thead>
+            <tr>
+              <th>Vendor</th><th>Connection Method</th><th>Always-On?</th>
+              <th>MFA</th><th>Systems Accessed</th><th>Access Level</th>
+              <th>Documented MOU/MSA</th><th>Session Logging</th><th>Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TechPath Solutions (MSP)</td>
+              <td>IPSec VPN (site-to-site) to Corp LAN (192.168.1.0/24)</td>
+              <td><span class="badge b-crit">YES — 24/7</span></td>
+              <td><span class="badge b-nomfa">None</span></td>
+              <td>All IT servers, M365, CIS, GIS</td>
+              <td><span class="badge b-adm">ADMIN</span></td>
+              <td><span class="badge b-no">No formal MSA</span></td>
+              <td><span class="badge b-no">None</span></td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+            </tr>
+            <tr>
+              <td>GE Grid Solutions (SCADA OEM)</td>
+              <td>Dedicated site-to-site VPN directly to OT LAN (10.0.10.0/24)</td>
+              <td><span class="badge b-crit">YES — 24/7</span></td>
+              <td><span class="badge b-nomfa">None</span></td>
+              <td>SCADA/HMI (SRV-002, OT-001)</td>
+              <td><span class="badge b-adm">ADMIN</span></td>
+              <td><span class="badge b-med">Basic SLA only</span></td>
+              <td><span class="badge b-no">None</span></td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+            </tr>
+            <tr>
+              <td>Buckeye Rural Electric (RTO tie)</td>
+              <td>Dedicated fiber + SCADA EMS link</td>
+              <td><span class="badge b-med">Operational only</span></td>
+              <td><span class="badge b-nomfa">None</span></td>
+              <td>Buckeye EMS portal (read-only telemetry export)</td>
+              <td><span class="badge b-ro">R/O</span></td>
+              <td><span class="badge b-yes">ICA on file</span></td>
+              <td><span class="badge b-med">EMS logs only</span></td>
+              <td><span class="badge b-med">MEDIUM</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-vendor'))">+ Add Vendor</button>
+    </div>
+  </div>
+
+  <!-- ── 9. OT Device Default Credentials ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🔧</span>
+      <span class="section-title">9. OT Device Credential Status</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box crit">
+        <strong>Critical Finding:</strong> Multiple OT/ICS devices retain factory default credentials. The SEL-351 relay at substation SS-02 (Oak Hill) has confirmed default username/password. The GE e-terra SCADA platform uses a shared SCADA_ADMIN account with a factory-set password. DNP3 SAv5 authentication is not implemented on any RTU or relay.
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-ot-creds">
+          <thead>
+            <tr>
+              <th>Asset ID</th><th>Device</th><th>Location</th>
+              <th>Default Creds Changed</th><th>MFA Available</th><th>Protocol Auth</th>
+              <th>Local Admin Account</th><th>Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>OT-001</td><td>GE e-terra SCADA Server</td><td>Coshocton HQ</td><td><span class="badge b-no">Partial (SCADA_ADMIN shared)</span></td><td><span class="badge b-no">No</span></td><td>Proprietary (no SAv5)</td><td>SCADA_ADMIN (shared)</td><td><span class="badge b-crit">CRITICAL</span></td></tr>
+            <tr><td>OT-002</td><td>GE D20MX RTU</td><td>SS-01 (Coshocton)</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-no">No</span></td><td>DNP3 (no SAv5)</td><td>rtu.admin (local)</td><td><span class="badge b-high">HIGH</span></td></tr>
+            <tr><td>OT-003</td><td>GE D20MX RTU</td><td>SS-02 (Oak Hill)</td><td><span class="badge b-med">Unknown</span></td><td><span class="badge b-no">No</span></td><td>DNP3 (no SAv5)</td><td>rtu.admin (local)</td><td><span class="badge b-high">HIGH</span></td></tr>
+            <tr><td>OT-004</td><td>SEL-2414 Substation Controller</td><td>SS-01 (Coshocton)</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-no">No</span></td><td>DNP3 (no SAv5)</td><td>SEL local account</td><td><span class="badge b-high">HIGH</span></td></tr>
+            <tr><td>OT-005</td><td>SEL-351 Protective Relay</td><td>SS-01 (Coshocton)</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-no">No</span></td><td>None (serial)</td><td>SEL local account</td><td><span class="badge b-med">MEDIUM</span></td></tr>
+            <tr><td>OT-006</td><td>SEL-351 Protective Relay</td><td>SS-02 (Oak Hill)</td><td><span class="badge b-crit">NO — DEFAULT PASSWORD</span></td><td><span class="badge b-no">No</span></td><td>None (serial)</td><td>SEL default "OTTER"</td><td><span class="badge b-crit">CRITICAL</span></td></tr>
+            <tr><td>OT-008</td><td>Landis+Gyr AMI Head-End v8.2</td><td>Coshocton HQ</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-no">No</span></td><td>RF mesh (proprietary)</td><td>ami.admin (local)</td><td><span class="badge b-high">HIGH</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-ot-creds'))">+ Add Device</button>
+    </div>
+  </div>
+
+  <!-- ── 10. Access Control Gaps & Findings ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🚨</span>
+      <span class="section-title">10. Access Control Gaps &amp; Findings</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-findings">
+          <thead>
+            <tr>
+              <th>#</th><th>Finding</th><th>Severity</th><th>C2M2 Domain / Practice</th>
+              <th>Affected Systems</th><th>Gap Description</th><th>Recommended Remediation</th><th>Target MIL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="finding-row sev-crit">
+              <td>ACM-01</td>
+              <td>No MFA on any system</td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+              <td>ACCESS: ACM-1c, ACM-2a</td>
+              <td>All systems</td>
+              <td>Zero multi-factor authentication deployed across all 12 accounts and 9 systems. Remote access (VPN) has no second factor.</td>
+              <td>Deploy MFA starting with privileged accounts and remote access; use Microsoft Authenticator or TOTP tokens; enforce at VPN gateway</td>
+              <td>MIL 2 → MIL 3</td>
+            </tr>
+            <tr class="finding-row sev-crit">
+              <td>ACM-02</td>
+              <td>Shared SCADA_ADMIN account — no individual accountability</td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+              <td>ACCESS: ACM-1a, ACM-1b; SITUATE: SA-2b</td>
+              <td>SCADA/HMI (OT-001, SRV-002)</td>
+              <td>Primary SCADA operational account is shared by 3 MVEC staff and GE vendor. No individual attribution in audit logs. Factory password never changed.</td>
+              <td>Create individual named SCADA accounts; disable SCADA_ADMIN; implement role-based SCADA access; change all factory passwords immediately</td>
+              <td>MIL 0 → MIL 2</td>
+            </tr>
+            <tr class="finding-row sev-crit">
+              <td>ACM-03</td>
+              <td>No centralized identity management (no AD/LDAP/SSO)</td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+              <td>ACCESS: ACM-1a, ACM-2c, ACM-3a</td>
+              <td>All systems</td>
+              <td>Each system manages accounts locally. No central provisioning, de-provisioning, or policy enforcement. Terminated employee access cannot be reliably revoked across all systems simultaneously.</td>
+              <td>Deploy Microsoft Entra ID (Azure AD) or on-prem AD with group policy; integrate all systems; automate provisioning/de-provisioning via HR triggers</td>
+              <td>MIL 1 → MIL 3</td>
+            </tr>
+            <tr class="finding-row sev-crit">
+              <td>ACM-04</td>
+              <td>Always-on third-party VPN with admin access — no JIT</td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+              <td>ACCESS: ACM-1e, ACM-2d; THIRD-PARTIES: TM-1a</td>
+              <td>TechPath VPN, GE Grid VPN</td>
+              <td>Both vendor VPNs are permanently active with admin-level credentials. No just-in-time (JIT) access, no session approval workflow, and no session recording.</td>
+              <td>Implement JIT VPN access with ticket-based approval; require MFA for all vendor sessions; deploy privileged access workstation (PAW) for vendor use; record all sessions</td>
+              <td>MIL 0 → MIL 3</td>
+            </tr>
+            <tr class="finding-row sev-crit">
+              <td>ACM-05</td>
+              <td>Default factory credentials on SEL-351 relay (OT-006) at SS-02</td>
+              <td><span class="badge b-crit">CRITICAL</span></td>
+              <td>ACCESS: ACM-1a; ARCH: AM-1b</td>
+              <td>OT-006 (SEL-351, Oak Hill)</td>
+              <td>SEL-351 at Oak Hill substation retains factory default password "OTTER". Device is accessible via the OT network segment.</td>
+              <td>Immediately change to a strong unique password per MVEC password policy; document in credential vault; verify SS-01 relay (OT-005) password as well</td>
+              <td>MIL 0 → MIL 1</td>
+            </tr>
+            <tr class="finding-row sev-high">
+              <td>ACM-06</td>
+              <td>No PAM tool — no privileged session management</td>
+              <td><span class="badge b-high">HIGH</span></td>
+              <td>ACCESS: ACM-2a, ACM-2b, ACM-3b</td>
+              <td>All systems with privileged accounts</td>
+              <td>No Privileged Access Management (PAM) tool deployed. Privileged sessions are not recorded, no time-based check-out of credentials, no automatic credential rotation.</td>
+              <td>Deploy PAM solution (CyberArk, BeyondTrust, or Delinea); vault all privileged credentials; enable session recording for all admin sessions</td>
+              <td>MIL 1 → MIL 3</td>
+            </tr>
+            <tr class="finding-row sev-high">
+              <td>ACM-07</td>
+              <td>No formal access review process</td>
+              <td><span class="badge b-high">HIGH</span></td>
+              <td>ACCESS: ACM-2c, ACM-3c</td>
+              <td>All systems</td>
+              <td>No documented periodic access review (recertification). Access accumulates over time. No evidence that terminated/transferred employee accounts are reviewed and revoked consistently.</td>
+              <td>Implement quarterly access recertification; document and track account lifecycle; assign account owner for each system; create off-boarding checklist</td>
+              <td>MIL 1 → MIL 2</td>
+            </tr>
+            <tr class="finding-row sev-high">
+              <td>ACM-08</td>
+              <td>DNP3 SAv5 not implemented on any RTU or relay</td>
+              <td><span class="badge b-high">HIGH</span></td>
+              <td>ACCESS: ACM-1d; ARCH: AM-1b</td>
+              <td>OT-002, OT-003 (RTUs), OT-004, OT-005, OT-006 (relays)</td>
+              <td>DNP3 Secure Authentication version 5 (SAv5) is not configured on any field device. SCADA polling traffic is unauthenticated and susceptible to spoofing or replay attacks.</td>
+              <td>Upgrade GE D20MX firmware to support SAv5; configure SAv5 on all DNP3 devices; test with GE Grid Solutions; include in next maintenance window</td>
+              <td>MIL 1 → MIL 2</td>
+            </tr>
+            <tr class="finding-row sev-med">
+              <td>ACM-09</td>
+              <td>Service account credentials hardcoded / plaintext in config files</td>
+              <td><span class="badge b-med">MEDIUM</span></td>
+              <td>ACCESS: ACM-1b, ACM-2a</td>
+              <td>SRV-003, SRV-004 (service accounts)</td>
+              <td>The nisc.portal and ami.svc service account credentials are stored in plaintext configuration files. The nisc.portal password was last changed in 2022 and has never been rotated.</td>
+              <td>Migrate credentials to a secrets manager or encrypted vault; enable automatic credential rotation; audit all config files for hardcoded passwords</td>
+              <td>MIL 1 → MIL 2</td>
+            </tr>
+            <tr class="finding-row sev-med">
+              <td>ACM-10</td>
+              <td>ami.svc service account has excess SCADA privileges</td>
+              <td><span class="badge b-med">MEDIUM</span></td>
+              <td>ACCESS: ACM-1c (Least Privilege)</td>
+              <td>SRV-004 (AMI), SCADA</td>
+              <td>The AMI-to-SCADA service account has read/write SCADA access despite only requiring read access for meter data forwarding. Violates least-privilege principle.</td>
+              <td>Create a dedicated read-only SCADA API account for AMI data push; revoke write permissions from ami.svc; document access justification</td>
+              <td>MIL 1 → MIL 2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-findings'))">+ Add Finding</button>
+    </div>
+  </div>
+
+  <!-- ── 11. C2M2 ACCESS Domain MIL Assessment ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <span class="section-title">11. C2M2 ACCESS Domain — Current MIL Assessment</span>
+    </div>
+    <div class="section-body">
+      <div class="info-box info">
+        <strong>C2M2 ACCESS Domain (Identity &amp; Access Management):</strong> Evaluates practices for managing identities and access to technology assets, information, and operational environments. MIL 1 = performed, MIL 2 = managed (policy-driven), MIL 3 = optimized (continuously improved).
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-mil">
+          <thead>
+            <tr>
+              <th>Practice ID</th><th>Practice Description</th>
+              <th>Current MIL</th><th>Evidence / Notes</th><th>Target MIL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>ACM-1a</td><td>Identify and authenticate users, devices, and other assets prior to granting access</td><td><span class="badge b-med">MIL 1 (Partial)</span></td><td>Local accounts exist but shared accounts and default creds undermine authentication integrity</td><td>MIL 2</td></tr>
+            <tr><td>ACM-1b</td><td>Manage identities and credentials for authorized users, devices, and services</td><td><span class="badge b-no">MIL 0</span></td><td>No central identity provider; no credential management policy; hardcoded service account passwords</td><td>MIL 2</td></tr>
+            <tr><td>ACM-1c</td><td>Authorize access based on least privilege and separation of duties</td><td><span class="badge b-no">MIL 0</span></td><td>No formal RBAC; users accumulate access; dobrowski.k is de-facto superuser for all systems</td><td>MIL 2</td></tr>
+            <tr><td>ACM-1d</td><td>Protect access control information</td><td><span class="badge b-med">MIL 1 (Partial)</span></td><td>System-level access lists exist but are not centrally documented or protected</td><td>MIL 2</td></tr>
+            <tr><td>ACM-1e</td><td>Manage remote access</td><td><span class="badge b-no">MIL 0</span></td><td>Always-on vendor VPNs with no MFA, JIT, or session monitoring</td><td>MIL 3</td></tr>
+            <tr><td>ACM-2a</td><td>Manage access control policies and procedures</td><td><span class="badge b-no">MIL 0</span></td><td>No formal access control policy document exists at MVEC</td><td>MIL 2</td></tr>
+            <tr><td>ACM-2b</td><td>Manage privileged access and accounts</td><td><span class="badge b-no">MIL 0</span></td><td>No PAM; privileged accounts use same login as standard; no session recording</td><td>MIL 2</td></tr>
+            <tr><td>ACM-2c</td><td>Review and update access rights periodically</td><td><span class="badge b-no">MIL 0</span></td><td>No access review process; no documented recertification cadence</td><td>MIL 2</td></tr>
+            <tr><td>ACM-2d</td><td>Manage access for third-party entities</td><td><span class="badge b-no">MIL 0</span></td><td>No formal MOU for TechPath; no JIT access; no vendor session logging</td><td>MIL 3</td></tr>
+            <tr><td>ACM-3a</td><td>Automate and enforce access control mechanisms</td><td><span class="badge b-no">MIL 0</span></td><td>All access management is manual; no automated enforcement or provisioning</td><td>MIL 3</td></tr>
+            <tr><td>ACM-3b</td><td>Continuously monitor access activity</td><td><span class="badge b-no">MIL 0</span></td><td>No SIEM; no centralized log collection; no behavioral monitoring of access patterns</td><td>MIL 3</td></tr>
+            <tr><td>ACM-3c</td><td>Improve access management using lessons learned</td><td><span class="badge b-no">MIL 0</span></td><td>No process to capture lessons learned from access incidents or near-misses</td><td>MIL 3</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-mil'))">+ Add Practice</button>
+      <div class="info-box crit mt-2">
+        <strong>Overall ACCESS Domain MIL Rating: MIL 0 / MIL 1 (Performed — Partial)</strong><br>
+        MVEC demonstrates MIL 0 on 8 of 12 ACCESS practices. The two MIL 1 (partial) ratings reflect that basic authentication mechanisms exist in some form, but are not consistently applied, documented, or managed. No MIL 2 practices are fully satisfied. This represents the highest-risk domain finding in the MVEC C2M2 assessment.
+      </div>
+      <button class="add-info-btn" onclick="addInfoBox(this)">+ Add Info Box</button>
+    </div>
+  </div>
+
+  <!-- ── 12. Remediation Roadmap ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🗺️</span>
+      <span class="section-title">12. Remediation Roadmap</span>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table id="tbl-roadmap">
+          <thead>
+            <tr>
+              <th>Priority</th><th>Action</th><th>Findings Addressed</th>
+              <th>Estimated Effort</th><th>Cost Estimate</th><th>Target Completion</th><th>Owner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge b-crit">Immediate</span></td>
+              <td>Change SEL-351 (OT-006) default password at SS-02</td>
+              <td>ACM-05</td>
+              <td>2 hours (on-site field work)</td>
+              <td>$0 (staff time)</td>
+              <td>Within 48 hours</td>
+              <td>K. Dobrowski / R. Fulton</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-crit">Immediate</span></td>
+              <td>Create individual SCADA accounts; disable SCADA_ADMIN shared account</td>
+              <td>ACM-02</td>
+              <td>1 day</td>
+              <td>$0</td>
+              <td>Within 1 week</td>
+              <td>K. Dobrowski + GE Grid Solutions</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-high">Short-Term (30 days)</span></td>
+              <td>Enable MFA on all privileged accounts and remote VPN access</td>
+              <td>ACM-01, ACM-04</td>
+              <td>3–5 days</td>
+              <td>$500–$2,000/yr (TOTP tokens or Authenticator app)</td>
+              <td>30 days</td>
+              <td>TechPath MSP + K. Dobrowski</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-high">Short-Term (30 days)</span></td>
+              <td>Implement JIT/ticketed access for vendor VPNs; disable always-on connections</td>
+              <td>ACM-04</td>
+              <td>2–3 days</td>
+              <td>$0 (policy + firewall config)</td>
+              <td>30 days</td>
+              <td>K. Dobrowski + TechPath</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-med">Medium-Term (90 days)</span></td>
+              <td>Deploy Microsoft Entra ID (Azure AD) for centralized identity management</td>
+              <td>ACM-03, ACM-06, ACM-07</td>
+              <td>2–4 weeks</td>
+              <td>$2,400–$6,000/yr (M365 licensing)</td>
+              <td>90 days</td>
+              <td>TechPath MSP</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-med">Medium-Term (90 days)</span></td>
+              <td>Implement formal access review (quarterly recertification) process</td>
+              <td>ACM-07</td>
+              <td>3–5 days (policy + tooling)</td>
+              <td>$0 (process; leverage AD if deployed)</td>
+              <td>90 days</td>
+              <td>D. Harmon + K. Dobrowski</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-med">Medium-Term (90 days)</span></td>
+              <td>Migrate service account credentials to encrypted vault; rotate passwords</td>
+              <td>ACM-09, ACM-10</td>
+              <td>2 days</td>
+              <td>$0–$500 (open-source vault or AD Managed Service Accounts)</td>
+              <td>90 days</td>
+              <td>K. Dobrowski + TechPath</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-low">Long-Term (180 days)</span></td>
+              <td>Implement DNP3 SAv5 on all RTUs and protective relays</td>
+              <td>ACM-08</td>
+              <td>2–4 weeks (firmware + commissioning)</td>
+              <td>$5,000–$15,000 (GE firmware upgrade + commissioning)</td>
+              <td>180 days</td>
+              <td>GE Grid Solutions + R. Fulton</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-low">Long-Term (180+ days)</span></td>
+              <td>Deploy PAM solution for privileged account management and session recording</td>
+              <td>ACM-06</td>
+              <td>4–8 weeks</td>
+              <td>$8,000–$20,000/yr (e.g., BeyondTrust or CyberArk Workforce Identity)</td>
+              <td>180 days</td>
+              <td>TechPath MSP + D. Harmon (approval)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addTableRow(document.getElementById('tbl-roadmap'))">+ Add Action</button>
+    </div>
+  </div>
+
+</div><!-- /report-body -->
+
+<script>
+const STORAGE_KEY = 'mvec_access_ctrl_v1';
+let editMode = false;
+
+/* ── Persistence ── */
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) document.getElementById('mainContainer').innerHTML = saved;
+});
+
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEY, document.getElementById('mainContainer').innerHTML);
+}
+
+/* ── Toggle Edit Mode ── */
+function toggleEditMode() {
+  editMode = !editMode;
+  const btn = document.getElementById('editToggleBtn');
+  if (editMode) {
+    document.body.classList.add('edit-mode');
+    btn.textContent = '✅ Exit Edit Mode';
+    btn.classList.add('active');
+    enableEditing();
+  } else {
+    disableEditing();
+    document.body.classList.remove('edit-mode');
+    btn.textContent = '✏️ Edit Mode';
+    btn.classList.remove('active');
+    saveToStorage();
+  }
+}
+
+/* ── Enable Editing ── */
+function enableEditing() {
+  // Make all table body cells editable
+  document.querySelectorAll('#mainContainer table tbody td').forEach(td => {
+    if (!td.classList.contains('del-col')) {
+      td.contentEditable = 'true';
+    }
+  });
+
+  // Add delete column to each table
+  document.querySelectorAll('#mainContainer table').forEach(tbl => {
+    const hRow = tbl.querySelector('thead tr');
+    if (hRow && !hRow.querySelector('.del-col')) {
+      const th = document.createElement('th');
+      th.className = 'del-col';
+      th.textContent = '×';
+      hRow.appendChild(th);
+    }
+    tbl.querySelectorAll('tbody tr').forEach(row => {
+      if (!row.querySelector('.del-col')) {
+        const td = document.createElement('td');
+        td.className = 'del-col';
+        td.appendChild(mkDelBtn(() => {
+          row.remove();
+          saveToStorage();
+        }));
+        row.appendChild(td);
+      }
+    });
+  });
+
+  // Make info boxes editable
+  document.querySelectorAll('#mainContainer .info-box').forEach(box => {
+    box.contentEditable = 'true';
+    if (!box.querySelector('.del-btn-box')) {
+      const btn = mkDelBtn(() => {
+        box.remove();
+        saveToStorage();
+      });
+      btn.className = 'del-btn del-btn-box';
+      btn.contentEditable = 'false';
+      btn.style.cssText = 'float:right;margin-left:8px;display:inline-block;';
+      box.prepend(btn);
+    }
+  });
+}
+
+/* ── Disable Editing ── */
+function disableEditing() {
+  document.querySelectorAll('#mainContainer [contenteditable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+  });
+  // Remove del columns from tables
+  document.querySelectorAll('#mainContainer .del-col').forEach(el => el.remove());
+  // Remove del buttons from info boxes
+  document.querySelectorAll('#mainContainer .del-btn-box').forEach(el => el.remove());
+}
+
+/* ── Helpers ── */
+function mkDelBtn(fn) {
+  const btn = document.createElement('button');
+  btn.className = 'del-btn';
+  btn.textContent = '×';
+  btn.contentEditable = 'false';
+  btn.addEventListener('click', (e) => { e.stopPropagation(); fn(); });
+  return btn;
+}
+
+/* ── Add Table Row ── */
+function addTableRow(tbl) {
+  const hRow = tbl.querySelector('thead tr');
+  const colCount = [...hRow.cells].filter(c => !c.classList.contains('del-col')).length;
+  const row = document.createElement('tr');
+  for (let i = 0; i < colCount; i++) {
+    const td = document.createElement('td');
+    td.contentEditable = 'true';
+    td.textContent = '—';
+    row.appendChild(td);
+  }
+  if (editMode) {
+    const delTd = document.createElement('td');
+    delTd.className = 'del-col';
+    delTd.appendChild(mkDelBtn(() => { row.remove(); saveToStorage(); }));
+    row.appendChild(delTd);
+  }
+  tbl.querySelector('tbody').appendChild(row);
+  row.querySelector('td').focus();
+  saveToStorage();
+}
+
+/* ── Add Info Box ── */
+function addInfoBox(btn) {
+  const box = document.createElement('div');
+  box.className = 'info-box info';
+  box.contentEditable = 'true';
+  box.textContent = 'New finding or note — click to edit.';
+  if (editMode) {
+    const delBtn = mkDelBtn(() => { box.remove(); saveToStorage(); });
+    delBtn.className = 'del-btn del-btn-box';
+    delBtn.contentEditable = 'false';
+    delBtn.style.cssText = 'float:right;margin-left:8px;display:inline-block;';
+    box.prepend(delBtn);
+  }
+  btn.parentNode.insertBefore(box, btn);
+  box.focus();
+  saveToStorage();
+}
+
+/* ── Reset ── */
+function resetChanges() {
+  if (confirm('Reset all changes and reload original data?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+/* ── Export HTML ── */
+function exportHTML() {
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelector('.edit-toolbar')?.remove();
+  clone.querySelector('.edit-banner')?.remove();
+  clone.querySelectorAll('.add-row-btn, .add-info-btn, .del-btn, .del-col').forEach(el => el.remove());
+  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  const blob = new Blob(['<!DOCTYPE html>' + clone.outerHTML], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'MVEC_Access_Control_Matrix.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>
