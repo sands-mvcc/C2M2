@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Case Study — Meridian Specialty Chemicals Inc. | MSCI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* ── Header ── */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2.5rem 2rem;
+            background: rgba(255,255,255,0.97);
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1a5c35, #28a745, #2a6478, #ffc107, #dc3545);
+        }
+        .header .doe-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #e8f5e9;
+            border: 1px solid #a3d9b8;
+            color: #1a5c35;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .header h1 { font-size: 2.4rem; color: #1a3a4a; margin-bottom: 0.4rem; font-weight: 800; }
+        .header h1 span { color: #1a5c35; }
+        .header .subtitle { font-size: 1.05rem; color: #666; margin-bottom: 1.2rem; }
+        .header .badges { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .badge-green  { background: #d4edda; color: #155724; }
+        .badge-blue   { background: #d1ecf1; color: #0c5460; }
+        .badge-yellow { background: #fff3cd; color: #856404; }
+        .badge-red    { background: #f8d7da; color: #721c24; }
+        .badge-purple { background: #e2d9f3; color: #4a235a; }
+        .badge-oil    { background: #fde8d8; color: #7b3a10; }
+        .badge-chem   { background: #e8f5e9; color: #1a5c35; }
+        .badge-cfats  { background: #fce4ec; color: #880e4f; }
+
+        /* ── Navigation breadcrumb ── */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.75);
+        }
+        .breadcrumb a { color: rgba(255,255,255,0.85); text-decoration: none; font-weight: 600; }
+        .breadcrumb a:hover { color: white; }
+        .breadcrumb span { opacity: 0.5; }
+
+        /* ── Section Cards ── */
+        .section-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .section-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.3rem 1.8rem;
+            background: linear-gradient(135deg, #1a3a4a, #2a6478);
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-card-header .sec-icon { font-size: 1.6rem; }
+        .section-card-header h2 { font-size: 1.2rem; font-weight: 700; flex: 1; }
+        .section-card-header .sec-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.7rem;
+            border-radius: 10px;
+            font-size: 0.73rem;
+            font-weight: 700;
+        }
+        .section-card-header .toggle-icon { font-size: 1rem; transition: transform 0.25s; }
+        .section-card-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+        .section-body { padding: 1.8rem; }
+        .section-body.hidden { display: none; }
+
+        /* ── Stat Grid ── */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-item {
+            background: #f0f8fc;
+            border: 1px solid #c8e4ef;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        .stat-item .si-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #2a6478; letter-spacing: 0.8px; margin-bottom: 0.35rem; }
+        .stat-item .si-value { font-size: 1.1rem; font-weight: 700; color: #1a3a4a; }
+        .stat-item .si-sub   { font-size: 0.78rem; color: #666; margin-top: 0.15rem; }
+
+        /* ── Detail Tables ── */
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-bottom: 1rem; }
+        th {
+            background: #1a3a4a;
+            color: white;
+            padding: 0.65rem 0.9rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #e9ecef; vertical-align: top; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        tr:hover td { background: #eef6fb; }
+        td .tag {
+            display: inline-block;
+            padding: 0.1rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .tag-red    { background: #f8d7da; color: #721c24; }
+        .tag-yellow { background: #fff3cd; color: #856404; }
+        .tag-green  { background: #d4edda; color: #155724; }
+        .tag-blue   { background: #d1ecf1; color: #0c5460; }
+        .tag-gray   { background: #e9ecef; color: #495057; }
+        .tag-purple { background: #e2d9f3; color: #4a235a; }
+
+        /* ── Info Boxes ── */
+        .info-box {
+            border-left: 4px solid;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .info-box.warning { border-color: #ffc107; background: #fff9e6; }
+        .info-box.danger  { border-color: #dc3545; background: #fdf2f3; }
+        .info-box.info    { border-color: #17a2b8; background: #e8f7fa; }
+        .info-box.success { border-color: #28a745; background: #eaf6ec; }
+        .info-box strong  { display: block; margin-bottom: 0.3rem; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ── Two-column layouts ── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+        /* ── Network Diagram (ASCII-style) ── */
+        .network-diagram {
+            background: #0f1e26;
+            color: #7dd3fc;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            padding: 1.5rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .network-diagram .nd-green  { color: #86efac; }
+        .network-diagram .nd-yellow { color: #fde68a; }
+        .network-diagram .nd-red    { color: #fca5a5; }
+        .network-diagram .nd-blue   { color: #93c5fd; }
+        .network-diagram .nd-gray   { color: #6b7280; }
+        .network-diagram .nd-orange { color: #fdba74; }
+
+        /* ── Domain Assessment Prep ── */
+        .domain-prep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+        .domain-prep-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .domain-prep-card .dpc-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .dpc-asset    { background: #e8f4f8; color: #1a3a4a; }
+        .dpc-threat   { background: #fdf2f3; color: #721c24; }
+        .dpc-risk     { background: #fff9e6; color: #856404; }
+        .dpc-access   { background: #eaf6ec; color: #155724; }
+        .dpc-situate  { background: #e2d9f3; color: #4a235a; }
+        .dpc-response { background: #fdf2f3; color: #721c24; }
+        .dpc-third    { background: #d1ecf1; color: #0c5460; }
+        .dpc-work     { background: #d4edda; color: #155724; }
+        .dpc-arch     { background: #e8f4f8; color: #1a3a4a; }
+        .dpc-program  { background: #fff9e6; color: #856404; }
+        .domain-prep-card .dpc-body { padding: 0.9rem 1rem; font-size: 0.83rem; }
+        .domain-prep-card .dpc-body ul { padding-left: 1.2rem; }
+        .domain-prep-card .dpc-body li { margin-bottom: 0.35rem; line-height: 1.45; color: #444; }
+        .dpc-mil-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; background: #f8f9fa; border-top: 1px solid #eee; font-size: 0.78rem; font-weight: 700; color: #555; }
+        .mil-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+        .mil-0 { background: #dee2e6; }
+        .mil-1 { background: #ffc107; }
+        .mil-2 { background: #fd7e14; }
+        .mil-3 { background: #dc3545; }
+
+        /* ── Section Labels ── */
+        .section-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.8rem;
+            margin-top: 2rem;
+        }
+        h3.sub-heading { font-size: 1rem; color: #1a3a4a; margin-bottom: 0.8rem; font-weight: 700; padding-bottom: 0.4rem; border-bottom: 2px solid #e8f4f8; }
+        p.body-text { line-height: 1.7; color: #555; margin-bottom: 1rem; font-size: 0.9rem; }
+        ul.body-list { padding-left: 1.4rem; margin-bottom: 1rem; }
+        ul.body-list li { margin-bottom: 0.4rem; line-height: 1.6; color: #555; font-size: 0.9rem; }
+
+        /* ── Org Chart ── */
+        .org-chart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+        .org-level { display: flex; gap: 1rem; justify-content: center; position: relative; padding: 0.5rem 0; }
+        .org-box {
+            background: #1a3a4a;
+            color: white;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 130px;
+        }
+        .org-box.ob-it { background: #2a6478; }
+        .org-box.ob-ops { background: #155724; }
+        .org-box.ob-contract { border: 2px dashed #ffc107; color: #333; background: #fff9e6; }
+        .org-line { width: 2px; height: 24px; background: #ccc; margin: 0 auto; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            color: rgba(255,255,255,0.85);
+            margin-top: 2rem;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .footer p { margin-bottom: 0.4rem; font-size: 0.9rem; }
+        .footer .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 0.25rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+        }
+
+        @media (max-width: 900px) {
+            .two-col   { grid-template-columns: 1fr; }
+            .three-col { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.8rem; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .section-body { padding: 1rem; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* ── Edit Mode ── */
+        .edit-toolbar {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            align-items: flex-end;
+        }
+        .et-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.82rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            transition: transform 0.15s, box-shadow 0.15s;
+            white-space: nowrap;
+        }
+        .et-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+        .et-edit   { background: #1a3a4a; color: white; }
+        .et-edit.active { background: #28a745; }
+        .et-export { background: #2a6478; color: white; }
+        .et-reset  { background: #dc3545; color: white; }
+
+        .edit-banner {
+            display: none;
+            background: linear-gradient(90deg, #28a745, #218838);
+            color: white;
+            text-align: center;
+            padding: 0.55rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            letter-spacing: 0.3px;
+        }
+        .edit-mode .edit-banner { display: block; }
+
+        .edit-mode [contenteditable="true"] {
+            outline: 2px dashed rgba(42,100,120,0.35);
+            border-radius: 3px;
+            cursor: text;
+            min-width: 20px;
+            min-height: 1em;
+            transition: outline 0.15s, background 0.15s;
+        }
+        .edit-mode [contenteditable="true"]:hover {
+            outline-color: #2a6478;
+            background: rgba(42,100,120,0.06);
+        }
+        .edit-mode [contenteditable="true"]:focus {
+            outline: 2px solid #2a6478;
+            background: rgba(42,100,120,0.1);
+        }
+
+        .del-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .del-btn:hover { background: #a71d2a; }
+        .del-btn[contenteditable="false"] { -webkit-user-select: none; user-select: none; }
+
+        th.del-col, td.del-col {
+            width: 34px;
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.3rem 0.25rem !important;
+        }
+        td.del-col { background: #fff5f5 !important; }
+        th.del-col { background: #3a1a1a !important; }
+
+        .add-row-btn, .add-item-btn, .add-stat-btn, .add-box-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            background: transparent;
+            border: 2px dashed #28a745;
+            color: #155724;
+            border-radius: 8px;
+            padding: 0.45rem 1rem;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 0.5rem;
+            transition: background 0.15s;
+        }
+        .add-row-btn:hover, .add-item-btn:hover,
+        .add-stat-btn:hover, .add-box-btn:hover { background: #d4edda; }
+
+        .stat-item { position: relative; }
+        .si-del-btn {
+            position: absolute;
+            top: 5px; right: 5px;
+            width: 18px; height: 18px;
+            font-size: 0.72rem;
+            line-height: 18px;
+            display: none;
+        }
+        .edit-mode .si-del-btn { display: block; }
+
+        .info-box { position: relative; }
+        .ib-del-btn {
+            position: absolute;
+            top: 6px; right: 6px;
+            display: none;
+        }
+        .edit-mode .ib-del-btn { display: block; }
+
+        li { display: flex; align-items: flex-start; gap: 0.35rem; }
+        li .li-del-btn { flex-shrink: 0; margin-top: 0.1rem; display: none; }
+        .edit-mode li .li-del-btn { display: block; }
+
+        .edit-mode .section-card { outline: 2px dashed rgba(42,100,120,0.18); }
+        .edit-mode .section-card:hover { outline-color: rgba(42,100,120,0.35); }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Edit Toolbar -->
+    <div class="edit-toolbar">
+        <button class="et-btn et-edit" id="editToggleBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="et-btn et-export" onclick="exportHTML()">💾 Export HTML</button>
+        <button class="et-btn et-reset" onclick="resetChanges()">🔄 Reset</button>
+    </div>
+
+    <!-- Edit Mode Banner -->
+    <div class="edit-banner">✏️ EDIT MODE ACTIVE — Click any cell, list item, or text to edit &nbsp;|&nbsp; Use ＋ buttons to add rows or items &nbsp;|&nbsp; Click × to delete</div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">C2M2 Portal</a>
+        <span>›</span>
+        <a href="casestudies.html">Case Studies</a>
+        <span>›</span>
+        <span>Case Study: Meridian Specialty Chemicals Inc.</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="doe-badge">🧪 C2M2 Training Exercise | Fictional Case Study</div>
+        <h1>Meridian Specialty <span>Chemicals Inc.</span></h1>
+        <p class="subtitle">Baton Rouge Specialty Chemical Manufacturing &mdash; C2M2 Assessment Exercise Scenario</p>
+        <div class="badges">
+            <span class="badge badge-chem">Specialty Chemicals</span>
+            <span class="badge badge-cfats">CFATS Tier 3</span>
+            <span class="badge badge-yellow">EPA RMP / OSHA PSM</span>
+            <span class="badge badge-red">MIL 0&ndash;1 Baseline</span>
+            <span class="badge badge-purple">Exercise: All 10 Domains</span>
+        </div>
+    </div>
+
+    <div class="info-box warning">
+        <strong>Exercise Notice</strong>
+        This case study is entirely fictional and created for C2M2 training purposes. All company names, personnel,
+        addresses, IP addresses, process configurations, and chemical data are simulated. Any resemblance to an
+        actual chemical manufacturer is coincidental. Participants should use this data to practice a full C2M2 v2.1
+        self-evaluation, with particular attention to CFATS compliance requirements and ICS/DCS cybersecurity controls
+        in a batch manufacturing environment.
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 – COMPANY PROFILE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 1 &mdash; Company Profile</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🏢</span>
+            <h2>Company Overview</h2>
+            <span class="sec-tag">PROFILE</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="si-label">Company Name</div>
+                    <div class="si-value">Meridian Specialty Chemicals Inc.</div>
+                    <div class="si-sub">MSCI</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Legal Status</div>
+                    <div class="si-value">Privately Held Corporation</div>
+                    <div class="si-sub">Louisiana C-Corp</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Founded</div>
+                    <div class="si-value">1974</div>
+                    <div class="si-sub">Baton Rouge, Louisiana</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Headquarters</div>
+                    <div class="si-value">Baton Rouge, LA 70802</div>
+                    <div class="si-sub">4801 River Road, Suite 100</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Annual Revenue</div>
+                    <div class="si-value">$187.3 Million</div>
+                    <div class="si-sub">FY 2024 (unaudited)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Total Employees</div>
+                    <div class="si-value">340 Full-Time</div>
+                    <div class="si-sub">+ 45 Active Contractors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Manufacturing Area</div>
+                    <div class="si-value">42-Acre Campus</div>
+                    <div class="si-sub">Main plant + Prairieville satellite</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Batch Reactors</div>
+                    <div class="si-value">4 Reactor Trains</div>
+                    <div class="si-sub">3,000-gal capacity each</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">C2M2 Score Range</div>
+                    <div class="si-value">MIL 0&ndash;1</div>
+                    <div class="si-sub">Baseline assessment (most domains)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Primary Regulation</div>
+                    <div class="si-value">CFATS Tier 3</div>
+                    <div class="si-sub">EPA RMP Prog. 3 &middot; OSHA PSM &middot; LA DEQ</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Primary Contact</div>
+                    <div class="si-value">Dr. Patricia Nguyen</div>
+                    <div class="si-sub">VP Manufacturing &amp; EHS</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">IT Staff</div>
+                    <div class="si-value">8 FTE</div>
+                    <div class="si-sub">OT Controls: 2 FTE &middot; Cyber Dedicated: 0</div>
+                </div>
+            </div>
+
+            <h3 class="sub-heading">Company Description</h3>
+            <p class="body-text">Meridian Specialty Chemicals Inc. (MSCI) is a privately held specialty chemical manufacturer operating a 42-acre production campus in Baton Rouge, Louisiana, and a satellite blending and warehousing facility in Prairieville, LA. Founded in 1974 to serve petrochemical feedstock demand along the Mississippi Chemical Corridor, MSCI has expanded into four primary product lines: specialty solvents for electronics cleaning and semiconductor fabrication, polymer additives for plastics compounders, crop protection intermediates for agricultural chemical formulators, and high-purity cleaning agents for pharmaceutical manufacturing. MSCI supplies approximately 180 customers across North America under long-term supply agreements.</p>
+            <p class="body-text">MSCI's manufacturing operations are classified under DHS CFATS Tier 3 due to the presence of several chemicals of interest (COI) above screening threshold quantities, including chlorine, anhydrous ammonia, and certain flammable liquids. The facility is subject to EPA Risk Management Program (RMP) Program 3 requirements for two covered processes, OSHA Process Safety Management (PSM) regulations, and Louisiana DEQ Title V air permitting. MSCI operates an eight-person IT department and two OT/Controls engineers — cybersecurity is treated as a collateral duty of IT Director Carlos Mendes, who estimates less than 8% of his time is spent on security activities. There is no dedicated cybersecurity staff, no CISO, and no formal cybersecurity program.</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2 – FACILITIES & PHYSICAL INFRASTRUCTURE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 2 &mdash; Facilities &amp; Physical Infrastructure</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🏭</span>
+            <h2>Facilities &amp; Physical Infrastructure</h2>
+            <span class="sec-tag">2 SITES / 8 AREAS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Location</th>
+                        <th>Function</th>
+                        <th>Physical Security</th>
+                        <th>IT / OT Presence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Main Plant — Admin &amp; IT Building</strong></td>
+                        <td>4801 River Road, Baton Rouge</td>
+                        <td>Corporate offices, IT server room, main control room, EHS department</td>
+                        <td><span class="tag tag-green">Card Access</span> <span class="tag tag-green">CCTV</span> <span class="tag tag-green">Mantrap (server room)</span></td>
+                        <td>Domain controllers, DCS application servers, historian, corporate LAN, control room HMIs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reactor Building A/B (Trains A &amp; B)</strong></td>
+                        <td>Main Plant Campus, North Wing</td>
+                        <td>Batch chemical synthesis — 2 &times; 3,000-gal glass-lined reactors per train</td>
+                        <td><span class="tag tag-yellow">Badge Access</span> <span class="tag tag-yellow">CCTV (partial)</span> <span class="tag tag-red">No Visitor Log</span></td>
+                        <td>Honeywell Experion DCS nodes, AB ControlLogix (utilities tie-in), local HMI panels</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reactor Building C/D (Trains C &amp; D)</strong></td>
+                        <td>Main Plant Campus, South Wing</td>
+                        <td>Batch chemical synthesis — 2 &times; 3,000-gal Hastelloy reactors; higher-hazard chemistry</td>
+                        <td><span class="tag tag-green">Card Access</span> <span class="tag tag-yellow">CCTV</span> <span class="tag tag-red">Legacy XP Workstation Present</span></td>
+                        <td>Honeywell Experion DCS nodes, Safety Manager SIS, local operator panels, WS-006 (Windows XP)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Distillation &amp; Solvent Recovery Unit</strong></td>
+                        <td>Main Plant Campus, East Process Area</td>
+                        <td>Two continuous distillation columns; solvent recovery/recycle; EPA RMP covered process</td>
+                        <td><span class="tag tag-yellow">Perimeter Fence</span> <span class="tag tag-yellow">Badge Access</span> <span class="tag tag-red">No CCTV</span></td>
+                        <td>Experion DCS, Honeywell Safety Manager SIS (ESD), Emerson Daniel flow computers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Utilities Area (Boiler, Cooling Tower, Compressed Air)</strong></td>
+                        <td>Main Plant Campus, West Side</td>
+                        <td>Steam generation (2 &times; 50,000 lb/hr firetube boilers), cooling tower, instrument air</td>
+                        <td><span class="tag tag-yellow">Perimeter Fence</span> <span class="tag tag-red">Padlock Only</span> <span class="tag tag-red">Unmanaged Switches</span></td>
+                        <td><strong>Allen-Bradley ControlLogix L85 PLCs — FLAT NETWORK (shares corporate VLAN)</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quality Control Laboratory</strong></td>
+                        <td>Main Plant Campus, Building C</td>
+                        <td>In-process and finished goods testing; GC/MS analysis; stability studies</td>
+                        <td><span class="tag tag-green">Card Access</span> <span class="tag tag-yellow">Badge Log Only</span></td>
+                        <td>LabVantage LIMS 8.7 workstations; network-connected GC/MS instruments</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Warehouse &amp; Shipping (Main Plant)</strong></td>
+                        <td>4801 River Road — South Gate</td>
+                        <td>Bulk solvent storage (ASTs), drum warehouse, truck loading/unloading, COI storage area</td>
+                        <td><span class="tag tag-yellow">Badge Access</span> <span class="tag tag-green">CCTV</span> <span class="tag tag-red">No IDS / Alarm</span></td>
+                        <td>Barcode scanning workstations; SAP S/4HANA WMS module; no OT systems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prairieville Satellite Facility</strong></td>
+                        <td>2240 Airline Hwy, Prairieville, LA 70769</td>
+                        <td>Blending, repackaging, and distribution; no chemical synthesis; CFATS Tier 4 sub-threshold</td>
+                        <td><span class="tag tag-yellow">Perimeter Fence</span> <span class="tag tag-yellow">Badge Access</span> <span class="tag tag-red">No Dedicated IT Support</span></td>
+                        <td>Standalone Windows 10 workstation (WS-008); shared VPN to main plant; no OT systems</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3 – ORGANIZATIONAL STRUCTURE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 3 &mdash; Organizational Structure &amp; Staffing</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">👥</span>
+            <h2>Organizational Structure &amp; Staffing</h2>
+            <span class="sec-tag">12 KEY ROLES</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box warning">
+                <strong>Critical Gap — No Dedicated Cybersecurity Staff</strong>
+                MSCI has zero dedicated cybersecurity employees. IT Director Carlos Mendes serves as the CFATS Facility Security Officer (FSO) and handles all cybersecurity matters as a collateral duty, estimating less than 8% of his time is spent on security activities. There is no CISO, no security operations function, and no OT-specific security role. CFATS requires designation of an FSO and submission of a Site Security Plan (SSP) — MSCI has met these requirements administratively, but implementation of SSP cybersecurity measures is incomplete.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Cybersecurity Responsibility</th>
+                        <th>System Access Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>VP Manufacturing &amp; EHS</strong></td>
+                        <td>Dr. Patricia Nguyen</td>
+                        <td>Executive</td>
+                        <td>SSP approval authority; cyber incident escalation; CFATS executive point of contact</td>
+                        <td><span class="tag tag-blue">Executive — Read-Only DCS</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>IT Director (CFATS FSO)</strong></td>
+                        <td>Carlos Mendes</td>
+                        <td>Information Technology</td>
+                        <td>Primary CFATS FSO; all IT/OT cybersecurity decisions; vendor access oversight; SSP implementation</td>
+                        <td><span class="tag tag-red">Domain Admin + DCS Admin</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Senior Sysadmin</strong></td>
+                        <td>Derek Walsh</td>
+                        <td>Information Technology</td>
+                        <td>Windows server administration; patch management; backup execution</td>
+                        <td><span class="tag tag-yellow">Server Local Admin</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Network Engineer</strong></td>
+                        <td>Lena Park</td>
+                        <td>Information Technology</td>
+                        <td>Cisco network infrastructure; Palo Alto NGFW; GlobalProtect VPN management</td>
+                        <td><span class="tag tag-yellow">Network Admin</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>IT Sysadmin</strong></td>
+                        <td>Omar Rashid</td>
+                        <td>Information Technology</td>
+                        <td>Helpdesk; workstation support; Active Directory user account management</td>
+                        <td><span class="tag tag-yellow">Helpdesk Admin</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Database Admin</strong></td>
+                        <td>Mia Torres</td>
+                        <td>Information Technology</td>
+                        <td>SAP HANA DB; LabVantage LIMS DB; SQL Server instances</td>
+                        <td><span class="tag tag-yellow">DB Admin</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Controls Engineer</strong></td>
+                        <td>Frank Albright</td>
+                        <td>Engineering</td>
+                        <td>DCS configuration changes; SIS engineering; informal OT change management</td>
+                        <td><span class="tag tag-red">DCS Full Admin + SIS Read</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Instrumentation Technician</strong></td>
+                        <td>Bobby Tran</td>
+                        <td>Engineering</td>
+                        <td>Field instrument calibration; PLC panel access; loop checks</td>
+                        <td><span class="tag tag-blue">OT Panel Local Access</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Production Supervisor</strong></td>
+                        <td>Angela Carter</td>
+                        <td>Manufacturing</td>
+                        <td>Batch execution oversight; approves operator system access requests</td>
+                        <td><span class="tag tag-yellow">DCS Operator (Read/Control)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lead DCS Operator</strong></td>
+                        <td>Marcus Hill</td>
+                        <td>Manufacturing</td>
+                        <td>DCS monitoring; batch operations; alarm management; shift reporting</td>
+                        <td><span class="tag tag-yellow">DCS Operator (Read/Control)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>EHS Manager</strong></td>
+                        <td>Tina Kowalski</td>
+                        <td>EHS</td>
+                        <td>CFATS compliance coordination; EPA RMP; OSHA PSM program; regulatory incident reporting</td>
+                        <td><span class="tag tag-blue">LIMS + SAP Read-Only</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Batch Server Admin (Contractor)</strong></td>
+                        <td>Siemens SITEC LLC</td>
+                        <td>Contractor</td>
+                        <td>Batch execution server (SIMATIC IT) maintenance, recipe management; remote VPN access</td>
+                        <td><span class="tag tag-red">Remote VPN — Batch Server Admin</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 4 – IT ASSET INVENTORY
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 4 &mdash; IT Asset Inventory</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">💻</span>
+            <h2>IT Asset Inventory</h2>
+            <span class="sec-tag">SERVERS &amp; WORKSTATIONS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <h3 class="sub-heading">Server Inventory</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Description</th>
+                        <th>Hardware</th>
+                        <th>Operating System</th>
+                        <th>Location</th>
+                        <th>Key Gaps / Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SRV-001</td>
+                        <td>Primary Domain Controller</td>
+                        <td>Dell PowerEdge R750</td>
+                        <td>Windows Server 2019 Standard</td>
+                        <td>IT Server Room, Baton Rouge</td>
+                        <td><span class="tag tag-green">Patched Current</span> <span class="tag tag-yellow">No Tier-0 isolation for domain admin accounts</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-002</td>
+                        <td>DCS Application Server (Honeywell Experion PKS)</td>
+                        <td>HP ProLiant DL380 G10</td>
+                        <td>Windows Server 2016 Standard</td>
+                        <td>IT Server Room, Baton Rouge</td>
+                        <td><span class="tag tag-red">CRITICAL — Domain-joined DCS server</span> <span class="tag tag-red">No MFA on DCS HMI login</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-003</td>
+                        <td>Process Historian (AspenTech IP.21)</td>
+                        <td>Dell PowerEdge R540</td>
+                        <td>Windows Server 2016 Standard</td>
+                        <td>IT Server Room, Baton Rouge</td>
+                        <td><span class="tag tag-yellow">IP.21 v14.0 — Patch 14.1 available</span> <span class="tag tag-red">IT/OT bridge — accessible from both networks</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-004</td>
+                        <td>Batch Execution Server (Siemens SIMATIC IT / ISA S88)</td>
+                        <td>Dell PowerEdge R440</td>
+                        <td>Windows Server 2012 R2 — <strong>EOL</strong></td>
+                        <td>IT Server Room, Baton Rouge</td>
+                        <td><span class="tag tag-red">EOL OS — No Security Patches Since 2023</span> <span class="tag tag-red">Port 8443 internet-facing (legacy recipe upload — ACTIVE)</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-005</td>
+                        <td>SAP S/4HANA App Server (ERP — Finance, Procurement, Sales)</td>
+                        <td>Virtual (VMware ESXi 7.0)</td>
+                        <td>Windows Server 2019 Standard</td>
+                        <td>IT Server Room, Baton Rouge (VM)</td>
+                        <td><span class="tag tag-green">Patched Current</span> <span class="tag tag-yellow">SAP basis admin shared with external SAP partner — standing access</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-006</td>
+                        <td>LIMS Server (LabVantage 8.7 — QC Lab)</td>
+                        <td>Dell PowerEdge R340</td>
+                        <td>Windows Server 2019 Standard</td>
+                        <td>IT Server Room, Baton Rouge</td>
+                        <td><span class="tag tag-yellow">LIMS accessible from plant network — no segmentation from QC lab VLAN</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-007</td>
+                        <td>File Server (CFATS CVI Documents, Engineering Drawings)</td>
+                        <td>Dell PowerEdge R340</td>
+                        <td>Windows Server 2019 Standard</td>
+                        <td>IT Server Room, Baton Rouge</td>
+                        <td><span class="tag tag-red">CVI documents — no access controls beyond standard AD login</span> <span class="tag tag-red">No DLP or audit logging on CVI folder</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-heading">Workstation Inventory</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Description</th>
+                        <th>Hardware</th>
+                        <th>Operating System</th>
+                        <th>Location</th>
+                        <th>Key Gaps / Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>WS-001 through WS-004</td>
+                        <td>DCS Operator HMI Workstations (4 units)</td>
+                        <td>Dell OptiPlex 7090</td>
+                        <td>Windows 10 LTSC 2019</td>
+                        <td>Main Control Room</td>
+                        <td><span class="tag tag-red">No MFA on DCS login</span> <span class="tag tag-yellow">Shared "operator" account active on WS-002 and WS-003</span></td>
+                    </tr>
+                    <tr>
+                        <td>WS-005</td>
+                        <td>DCS Engineering Workstation</td>
+                        <td>Dell Precision 5760</td>
+                        <td>Windows 10 Pro</td>
+                        <td>Controls Engineering Office</td>
+                        <td><span class="tag tag-red">Dual-homed: IT LAN (VLAN 10) + DCS network (VLAN 20)</span> <span class="tag tag-red">USB ports unrestricted; no removable media policy</span></td>
+                    </tr>
+                    <tr>
+                        <td>WS-006</td>
+                        <td>LEGACY Process Graphics Workstation</td>
+                        <td>Dell OptiPlex GX280 (2005 vintage)</td>
+                        <td>Windows XP SP3 — <strong>EOL since April 2014</strong></td>
+                        <td>Reactor Building C/D, Local Panel Room</td>
+                        <td><span class="tag tag-red">EOL OS — unpatched since 2014</span> <span class="tag tag-red">No EDR agent possible on Windows XP</span> <span class="tag tag-yellow">Network-connected to DCS VLAN</span></td>
+                    </tr>
+                    <tr>
+                        <td>WS-007</td>
+                        <td>IT Admin Workstation</td>
+                        <td>Dell Precision 3650</td>
+                        <td>Windows 10 Pro</td>
+                        <td>IT Director Office</td>
+                        <td><span class="tag tag-yellow">No PAM tool — IT Director uses direct RDP to all servers from this workstation</span></td>
+                    </tr>
+                    <tr>
+                        <td>WS-008</td>
+                        <td>Prairieville Facility Workstation</td>
+                        <td>Dell OptiPlex 5090</td>
+                        <td>Windows 10 Pro</td>
+                        <td>Prairieville, LA Satellite Facility</td>
+                        <td><span class="tag tag-red">No EDR agent installed</span> <span class="tag tag-yellow">Connected to main plant via split-tunnel VPN; no dedicated IT support on-site</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 5 – OT / ICS / DCS ASSETS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 5 &mdash; OT / ICS / DCS Asset Inventory</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">⚙️</span>
+            <h2>OT / ICS / DCS Asset Inventory</h2>
+            <span class="sec-tag">DCS / SIS / BATCH</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box danger">
+                <strong>Critical Finding — Legacy Windows XP DCS Workstation &amp; Internet-Facing Batch Server Port</strong>
+                Two critical OT vulnerabilities exist in MSCI's environment. First, process graphics workstation WS-006 in Reactor Building C/D is running Windows XP SP3, an operating system that has received no security patches since April 2014. This machine is network-connected to the DCS VLAN and cannot host modern endpoint detection tools. Second, the Siemens SIMATIC IT batch execution server (SRV-004) has TCP port 8443 open and internet-facing — a legacy configuration from a 2009 remote recipe upload feature that has never been disabled. IT staff are unaware this port is active. An attacker with knowledge of this port could potentially interact with the batch execution system without traversing the corporate network or triggering any existing security control.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Description</th>
+                        <th>Vendor / Model</th>
+                        <th>Firmware / Version</th>
+                        <th>Location</th>
+                        <th>Security Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OT-001</td>
+                        <td>DCS Master Controller — Primary</td>
+                        <td>Honeywell Experion PKS</td>
+                        <td>R430.1 (2020)</td>
+                        <td>IT Server Room, Baton Rouge</td>
+                        <td><span class="tag tag-yellow">R430.3 patch available — not yet applied</span> <span class="tag tag-red">No application whitelisting on Experion nodes</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-002 through OT-005</td>
+                        <td>DCS Process Controllers — Reactors A–D (4 units)</td>
+                        <td>Honeywell C300 Process Controllers</td>
+                        <td>R430.1 firmware</td>
+                        <td>Reactor Buildings A/B and C/D</td>
+                        <td><span class="tag tag-yellow">Firmware update requires planned process shutdown</span> <span class="tag tag-red">No keyswitch lock policy enforced on 2 units</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-006</td>
+                        <td>DCS Process Controller — Distillation &amp; Solvent Recovery</td>
+                        <td>Honeywell C300</td>
+                        <td>R430.1 firmware</td>
+                        <td>East Process Area</td>
+                        <td><span class="tag tag-yellow">Same firmware patch gap as reactor controllers</span> <span class="tag tag-green">Network-isolated on dedicated VLAN</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-007</td>
+                        <td>Safety Instrumented System (SIS)</td>
+                        <td>Honeywell Safety Manager SC</td>
+                        <td>v160 (current)</td>
+                        <td>Reactor C/D and Distillation Unit</td>
+                        <td><span class="tag tag-green">Current firmware</span> <span class="tag tag-yellow">IT staff have SIS read access via corporate AD credentials — not SIS-dedicated accounts</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-008</td>
+                        <td>Utility PLC — Boilers, Cooling Tower, Compressed Air</td>
+                        <td>Allen-Bradley ControlLogix L85</td>
+                        <td>v33.013 (current)</td>
+                        <td>Utilities Area, West Plant</td>
+                        <td><span class="tag tag-red">CRITICAL — On corporate VLAN (flat network, no IT/OT boundary)</span> <span class="tag tag-red">No industrial firewall at utilities network boundary</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-009 through OT-010</td>
+                        <td>Batch Execution System — ISA S88 Recipe Management (2 nodes)</td>
+                        <td>Siemens SIMATIC IT R&amp;D Suite</td>
+                        <td>v8.1.0 (2019)</td>
+                        <td>IT Server Room (logical — SRV-004)</td>
+                        <td><span class="tag tag-red">Port 8443 internet-facing (legacy — still active)</span> <span class="tag tag-yellow">v8.2 update available — requires Siemens on-site</span> <span class="tag tag-red">Contractor remote access: no MFA, no session recording</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-011 through OT-012</td>
+                        <td>Flow Computers — Custody Transfer &amp; Mass Balance (2 units)</td>
+                        <td>Emerson Daniel 3-Phase Flow Computer</td>
+                        <td>v2.31</td>
+                        <td>East Process Area (Distillation)</td>
+                        <td><span class="tag tag-yellow">Audit logs enabled — not reviewed on any regular schedule</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-013 through OT-016</td>
+                        <td>Industrial Ethernet Switches — Managed (4 units)</td>
+                        <td>Cisco Catalyst IE-3400</td>
+                        <td>IOS-XE 17.6.1</td>
+                        <td>DCS network and server room</td>
+                        <td><span class="tag tag-yellow">SNMP v2c enabled — community string "msciint"</span> <span class="tag tag-green">VLANs configured for DCS isolation at main plant</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-017 through OT-021</td>
+                        <td>Industrial Ethernet Switches — Unmanaged (5 units)</td>
+                        <td>Phoenix Contact FL SWITCH 1005</td>
+                        <td>N/A (unmanaged)</td>
+                        <td>Utilities area and Prairieville facility</td>
+                        <td><span class="tag tag-red">Unmanaged — no logging, no port security, no VLAN capability</span> <span class="tag tag-red">Cannot enforce segmentation at utilities or remote site</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-022</td>
+                        <td>Gas Detection System (Fixed LEL / H2S / Cl2 — 38 sensor points)</td>
+                        <td>MSA PrimaX Pro</td>
+                        <td>v3.4 (current)</td>
+                        <td>Main plant process areas (all buildings)</td>
+                        <td><span class="tag tag-yellow">Controller connected to safety network — no formal cybersecurity review or risk assessment performed for this system</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════
+         SECTION 6 – NETWORK ARCHITECTURE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 6 &mdash; Network Architecture</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🌐</span>
+            <h2>Network Architecture</h2>
+            <span class="sec-tag">IT / OT TOPOLOGY</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="network-diagram"><span class="nd-gray">╔══════════════════════════════════════════════════════════════════════════════════════════╗
+║              MERIDIAN SPECIALTY CHEMICALS INC. — NETWORK TOPOLOGY (SIMPLIFIED)           ║
+╚══════════════════════════════════════════════════════════════════════════════════════════╝</span>
+
+<span class="nd-blue">  ┌─────────────────────────────────────────────────────────────┐
+  │                  INTERNET / CLOUD SERVICES                  │
+  │  SAP S/4HANA Cloud (SAP-hosted HANA DB)                    │
+  │  MSCI Office 365  ·  Azure AD Connect (SSO)                │
+  └────────────────────────────┬────────────────────────────────┘
+                               │  AT&amp;T Fiber — 500 Mbps Internet Circuit
+                               ▼</span>
+<span class="nd-green">  ┌─────────────────────────────────────────────────────────────┐
+  │               CORPORATE PERIMETER FIREWALL                  │
+  │         Palo Alto PA-3220 NGFW  (PAN-OS 10.2.6)            │
+  │  ✓ IPS/IDS enabled on internet-facing zones                │
+  │  ✓ App-ID + User-ID policies active                        │
+  │  GlobalProtect SSL VPN  ⚠ NO MFA — username/password only  │
+  └─────────────────────────────┬───────────────────────────────┘
+                                │  Corporate LAN (VLAN 10 — 10.10.10.0/24)
+                                ▼</span>
+<span class="nd-green">  ┌─────────────────────────────────────────────────────────────┐
+  │                   CORPORATE IT NETWORK                      │
+  │  SRV-001  Domain Controller (Windows Server 2019)          │
+  │  SRV-005  SAP S/4HANA App Server (VM — Windows 2019)       │
+  │  SRV-006  LabVantage LIMS Server (Windows 2019)            │
+  │  SRV-007  File Server ⚠ CVI DOCS — UNPROTECTED FILE SHARE  │
+  │  Cisco Catalyst 4500X Core Switch                          │
+  └──────────────┬──────────────────────────┬────────────────────┘
+                 │  VLAN 20 (10.20.0.0/16)  │  VLAN 30 (Safety — 10.30.0.0/24)
+                 ▼                          ▼</span>
+<span class="nd-yellow">  ┌───────────────────────────┐    ┌──────────────────────────────┐
+  │   DCS / PROCESS CONTROL   │    │       SAFETY NETWORK          │
+  │   NETWORK  (VLAN 20)      │    │  OT-007 Honeywell Safety      │
+  │                           │    │         Manager SC (SIS)       │
+  │  SRV-002 Experion PKS     │    │  IEC 61511 compliant SIS      │
+  │  SRV-003 IP.21 Historian  │    │  ⚠ IT staff have read access  │
+  │   ⚠ BRIDGE: VLAN 10+20   │    │    via corporate AD creds      │
+  │  SRV-004 Batch Server     │    │    (not SIS-dedicated accts)   │
+  │   ⚠ PORT 8443 INTERNET    │    └──────────────────────────────┘
+  │  WS-001 to WS-004 HMIs   │
+  │  WS-005 Eng. WS           │
+  │   ⚠ DUAL-HOMED VLAN10+20 │
+  │  OT-001 to OT-006 C300s  │
+  │  OT-013–016 IE-3400 SW   │
+  └───────────────────────────┘</span>
+
+<span class="nd-red">  ┌─────────────────────────────────────────────────────────────┐
+  │  ⚠ UTILITIES FLAT NETWORK — NO SEGMENTATION (VLAN 10)      │
+  │                                                             │
+  │  OT-008  Allen-Bradley ControlLogix L85 PLC                │
+  │          (Boilers · Cooling Tower · Compressed Air)        │
+  │          SAME SUBNET AS CORPORATE LAN — no firewall        │
+  │          ANY corporate workstation can reach this PLC       │
+  │                                                             │
+  │  OT-017 to OT-021  Phoenix Contact Unmanaged Switches      │
+  │          No logging · No port security · No VLAN support   │
+  └─────────────────────────────────────────────────────────────┘</span>
+
+<span class="nd-gray">  VENDOR REMOTE ACCESS (ALL via GlobalProtect VPN — NO MFA):
+  ──────────────────────────────────────────────────────────────
+  Honeywell PSS   → VPN → SRV-002 DCS Full Admin  (shared cred, no recording)
+  Siemens SITEC   → VPN → SRV-004 Batch Server Admin (no MFA, port 8443 unknown)
+  SAP Partner     → VPN → SRV-005 SAP Basis Admin  (standing access since 2021)
+  LabVantage      → VPN → SRV-006 LIMS Admin        (annual, no MFA, active year-round)
+  ⚠ No vendor access reviews performed · No session recording on any vendor session</span></div>
+
+            <div class="info-box warning">
+                <strong>Utilities Flat Network Gap</strong>
+                The Allen-Bradley ControlLogix L85 utility PLCs (OT-008) — controlling the boiler plant, cooling tower, and compressed air system — share the same corporate VLAN (VLAN 10, 10.10.10.0/24) as all corporate IT workstations, servers, and the GlobalProtect VPN termination point. There is no industrial firewall, no VLAN boundary, and no access control list between the corporate network and the utility PLC Ethernet ports. Any device connected to the corporate LAN, including a compromised workstation or an authenticated VPN session, can communicate directly with the PLC without traversal of any security boundary.
+            </div>
+            <div class="info-box danger">
+                <strong>Dual-Homed Engineering Workstation &amp; Internet-Facing Batch Server Port</strong>
+                WS-005 (DCS Engineering Workstation) has two active network interfaces — one on VLAN 10 (corporate IT) and one on VLAN 20 (DCS/process control). This dual-homed configuration creates a direct network bridge that bypasses the Palo Alto NGFW segmentation between IT and OT at the Baton Rouge campus. Additionally, SRV-004 (Batch Execution Server) has TCP port 8443 open and reachable from the internet. This port is not present in the current Palo Alto firewall ruleset because it predates the firewall — the port was configured in 2009 and was inadvertently carried forward when MSCI migrated to the Palo Alto platform in 2017. No IT staff member is currently aware the port is active or internet-reachable.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 7 – CYBERSECURITY CONTROLS ASSESSMENT
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 7 &mdash; Cybersecurity Controls Assessment</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🔒</span>
+            <h2>Cybersecurity Controls Assessment</h2>
+            <span class="sec-tag">12 CONTROL DOMAINS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>Current Control / Status</th>
+                        <th>Implementation</th>
+                        <th>Key Gap / Finding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Access Management</strong></td>
+                        <td>Active Directory with RBAC groups; Palo Alto GlobalProtect VPN; local accounts on DCS Experion server</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>No MFA on VPN, DCS HMIs, or batch server; shared operator accounts on WS-002 and WS-003; no PAM tool; no privileged access review process</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Threat &amp; Vulnerability Management</strong></td>
+                        <td>Rapid7 InsightVM deployed on IT network; no OT scanning; informal patch process for Windows servers only</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>All OT assets (DCS, SIS, PLCs) excluded from vulnerability management program; WS-006 (Windows XP) unpatched since 2014; Experion R430.3 available but not applied; no risk-based patching schedule for OT systems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Situation Awareness</strong></td>
+                        <td>Palo Alto firewall logs reviewed manually and ad-hoc; no SIEM; Windows event logs retained locally only; no OT network monitoring</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No SIEM or centralized log aggregation; DCS/OT network has zero intrusion detection or anomaly monitoring capability; log retention less than 14 days on most systems; internet-facing port 8443 on SRV-004 was never detected by existing controls</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incident Response</strong></td>
+                        <td>Draft IT-focused IRP exists; OSHA PSM emergency response plan covers chemical process releases (not cyber); no cyber tabletop exercises conducted</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>IRP has no OT/DCS-specific runbooks; no cyber-physical scenario planning; PSM emergency plan and cyber IRP are completely separate and not integrated; no tabletop or functional exercise history; DHS expects incident response capability even though CFATS does not prescribe specific IR procedures</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Service Continuity</strong></td>
+                        <td>Tape backups performed for IT servers; no tested restoration procedure; BCP covers physical hazards (hurricane, fire, chemical release) only; DCS has no backup or recovery procedure</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No cyber BCP or DR plan; no defined RTO/RPO for DCS, batch server, or historian; SRV-003 (IP.21 Historian) backup has never been tested for successful restoration; no backup DCS controller or hot standby for Experion PKS; batch recipe library (SRV-004) has no verified backup</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk Management</strong></td>
+                        <td>CFATS CSAT completed 2022 (DHS hazard-based assessment); OSHA PHA addresses process safety risks only; no formal cybersecurity risk assessment exists</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No cyber risk register; CFATS CSAT findings from 2022 only partially implemented; no cyber-physical risk analysis for batch reactor DCS compromise scenarios; CFATS Tier 3 SSP contains a cybersecurity section but the required technical controls have not been fully operationalized</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Asset Management</strong></td>
+                        <td>IT CMDB in ServiceNow maintained for IT assets; OT assets tracked in spreadsheet by Controls Engineer Frank Albright; no automated asset discovery</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>OT asset inventory incomplete and not integrated with CMDB; WS-006 (XP workstation) not listed in ServiceNow; SRV-004 internet-facing port 8443 not in any asset or configuration record; no configuration baseline documented for DCS controllers; software inventory for OT systems not maintained</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Identity Management</strong></td>
+                        <td>Active Directory manages IT user identities; DCS accounts locally managed on Experion application server; no formal identity lifecycle management for OT accounts</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>Two former contractor AD accounts remain active (departed within last 12 months); DCS accounts for at least one departed controls contractor not removed; no periodic user access certification; SAP partner retains standing VPN access between quarterly visits — access not deprovisioned between engagements</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Supply Chain &amp; Third-Party Risk</strong></td>
+                        <td>Vendor contracts reference general liability; Honeywell and Siemens hold active remote VPN access; no third-party vendor risk management program</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No third-party cyber risk assessment program; Honeywell remote DCS access uses shared credential with no MFA and no session recording; Siemens batch server access has same gaps plus undiscovered internet-facing port; no annual vendor security review; no cybersecurity requirements in any vendor SOW or MSA</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Workforce Management</strong></td>
+                        <td>OSHA and EHS safety training mandatory and well-documented; cybersecurity awareness training completely absent; background checks for new hires and all CFATS-designated personnel</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>No cybersecurity awareness training program; no phishing simulations ever conducted; DCS operators have not received any ICS security training; IT Director / CFATS FSO (Carlos Mendes) holds no formal cybersecurity certification; CFATS personnel surety (background check) requirements are met but no cyber-specific training requirements are enforced</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Physical Security</strong></td>
+                        <td>HQ and control room: card access + full CCTV; reactor buildings: badge access; utilities area: padlock only; CFATS SSP physical security measures partially implemented</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>Utilities area — containing PLCs on the flat corporate network — has only padlock-level physical security with no CCTV and no intrusion alarm; no visitor escort policy for contractor access to OT panel rooms in reactor buildings; Prairieville satellite facility has no dedicated IT or security support and a single badge-access entry point</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Configuration Management</strong></td>
+                        <td>IT change tickets managed in ServiceNow; OT changes performed verbally by Controls Engineer without documentation; no formal OT change management process; no DCS configuration backup</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No formal OT change management process; DCS controller configurations not backed up or version-controlled; PLC ladder logic not stored in a version control system; WS-006 (XP workstation) configuration is completely unknown; the batch server's internet-facing port 8443 exists because of an undocumented 2009 configuration change that was never reviewed or recorded</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 8 – THIRD-PARTY RELATIONSHIPS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 8 &mdash; Third-Party Relationships &amp; Vendor Access</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🤝</span>
+            <h2>Third-Party Relationships &amp; Vendor Access</h2>
+            <span class="sec-tag">8 VENDORS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box warning">
+                <strong>Vendor Remote Access — No MFA, No Session Recording, No Review</strong>
+                Three vendors — Honeywell PSS, Siemens SITEC, and the SAP partner — hold administrative-level remote access to MSCI's most critical systems (DCS, batch server, ERP). All three connect via GlobalProtect VPN using username and password only (no MFA). Sessions are not recorded or monitored. Access is not time-limited or deprovisioned between engagements. No formal vendor risk assessment has been performed for any vendor. Honeywell's VPN credential is shared among multiple Honeywell field service engineers — MSCI has no way to determine which individual accessed the DCS at any given time, or what changes were made.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Vendor</th>
+                        <th>Service Provided</th>
+                        <th>Access Level</th>
+                        <th>Risk Rating</th>
+                        <th>Notes / Gaps</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Honeywell Process Solutions (PSS)</strong></td>
+                        <td>Experion PKS DCS application support, patch deployment, configuration changes</td>
+                        <td><span class="tag tag-red">Remote VPN — DCS Full Admin</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                        <td>Shared credential used by multiple Honeywell engineers; no MFA; no session recording; access not time-limited; no annual review; last remote session date not logged</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Siemens SITEC LLC</strong></td>
+                        <td>SIMATIC IT batch execution server maintenance, ISA S88 recipe management updates</td>
+                        <td><span class="tag tag-red">Remote VPN — Batch Server Admin</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                        <td>No MFA; no session recording; SRV-004 has internet-facing TCP port 8443 that Siemens itself is unaware of; last confirmed remote access: approximately 4 months ago; v8.2 software update pending</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SAP SE / Authorized Partner</strong></td>
+                        <td>SAP S/4HANA BASIS administration, quarterly software patches and system health checks</td>
+                        <td><span class="tag tag-yellow">Remote VPN — SAP Basis Admin (quarterly)</span></td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                        <td>No MFA; standing VPN access not deprovisioned between quarterly visits; same credential in use since 2021; SAP partner personnel turnover not communicated to MSCI; no time-of-day access restrictions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LabVantage Solutions</strong></td>
+                        <td>LIMS application support and annual version upgrade</td>
+                        <td><span class="tag tag-yellow">Remote VPN — LIMS Admin (annual)</span></td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                        <td>Remote access only during annual upgrade engagement; however, VPN account remains active year-round and is never deprovisioned between annual visits; no MFA</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PSC Environmental Services (EHS Consultant)</strong></td>
+                        <td>EPA RMP plan updates, CFATS CSAT submission support, OSHA PSM third-party auditing</td>
+                        <td><span class="tag tag-green">Onsite Only + LIMS/SAP Read-Only</span></td>
+                        <td><span class="tag tag-green">LOW</span></td>
+                        <td>Physical access only during PSM audit and RMP update engagements; limited read-only data access on-site; CFATS personnel surety (background check) completed for all PSC personnel; CVI handling training confirmed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Air Products and Chemicals (Gas Supply)</strong></td>
+                        <td>Specialty gas cylinder delivery — nitrogen, hydrogen, argon, instrument air</td>
+                        <td><span class="tag tag-green">Physical Delivery Only</span></td>
+                        <td><span class="tag tag-green">LOW</span></td>
+                        <td>No IT or OT system access; delivery personnel issued temporary badge at dock; drivers do not enter process areas; CFATS personnel surety completed for drivers accessing COI storage areas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cisco SmartNet / CDW Government</strong></td>
+                        <td>Network equipment maintenance contracts, replacement hardware procurement, Cisco TAC support</td>
+                        <td><span class="tag tag-yellow">Onsite — Network Access (as needed)</span></td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                        <td>On-site access only when replacing failed equipment; CDW has no standing remote access; Cisco TAC support accessed via case portal only; no formal security requirements in SmartNet or CDW statements of work</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DHS / CISA — CFATS Inspector</strong></td>
+                        <td>CFATS compliance inspections — SSP verification, physical security walk, chemical inventory audit</td>
+                        <td><span class="tag tag-blue">Onsite — SSP Review + Physical Walk</span></td>
+                        <td><span class="tag tag-blue">REGULATORY</span></td>
+                        <td>Access per DHS CFATS inspection schedule; no IT or OT system access during inspections; all CFATS documentation shared under CVI handling requirements; follow-up inspection scheduled for 2026 based on 2022 CSAT findings</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 9 – POLICIES & GOVERNANCE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 9 &mdash; Policies &amp; Governance</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">📋</span>
+            <h2>Policies &amp; Governance</h2>
+            <span class="sec-tag">POLICY INVENTORY</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box danger">
+                <strong>Critical Gap — CFATS CVI Data Improperly Protected</strong>
+                Chemical-terrorism Vulnerability Information (CVI) is a sensitive DHS-protected category of information under 6 CFR Part 27, Appendix A. MSCI's CFATS documentation — including the Site Security Plan (SSP), CSAT vulnerability assessment results, facility chemical inventory above screening threshold quantities, and security vulnerability findings — is stored on SRV-007 in a standard Windows file share accessible to all domain users with a basic Active Directory login. CVI handling regulations require access controls limited to personnel with a demonstrated need to know, audit logging of all access, and restrictions on copying or transmitting CVI. None of these controls are implemented. Any MSCI employee, or any attacker with a compromised domain account, could access CVI documents without restriction or detection.
+            </div>
+            <h3 class="sub-heading">Policy &amp; Procedure Inventory</h3>
+            <ul class="body-list">
+                <li><span class="tag tag-green" style="margin-right:0.4rem;">In Place — 2023</span> <strong>Acceptable Use Policy (AUP)</strong> — Covers IT systems, internet use, and email; all employees sign annually; does not address OT systems, removable media on DCS workstations, or CFATS CVI document handling requirements</li>
+                <li><span class="tag tag-yellow" style="margin-right:0.4rem;">Draft — Never Exercised</span> <strong>Incident Response Plan (IRP)</strong> — IT-focused draft document; no OT or DCS-specific runbooks; not integrated with the OSHA PSM Emergency Response Plan; never tested via tabletop or functional exercise; CFATS does not specify IR procedures but DHS expects a documented and practiced capability</li>
+                <li><span class="tag tag-yellow" style="margin-right:0.4rem;">Informal — IT Only</span> <strong>Change Management Procedure</strong> — ServiceNow change tickets used for IT infrastructure; all OT changes performed verbally or via email by Controls Engineer with no formal documentation or approval gate; no change advisory board; the batch server's internet-facing port 8443 exists because of a 2009 change that was never reviewed, approved, or recorded</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Exist</span> <strong>OT Patch Management Policy</strong> — No formal policy governing DCS, SIS, or PLC firmware and software patching; updates applied ad-hoc when a vendor recommends during a service call; WS-006 (Windows XP) has received no security patches since April 2014; no compensating controls documented for unpatched OT systems</li>
+                <li><span class="tag tag-yellow" style="margin-right:0.4rem;">IT Only — OT Not Addressed</span> <strong>Access Control Policy</strong> — IT user provisioning and deprovisioning process documented; OT account management completely absent from the policy; two former contractor AD accounts remain active; DCS accounts are not synchronized with the HR offboarding process</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Cover Cyber</span> <strong>Business Continuity Plan (BCP)</strong> — Physical BCP covers hurricane, fire, equipment failure, and chemical release scenarios; does not address cyber-induced operational disruption; no defined RTO or RPO for IT or OT systems; no cyber BCP testing history; batch recipe library recovery not addressed</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Exist</span> <strong>Third-Party / Vendor Access Policy</strong> — No documented policy governing vendor remote access; no requirements for MFA, session recording, access time limits, or scope restrictions; no annual vendor access review; vendor SOWs and MSAs do not include cybersecurity requirements or right-to-audit clauses</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Improperly Implemented</span> <strong>CFATS CVI Handling Policy</strong> — CVI handling obligations are referenced in the SSP but have never been operationalized; CVI documents are stored on an open file share accessible to all AD-authenticated users; no access logging, no need-to-know enforcement, no CVI training records for personnel beyond the FSO; this constitutes a potential CVI mishandling violation under 6 CFR Part 27</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Exist</span> <strong>Removable Media Policy</strong> — No policy restricts the use of USB drives or external media on OT workstations; USB ports on WS-005 (DCS engineering workstation) and WS-006 (XP graphics workstation) are unrestricted; Honeywell PSS has historically delivered DCS patches via USB media without hash verification or malware scanning prior to OT use</li>
+                <li><span class="tag tag-yellow" style="margin-right:0.4rem;">Filed 2022 — Partially Implemented</span> <strong>CFATS Site Security Plan (SSP)</strong> — Required cybersecurity measures were identified in the 2022 CSAT submission; SSP approved by DHS; several Tier 3 required cybersecurity controls specified in the SSP have not yet been technically deployed; a DHS follow-up compliance inspection is scheduled for 2026 to verify SSP implementation status</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 10 – C2M2 DOMAIN ASSESSMENT
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 10 &mdash; C2M2 Domain Assessment Data</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">📊</span>
+            <h2>C2M2 Domain Assessment — Indicative Scores</h2>
+            <span class="sec-tag">10 DOMAINS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box info">
+                <strong>Assessment Scope Note</strong>
+                The following indicative C2M2 v2.1 maturity scores are based on the asset inventory, controls assessment, and policy review documented in this case study. Students should validate these scores by mapping individual C2M2 practices to the evidence presented, identifying where MSCI's actual practices fall short of the documented MIL threshold. MSCI's process safety maturity (OSHA PSM program, IEC 61511-compliant SIS) is high relative to its peer group — but cybersecurity maturity is largely independent and must be assessed separately. A common student error is to conflate PSM program maturity with C2M2 cybersecurity maturity; these are distinct disciplines with distinct evidence requirements.
+            </div>
+            <div class="domain-prep-grid">
+                <!-- ASSET -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-asset">🗂️ ASSET — Asset, Change &amp; Configuration Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">MSCI maintains an IT CMDB in ServiceNow and tracks OT assets in a spreadsheet, yielding a partial MIL 1. Critical gaps include WS-006 (XP workstation) absent from the CMDB, the internet-facing port 8443 not recorded anywhere, and no DCS configuration baselines.</p>
+                        <ul>
+                            <li>IT CMDB exists but OT inventory is a separate, incomplete spreadsheet</li>
+                            <li>WS-006 (legacy XP workstation) not present in any asset tracking system</li>
+                            <li>No configuration baseline for Experion DCS controllers or PLCs</li>
+                            <li>Top Practice: ASSET-2a — Establish unified OT asset inventory with configuration baselines and change history</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1 (IT) / MIL 0 (OT Config Mgmt)</div>
+                </div>
+                <!-- THREAT -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-threat">🎯 THREAT — Threat and Vulnerability Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">Rapid7 InsightVM provides IT vulnerability scanning, but all OT assets are excluded. WS-006 has been unpatched for over 10 years. The Experion R430.3 patch is available but not applied. No OT-specific threat intelligence sources are monitored.</p>
+                        <ul>
+                            <li>OT assets (DCS, SIS, PLCs, XP workstation) excluded from vuln program</li>
+                            <li>WS-006 (Windows XP EOL) — no patches since April 2014</li>
+                            <li>Experion R430.3 patch available; not scheduled for application</li>
+                            <li>Top Practice: THREAT-1a — Extend vulnerability management scope to cover all OT/ICS assets</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- RISK -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-risk">⚖️ RISK — Risk Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">CFATS CSAT is a DHS-driven hazard inventory, not a cybersecurity risk assessment. No cyber risk register exists. CSAT findings from 2022 are partially implemented. No cyber-physical risk analysis has been performed for DCS compromise scenarios in the batch reactor environment.</p>
+                        <ul>
+                            <li>No documented cybersecurity risk register of any kind</li>
+                            <li>CFATS CSAT ≠ C2M2 risk management — students should clearly distinguish these</li>
+                            <li>2022 CSAT findings only partially implemented — DHS follow-up inspection due 2026</li>
+                            <li>Top Practice: RISK-1a — Establish cyber risk register incorporating CFATS, PSM, and OT threat scenarios</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Current MIL: 0</div>
+                </div>
+                <!-- ACCESS -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-access">🔑 ACCESS — Identity and Access Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">AD RBAC and Palo Alto VPN provide basic IT access controls. However, no MFA is deployed anywhere — not on VPN, DCS HMIs, or the batch server. Shared operator accounts and stale contractor accounts are active. OT identities are outside AD governance.</p>
+                        <ul>
+                            <li>No MFA on VPN, DCS HMIs, or batch server — highest priority gap</li>
+                            <li>Shared "operator" account on two HMI workstations</li>
+                            <li>Two former contractor AD accounts still active; DCS accounts not reviewed</li>
+                            <li>Top Practice: ACCESS-2b — Implement MFA for all VPN, remote access, and DCS HMI authentication</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- SITUATION -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-situate">👁️ SITUATION — Situational Awareness</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">The most significant MIL 0 domain. No SIEM, no centralized logging, no OT network monitoring of any kind. The internet-facing port 8443 on SRV-004 is the clearest evidence of this gap — it existed for 15 years without being detected by any security control.</p>
+                        <ul>
+                            <li>No SIEM or centralized log aggregation platform</li>
+                            <li>OT/DCS network has zero IDS or behavioral anomaly monitoring</li>
+                            <li>Log retention less than 14 days on most systems — insufficient for forensics</li>
+                            <li>Top Practice: SITUATION-1a — Deploy SIEM with IT + OT log ingestion; add passive OT network monitoring</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Current MIL: 0</div>
+                </div>
+                <!-- RESPONSE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-response">🚨 RESPONSE — Event and Incident Response, Continuity</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">A draft IT IRP exists. The OSHA PSM emergency response plan is mature for process safety events but completely separate from the cyber IRP. No tabletop exercises have ever been conducted. No OT-specific runbooks or cyber-safety decision trees exist for operators.</p>
+                        <ul>
+                            <li>IRP and PSM emergency plan are entirely separate — not integrated</li>
+                            <li>No OT incident runbooks; DCS operators have no cyber guidance</li>
+                            <li>No tabletop exercise has ever been conducted at MSCI</li>
+                            <li>Top Practice: RESPONSE-1b — Develop and exercise integrated cyber-physical IRP with OT runbooks</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- THIRD-PARTIES -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-third">🏢 THIRD-PARTIES — Third-Party Risk Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">No third-party risk management program of any kind. Three vendors hold admin-level remote access to critical systems with shared credentials, no MFA, and no session recording. Vendor contracts contain no cybersecurity requirements. No reviews have been performed.</p>
+                        <ul>
+                            <li>Honeywell DCS access: shared credential, no MFA, no session monitoring</li>
+                            <li>Siemens batch server access: identical gaps + unknown internet-facing port</li>
+                            <li>No security requirements in any vendor contract or SOW</li>
+                            <li>Top Practice: THIRD-1a — Establish vendor access policy with MFA, session recording, and annual review</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Current MIL: 0</div>
+                </div>
+                <!-- WORKFORCE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-work">👷 WORKFORCE — Workforce Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">OSHA and EHS safety training is mandatory and well-documented — a strength. However, no cybersecurity awareness training exists, no phishing simulations have been run, and DCS operators have received no ICS security training. The CFATS FSO holds no security certification.</p>
+                        <ul>
+                            <li>No cybersecurity awareness program — zero training history for any role</li>
+                            <li>DCS operators cannot identify cyber incident indicators</li>
+                            <li>CFATS FSO (IT Director) has no formal cybersecurity qualification</li>
+                            <li>Top Practice: WORKFORCE-1a — Implement cyber awareness training with OT/ICS-specific content for all roles</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- ARCHITECTURE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-arch">🏗️ ARCHITECTURE — Cybersecurity Architecture</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">The Palo Alto NGFW is a genuine strength at the perimeter. DCS VLAN segmentation exists at the main plant. However, WS-005 dual-home bypasses the VLAN boundary, utilities PLCs are on the flat corporate VLAN, and unmanaged switches eliminate visibility and control at utilities and Prairieville.</p>
+                        <ul>
+                            <li>Utilities PLCs on flat VLAN 10 — any corporate device can reach them</li>
+                            <li>WS-005 dual-homed — bridges VLAN 10 and VLAN 20, bypassing Palo Alto</li>
+                            <li>5 unmanaged switches — no logging, port security, or VLAN capability</li>
+                            <li>Top Practice: ARCHITECTURE-2a — Segment utilities network; remove WS-005 dual-home; replace unmanaged switches</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- PROGRAM -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-program">🗓️ PROGRAM — Cybersecurity Program Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">No formal cybersecurity program exists at MSCI. The CFATS SSP was filed to meet a regulatory obligation, not as part of a strategic security program. There is no CISO, no security budget line item, no governance structure, and no program roadmap. Cybersecurity is entirely reactive and collateral.</p>
+                        <ul>
+                            <li>No cybersecurity budget — funded ad-hoc from IT operating budget</li>
+                            <li>No executive governance (no CISO, no security steering committee)</li>
+                            <li>CFATS SSP filed for compliance but not operationalized as a program</li>
+                            <li>Top Practice: PROGRAM-1a — Establish executive-sponsored program with budget, CISO, and governance structure</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Current MIL: 0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 11 – EXERCISE DISCUSSION QUESTIONS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 11 &mdash; Exercise Discussion Questions</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🎓</span>
+            <h2>Exercise Discussion Questions &amp; Scenario Injects</h2>
+            <span class="sec-tag">5 SCENARIOS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box info">
+                <strong>Scenario A — Spear-Phishing Targeting the Controls Engineer</strong>
+                A threat actor sends a convincing spear-phishing email to Controls Engineer Frank Albright, appearing to come from Honeywell PSS with a link to "review a critical Experion security advisory." The link installs a remote access trojan (RAT) on WS-005, the dual-homed engineering workstation connected to both VLAN 10 (corporate IT) and VLAN 20 (DCS network). The RAT begins enumerating the DCS network and attempts to authenticate to SRV-002 (Experion PKS application server) using Frank's cached domain credentials.<br><br>
+                <em>Discussion:</em> What detection capability does MSCI have at each stage of this attack chain — initial delivery, execution, lateral movement to DCS? How does the dual-homed WS-005 affect the blast radius and containment options? What does the draft IRP require Frank to do, and is that guidance sufficient? Which C2M2 domains are most directly implicated? Which implemented controls, if any, would have disrupted this scenario?
+            </div>
+            <div class="info-box warning">
+                <strong>Scenario B — Internet-Facing Batch Server Port Discovered</strong>
+                During a routine Rapid7 InsightVM scan of the IT network, Network Engineer Lena Park notices an anomalous outbound connection originating from SRV-004 (Batch Execution Server) on TCP port 8443. She escalates to IT Director Carlos Mendes. Carlos has no record of this port in the Palo Alto firewall ruleset, the ServiceNow CMDB, or any change record. He contacts Siemens SITEC, who confirms the port exists as a legacy feature from 2009 but states they have not used it in several years and cannot confirm whether it has been accessed by any other party.<br><br>
+                <em>Discussion:</em> How does MSCI determine whether this port represents a benign historic misconfiguration, an active exploit, or an authorized but completely undocumented feature? What change management and configuration management practices are missing that allowed this to persist for 15 years? Map this finding to specific C2M2 ASSET and ARCHITECTURE domain practices. What are the CFATS regulatory implications if this port is discovered by a DHS inspector before MSCI addresses it?
+            </div>
+            <div class="info-box danger">
+                <strong>Scenario C — DHS CFATS Unannounced Follow-Up Inspection</strong>
+                A DHS/CISA chemical security inspector arrives at the facility for an unannounced follow-up compliance inspection related to MSCI's 2022 CSAT submission. The inspector requests evidence of implementation for the cybersecurity measures specified in MSCI's approved Site Security Plan, specifically: (1) access control measures for CFATS CVI documents; (2) network segmentation between IT and OT systems; (3) remote access security controls for DCS systems; (4) personnel cybersecurity training records; (5) evidence of a cybersecurity monitoring and detection capability.<br><br>
+                <em>Discussion:</em> For each of the five SSP implementation items, assess MSCI's ability to provide adequate compliance evidence. Which items are most likely to generate an SSP amendment requirement or corrective action? What are the potential enforcement consequences under 6 CFR Part 27 for unimplemented SSP measures? Build a 60-day emergency remediation plan prioritized by CFATS compliance risk, distinguishing between quick administrative fixes and longer technical implementations.
+            </div>
+            <div class="info-box info">
+                <strong>Scenario D — Ransomware Lateral Movement from IT to Utilities PLC</strong>
+                A ransomware variant enters MSCI's network via a phishing email clicked on a corporate workstation on VLAN 10. The ransomware rapidly encrypts files on corporate file shares (including SRV-007, which contains CFATS CVI documents) and begins scanning for additional targets. Because the Allen-Bradley ControlLogix utility PLCs (OT-008) share VLAN 10 with the corporate LAN, the ransomware's network scanner reaches the PLC's Ethernet port. The PLC firmware does not support the SMB exploit used for lateral movement, but the cooling tower PLC loses communications when the ransomware encrypts the engineering workstation that was polling it on VLAN 10. The cooling tower trips on communication loss, causing a process upset in Reactor Train C.<br><br>
+                <em>Discussion:</em> Trace the full attack path and identify the precise network segmentation boundary that, if implemented, would have contained the ransomware to VLAN 10. What is the production and safety impact of an unplanned cooling tower trip during an active exothermic batch in Reactor Train C? Does MSCI's BCP address this scenario? What is the cyber-versus-process-safety decision-making process when the cooling tower trips — who makes the call, and what does the OSHA PSM emergency plan require? Map the containment failure to C2M2 ARCHITECTURE and SERVICE CONTINUITY domain practices.
+            </div>
+            <div class="info-box warning">
+                <strong>Scenario E — Insider Threat: Departing Contractor with Active AD Account</strong>
+                During a routine student-led access review exercise, a former Honeywell controls contractor who departed MSCI 8 months ago is found to have an active Active Directory account with Experion DCS read access. The account can authenticate to the GlobalProtect VPN from any external location. HR records confirm the contractor was terminated for cause following a workplace dispute. The IT ticket to disable the account was created but never completed — it was closed as a duplicate of a different ticket that referred to a different contractor.<br><br>
+                <em>Discussion:</em> How long has this account represented a live external attack surface, and what is the worst-case exposure? What monitoring capability would detect unauthorized VPN authentication from this account — and does MSCI have it? Walk through the complete MSCI account deprovisioning process and identify exactly where it failed in this case. Map this finding to C2M2 IDENTITY and WORKFORCE domain practices. What immediate containment steps should Carlos Mendes take today, and what long-term process controls should be implemented to prevent recurrence?
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Cybersecurity Capability Maturity Model (C2M2) Program</strong></p>
+        <p>Developed by the U.S. Department of Energy (DOE) Office of Cybersecurity, Energy Security, and Emergency Response (CESER)</p>
+        <p>C2M2 Version 2.1 | Training Case Study — Meridian Specialty Chemicals Inc. (MSCI)</p>
+        <p style="font-size: 0.85rem; margin-top: 1rem; opacity: 0.7;">All case study organizations, personnel, and data are entirely fictional and for educational use only.</p>
+        <div class="version-badge">🧪 Industrial / OT Sector | CFATS Tier 3 | Baton Rouge, LA | March 2026</div>
+    </div>
+
+</div>
+
+<script>
+/* ── Section collapse / expand ── */
+function toggleSection(headerEl) {
+    const body = headerEl.nextElementSibling;
+    const icon = headerEl.querySelector('.toggle-icon');
+    if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        headerEl.classList.remove('collapsed');
+        icon.textContent = '▼';
+    } else {
+        body.classList.add('hidden');
+        headerEl.classList.add('collapsed');
+        icon.textContent = '▼';
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   COUNTER ANIMATION
+═══════════════════════════════════════════════════ */
+function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const duration = 1200;
+    const start = performance.now();
+    function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = target;
+    }
+    requestAnimationFrame(update);
+}
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            document.querySelectorAll('.count-anim').forEach(el => animateCounter(el));
+            observer.disconnect();
+        }
+    });
+}, { threshold: 0.3 });
+const statsRow = document.querySelector('.stats-row');
+if (statsRow) observer.observe(statsRow);
+
+/* ═══════════════════════════════════════════════════
+   EDIT MODE ENGINE
+═══════════════════════════════════════════════════ */
+const STORAGE_KEY = 'msci_cs_v1';
+let editMode = false;
+
+function toggleEditMode() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    const btn = document.getElementById('editToggleBtn');
+    if (editMode) {
+        btn.textContent = '✅ Done Editing';
+        btn.classList.add('active');
+        enableEditing();
+    } else {
+        btn.textContent = '✏️ Edit Mode';
+        btn.classList.remove('active');
+        disableEditing();
+        saveToStorage();
+    }
+}
+
+/* ── Enable ── */
+function enableEditing() {
+
+    /* 1. Tables inside section-body: add delete column + Add Row button */
+    document.querySelectorAll('.section-body table').forEach(tbl => {
+        const headerRow = tbl.querySelector('thead tr');
+        if (headerRow && !headerRow.querySelector('th.del-col')) {
+            const th = document.createElement('th');
+            th.className = 'del-col';
+            headerRow.appendChild(th);
+        }
+        tbl.querySelectorAll('tbody tr').forEach(tr => {
+            tr.querySelectorAll('td:not(.del-col)').forEach(td => {
+                td.contentEditable = 'true';
+            });
+            if (!tr.querySelector('td.del-col')) {
+                const td = mkDelCell(() => tr.remove());
+                tr.appendChild(td);
+            }
+        });
+        if (!tbl.nextElementSibling || !tbl.nextElementSibling.classList.contains('add-row-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-row-btn';
+            btn.textContent = '＋ Add Row';
+            btn.onclick = () => addTableRow(tbl);
+            tbl.after(btn);
+        }
+    });
+
+    /* 2. List items: make editable + add delete buttons */
+    document.querySelectorAll('.section-body li, .dpc-body li').forEach(li => {
+        li.contentEditable = 'true';
+        if (!li.querySelector('.li-del-btn')) {
+            const btn = mkDelBtn(() => li.remove());
+            btn.classList.add('li-del-btn');
+            btn.contentEditable = 'false';
+            li.appendChild(btn);
+        }
+    });
+
+    /* 3. Add Item buttons after each UL */
+    document.querySelectorAll('.section-body ul, .dpc-body ul').forEach(ul => {
+        if (!ul.nextElementSibling || !ul.nextElementSibling.classList.contains('add-item-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-item-btn';
+            btn.textContent = '＋ Add Item';
+            btn.onclick = () => addListItem(ul);
+            ul.after(btn);
+        }
+    });
+
+    /* 4. Stat items: make label/value/sub editable + delete button */
+    document.querySelectorAll('.stat-item').forEach(item => {
+        item.querySelectorAll('.si-label, .si-value, .si-sub').forEach(el => {
+            el.contentEditable = 'true';
+        });
+        if (!item.querySelector('.si-del-btn')) {
+            const btn = mkDelBtn(() => item.remove());
+            btn.className += ' si-del-btn';
+            btn.contentEditable = 'false';
+            item.appendChild(btn);
+        }
+    });
+
+    /* 5. Add Stat button after the stat grid */
+    const statGrid = document.querySelector('.stat-grid');
+    if (statGrid && (!statGrid.nextElementSibling || !statGrid.nextElementSibling.classList.contains('add-stat-btn'))) {
+        const btn = document.createElement('button');
+        btn.className = 'add-stat-btn';
+        btn.textContent = '＋ Add Stat Item';
+        btn.onclick = addStatItem;
+        statGrid.after(btn);
+    }
+
+    /* 6. Info boxes: make editable + delete button */
+    document.querySelectorAll('.info-box').forEach(box => {
+        box.contentEditable = 'true';
+        if (!box.querySelector('.ib-del-btn')) {
+            const btn = mkDelBtn(() => box.remove());
+            btn.className += ' ib-del-btn';
+            btn.contentEditable = 'false';
+            box.appendChild(btn);
+        }
+    });
+
+    /* 7. Add Info Box buttons — one per section-body */
+    document.querySelectorAll('.section-body').forEach(body => {
+        if (!body.querySelector('.add-box-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-box-btn';
+            btn.textContent = '＋ Add Info Box';
+            btn.onclick = () => addInfoBox(btn);
+            body.appendChild(btn);
+        }
+    });
+
+    /* 8. Section headings editable */
+    document.querySelectorAll('.section-card-header h2, .section-body h3.sub-heading, .section-body .body-text, .dpc-header, .dpc-mil-bar').forEach(el => {
+        el.contentEditable = 'true';
+    });
+
+    /* 9. Network diagram editable */
+    document.querySelectorAll('.network-diagram').forEach(el => {
+        el.contentEditable = 'true';
+    });
+}
+
+/* ── Disable ── */
+function disableEditing() {
+    document.querySelectorAll('th.del-col, td.del-col').forEach(el => el.remove());
+    document.querySelectorAll('.add-row-btn, .add-item-btn, .add-stat-btn, .add-box-btn').forEach(el => el.remove());
+    document.querySelectorAll('.section-body tbody td[contenteditable]').forEach(td => td.removeAttribute('contenteditable'));
+    document.querySelectorAll('.li-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('li[contenteditable]').forEach(li => li.removeAttribute('contenteditable'));
+    document.querySelectorAll('.si-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.si-label[contenteditable], .si-value[contenteditable], .si-sub[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.querySelectorAll('.ib-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.info-box[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.querySelectorAll('.section-card-header h2[contenteditable], h3.sub-heading[contenteditable], .body-text[contenteditable], .dpc-header[contenteditable], .dpc-mil-bar[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.querySelectorAll('.network-diagram[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+}
+
+/* ── Helpers ── */
+function mkDelBtn(onClickFn) {
+    const btn = document.createElement('button');
+    btn.className = 'del-btn';
+    btn.textContent = '×';
+    btn.title = 'Delete';
+    btn.onclick = (e) => { e.stopPropagation(); onClickFn(); };
+    return btn;
+}
+
+function mkDelCell(onClickFn) {
+    const td = document.createElement('td');
+    td.className = 'del-col';
+    td.appendChild(mkDelBtn(onClickFn));
+    return td;
+}
+
+function addTableRow(tbl) {
+    const headerRow = tbl.querySelector('thead tr');
+    const dataCols = headerRow
+        ? [...headerRow.cells].filter(c => !c.classList.contains('del-col')).length
+        : 3;
+    const tr = document.createElement('tr');
+    for (let i = 0; i < dataCols; i++) {
+        const td = document.createElement('td');
+        td.contentEditable = 'true';
+        td.textContent = 'Click to edit';
+        tr.appendChild(td);
+    }
+    tr.appendChild(mkDelCell(() => tr.remove()));
+    tbl.querySelector('tbody').appendChild(tr);
+    tr.cells[0].focus();
+}
+
+function addListItem(ul) {
+    const li = document.createElement('li');
+    li.contentEditable = 'true';
+    li.textContent = 'New item — click to edit';
+    const btn = mkDelBtn(() => li.remove());
+    btn.classList.add('li-del-btn');
+    btn.contentEditable = 'false';
+    li.appendChild(btn);
+    ul.appendChild(li);
+    const range = document.createRange();
+    const textNode = li.firstChild;
+    if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        range.setStart(textNode, 0);
+        range.collapse(true);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+    li.focus();
+}
+
+function addStatItem() {
+    const grid = document.querySelector('.stat-grid');
+    if (!grid) return;
+    const item = document.createElement('div');
+    item.className = 'stat-item';
+    item.innerHTML =
+        '<div class="si-label" contenteditable="true">Label</div>' +
+        '<div class="si-value" contenteditable="true">Value</div>' +
+        '<div class="si-sub"  contenteditable="true">Sub-detail</div>';
+    const btn = mkDelBtn(() => item.remove());
+    btn.className += ' si-del-btn';
+    btn.contentEditable = 'false';
+    item.appendChild(btn);
+    grid.appendChild(item);
+    item.querySelector('.si-value').focus();
+}
+
+function addInfoBox(addBtn) {
+    const box = document.createElement('div');
+    box.className = 'info-box info';
+    box.contentEditable = 'true';
+    box.innerHTML = '<strong contenteditable="false">Heading</strong> Enter your text here.';
+    const delBtn = mkDelBtn(() => box.remove());
+    delBtn.className += ' ib-del-btn';
+    delBtn.contentEditable = 'false';
+    box.appendChild(delBtn);
+    addBtn.before(box);
+    box.focus();
+}
+
+/* ═══════════════════════════════════════════════════
+   PERSISTENCE
+═══════════════════════════════════════════════════ */
+function saveToStorage() {
+    try {
+        const container = document.querySelector('.container');
+        localStorage.setItem(STORAGE_KEY, container.innerHTML);
+    } catch(e) {
+        console.warn('localStorage save failed:', e);
+    }
+}
+
+function loadFromStorage() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            document.querySelector('.container').innerHTML = saved;
+        }
+    } catch(e) {}
+}
+
+function resetChanges() {
+    if (confirm('Reset all edits and restore the original case study?\n\nThis cannot be undone.')) {
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+        if (editMode) {
+            editMode = false;
+            document.body.classList.remove('edit-mode');
+        }
+        location.reload();
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════════════════ */
+function exportHTML() {
+    const wasEditing = editMode;
+    if (wasEditing) {
+        editMode = false;
+        document.body.classList.remove('edit-mode');
+        disableEditing();
+    }
+
+    const clone = document.documentElement.cloneNode(true);
+    const toolbar = clone.querySelector('.edit-toolbar');
+    if (toolbar) toolbar.remove();
+    const banner = clone.querySelector('.edit-banner');
+    if (banner) banner.remove();
+    clone.querySelector('body')?.classList.remove('edit-mode');
+
+    const blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'msci-case-study.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+
+    if (wasEditing) {
+        editMode = true;
+        document.body.classList.add('edit-mode');
+        enableEditing();
+    }
+}
+
+/* ── Load saved state on page load ── */
+// loadFromStorage(); // Uncomment to auto-restore saved edits on load
+</script>
+</body>
+</html>
