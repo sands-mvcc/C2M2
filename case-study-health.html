@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study: VRMC | C2M2 Program Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1150px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 0.95rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+
+        /* ── Edit toolbar ── */
+        .edit-toolbar {
+            position: fixed; top: 1rem; right: 1rem; z-index: 999;
+            display: flex; gap: 0.5rem; flex-direction: column; align-items: flex-end;
+        }
+        .toolbar-btn {
+            background: rgba(26,58,74,0.92); color: white; border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.45rem 0.9rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer;
+            font-family: inherit; font-weight: 600; transition: all 0.2s; white-space: nowrap;
+            backdrop-filter: blur(4px);
+        }
+        .toolbar-btn:hover { background: #2a6478; border-color: rgba(255,255,255,0.4); }
+        .toolbar-btn.active { background: #c2185b; border-color: #c2185b; }
+
+        /* ── Page header ── */
+        .page-header {
+            background: rgba(255,255,255,0.97); border-radius: 16px; padding: 2.2rem 2rem;
+            margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .page-header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, #880e4f, #c2185b, #e91e63, #ad1457, #6a1429);
+        }
+        .page-header .org-label {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: #fce4ec; border: 1px solid #f48fb1; color: #880e4f;
+            padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 0.82rem;
+            font-weight: 600; margin-bottom: 0.8rem;
+        }
+        .page-header h1 { font-size: 2.3rem; color: #1a3a4a; font-weight: 800; margin-bottom: 0.3rem; }
+        .page-header h1 span { color: #c2185b; }
+        .page-header .subtitle { font-size: 1.05rem; color: #666; font-weight: 300; margin-bottom: 1rem; }
+        .header-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .hbadge {
+            display: inline-block; padding: 0.28rem 0.8rem; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 700;
+        }
+        .hbadge-blue   { background: #d1ecf1; color: #0c5460; }
+        .hbadge-green  { background: #d4edda; color: #155724; }
+        .hbadge-yellow { background: #fff3cd; color: #856404; }
+        .hbadge-red    { background: #f8d7da; color: #721c24; }
+        .hbadge-pink   { background: #fce4ec; color: #880e4f; }
+        .disclaimer {
+            margin-top: 1rem; padding: 0.6rem 1rem;
+            background: #fff8e1; border-left: 4px solid #ffc107;
+            border-radius: 6px; font-size: 0.8rem; color: #856404; text-align: left;
+        }
+
+        /* ── Stat bar ── */
+        .stat-bar {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.9rem; margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 12px; padding: 1.2rem 0.9rem; text-align: center;
+            color: white; backdrop-filter: blur(4px); transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card .snum { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+        .stat-card .slbl { font-size: 0.78rem; opacity: 0.85; margin-top: 0.3rem; }
+
+        /* ── Collapsible section cards ── */
+        .section-card {
+            background: rgba(255,255,255,0.97); border-radius: 14px;
+            margin-bottom: 1.5rem; box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.2rem 1.6rem; cursor: pointer; user-select: none;
+            border-bottom: 2px solid transparent; transition: background 0.2s;
+        }
+        .section-header:hover { background: #fdf5f7; }
+        .section-header.open { border-bottom-color: #c2185b; }
+        .section-header h2 {
+            font-size: 1.2rem; color: #1a3a4a; font-weight: 700;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .section-arrow { font-size: 0.8rem; color: #888; transition: transform 0.3s; }
+        .section-arrow.open { transform: rotate(180deg); }
+        .section-body { display: none; padding: 1.6rem; }
+        .section-body.open { display: block; }
+
+        /* ── General typography inside sections ── */
+        .section-body p { color: #555; line-height: 1.75; margin-bottom: 0.8rem; font-size: 0.93rem; }
+        .section-body h3 { font-size: 1.05rem; color: #1a3a4a; font-weight: 700; margin: 1.2rem 0 0.5rem; }
+        .section-body ul { padding-left: 1.4rem; color: #555; line-height: 1.85; font-size: 0.93rem; }
+        .section-body li { margin-bottom: 0.3rem; }
+
+        /* ── Info alert boxes ── */
+        .alert { border-radius: 8px; padding: 0.85rem 1.1rem; margin-bottom: 1rem; font-size: 0.88rem; line-height: 1.6; }
+        .alert-danger  { background: #fdf0f0; border-left: 4px solid #dc3545; color: #6b1c1c; }
+        .alert-warning { background: #fffbf0; border-left: 4px solid #ffc107; color: #7a5a00; }
+        .alert-info    { background: #f0f8ff; border-left: 4px solid #17a2b8; color: #0c4a56; }
+        .alert-success { background: #f0fff4; border-left: 4px solid #28a745; color: #1a4a2a; }
+        .alert-health  { background: #fce4ec; border-left: 4px solid #c2185b; color: #880e4f; }
+        .alert strong { font-weight: 700; }
+
+        /* ── Tables ── */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-bottom: 1rem; }
+        .data-table th { background: #880e4f; color: white; padding: 0.65rem 0.9rem; text-align: left; font-weight: 600; }
+        .data-table td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #f5e0e7; color: #444; vertical-align: top; }
+        .data-table tr:nth-child(even) td { background: #fdf5f7; }
+        .data-table tr:hover td { background: #f9ecf1; }
+
+        /* ── Tags / status badges ── */
+        .tag { display: inline-block; padding: 0.18rem 0.6rem; border-radius: 12px; font-size: 0.74rem; font-weight: 700; margin: 1px; }
+        .tag-red    { background: #f8d7da; color: #721c24; }
+        .tag-yellow { background: #fff3cd; color: #856404; }
+        .tag-green  { background: #d4edda; color: #155724; }
+        .tag-blue   { background: #d1ecf1; color: #0c5460; }
+        .tag-gray   { background: #e2e8f0; color: #4a5568; }
+        .tag-purple { background: #e9d8fd; color: #553c9a; }
+        .tag-orange { background: #fde8d8; color: #7b3a10; }
+        .tag-pink   { background: #fce4ec; color: #880e4f; }
+
+        /* ── Key metrics grid ── */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .metric-box {
+            background: linear-gradient(135deg, #fdf5f7, #f9ecf1);
+            border-radius: 10px; padding: 1.1rem; border-left: 4px solid #c2185b; text-align: center;
+        }
+        .metric-box .mnum { font-size: 2rem; font-weight: 800; color: #880e4f; }
+        .metric-box .mlbl { font-size: 0.82rem; color: #666; margin-top: 0.2rem; }
+
+        /* ── Network diagram ── */
+        .net-diagram {
+            background: #0a1520; border-radius: 12px; padding: 1.5rem;
+            font-family: 'Courier New', Courier, monospace; font-size: 0.78rem;
+            line-height: 1.8; overflow-x: auto; color: #a8d8ea;
+            border: 1px solid #1e3a4a;
+        }
+        .net-diagram .nd-title  { color: #f48fb1; font-weight: bold; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .net-diagram .nd-green  { color: #66bb6a; }
+        .net-diagram .nd-yellow { color: #ffca28; }
+        .net-diagram .nd-red    { color: #ef5350; }
+        .net-diagram .nd-blue   { color: #42a5f5; }
+        .net-diagram .nd-white  { color: #e0e0e0; }
+        .net-diagram .nd-cyan   { color: #26c6da; }
+        .net-diagram .nd-orange { color: #ffa726; }
+        .net-diagram .nd-pink   { color: #f48fb1; }
+        .net-diagram .nd-comment{ color: #546e7a; font-style: italic; }
+
+        /* ── C2M2 domain cards ── */
+        .domain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; }
+        .domain-card {
+            border-radius: 12px; padding: 1.2rem; border: 1px solid #f0d8e4;
+            background: #fdf8fa; position: relative; overflow: hidden;
+        }
+        .domain-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        }
+        .dc-mil0::before { background: #dc3545; }
+        .dc-mil1::before { background: #ffc107; }
+        .dc-mil2::before { background: #17a2b8; }
+        .dc-mil3::before { background: #28a745; }
+        .domain-card h4 { font-size: 0.95rem; color: #1a3a4a; font-weight: 700; margin-bottom: 0.5rem; }
+        .domain-card p { font-size: 0.84rem; color: #666; line-height: 1.65; margin-bottom: 0.5rem; }
+        .domain-card ul { padding-left: 1.2rem; font-size: 0.82rem; color: #666; line-height: 1.7; }
+        .mil-badge {
+            display: inline-block; font-size: 0.72rem; font-weight: 700;
+            padding: 0.18rem 0.55rem; border-radius: 10px; margin-bottom: 0.5rem;
+        }
+        .mil-badge-0 { background: #f8d7da; color: #721c24; }
+        .mil-badge-1 { background: #fff3cd; color: #856404; }
+        .mil-badge-2 { background: #d1ecf1; color: #0c5460; }
+        .mil-badge-3 { background: #d4edda; color: #155724; }
+
+        /* ── Org chart ── */
+        .org-chart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+        .org-level { display: flex; justify-content: center; gap: 1rem; position: relative; margin-bottom: 0; }
+        .org-box {
+            background: #1a3a4a; color: white; border-radius: 8px;
+            padding: 0.55rem 0.9rem; text-align: center; font-size: 0.8rem;
+            min-width: 130px; position: relative;
+        }
+        .org-box .oname { font-weight: 700; }
+        .org-box .otitle { opacity: 0.75; font-size: 0.72rem; margin-top: 0.15rem; }
+        .org-box.top  { background: #880e4f; }
+        .org-box.dir  { background: #c2185b; }
+        .org-box.staff{ background: #e91e63; font-size: 0.75rem; min-width: 110px; }
+        .org-connector { width: 2px; height: 20px; background: #c2185b; margin: 0 auto; }
+        .org-h-line { height: 2px; background: #c2185b; flex: 1; align-self: center; }
+
+        /* ── Exercise section ── */
+        .exercise-q { background: #fdf5f7; border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 0.8rem; }
+        .exercise-q strong { color: #880e4f; font-size: 0.93rem; }
+        .exercise-q p { margin-top: 0.3rem; color: #666; font-size: 0.88rem; line-height: 1.65; margin-bottom: 0; }
+        .inject-card {
+            border: 2px solid #dc3545; border-radius: 10px; padding: 1.2rem;
+            margin-bottom: 1rem; background: #fff8f8;
+        }
+        .inject-card .inject-title { color: #dc3545; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .inject-card p { font-size: 0.88rem; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+        .inject-card ul { font-size: 0.87rem; padding-left: 1.3rem; color: #555; line-height: 1.75; }
+
+        /* ── Vendor cards ── */
+        .vendor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .vendor-card {
+            border: 1px solid #f0d8e4; border-radius: 10px; padding: 1.1rem;
+            background: #fdf8fa;
+        }
+        .vendor-card h4 { font-size: 0.92rem; font-weight: 700; color: #1a3a4a; margin-bottom: 0.3rem; }
+        .vendor-card .vendor-type { font-size: 0.75rem; color: #c2185b; font-weight: 600; margin-bottom: 0.5rem; }
+        .vendor-card ul { padding-left: 1.2rem; font-size: 0.82rem; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+
+        /* ── Editable mode ── */
+        [contenteditable="true"] { outline: 2px dashed #c2185b; border-radius: 4px; min-height: 1em; }
+        .edit-active [contenteditable] { background: rgba(194,24,91,0.04); }
+        .add-row-btn {
+            background: transparent; border: 2px dashed #c2185b; color: #c2185b;
+            padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+            font-size: 0.8rem; font-family: inherit; font-weight: 600; margin-top: 0.4rem;
+            transition: all 0.2s;
+        }
+        .add-row-btn:hover { background: #c2185b; color: white; }
+        .del-btn {
+            background: #dc3545; color: white; border: none; border-radius: 4px;
+            padding: 0.15rem 0.45rem; cursor: pointer; font-size: 0.72rem;
+            font-family: inherit; opacity: 0;
+        }
+        .edit-active .del-btn { opacity: 1; }
+        td:hover .del-btn { opacity: 1; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.1);
+            border-radius: 14px; color: white; margin-top: 1.5rem;
+        }
+        .footer p { font-size: 0.88rem; opacity: 0.85; margin-bottom: 0.3rem; }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .page-header h1 { font-size: 1.7rem; }
+            .stat-bar { grid-template-columns: repeat(2, 1fr); }
+            .domain-grid { grid-template-columns: 1fr; }
+            .edit-toolbar { display: none; }
+        }
+
+        @media print {
+            body { background: white; }
+            .edit-toolbar, .back-link { display: none; }
+            .section-body { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="casestudies.html" class="back-link">← Back to Case Studies</a>
+
+    <!-- Edit Toolbar -->
+    <div class="edit-toolbar">
+        <button class="toolbar-btn" id="editBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="toolbar-btn" onclick="exportHTML()">💾 Export HTML</button>
+        <button class="toolbar-btn" onclick="window.print()">🖨️ Print</button>
+        <button class="toolbar-btn" onclick="expandAll()">📂 Expand All</button>
+        <button class="toolbar-btn" onclick="collapseAll()">📁 Collapse All</button>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="org-label">🏥 Healthcare | Training Case Study</div>
+        <h1>Valley Regional <span>Medical Center</span></h1>
+        <p class="subtitle">Fictional 350-Bed Regional Hospital System — Fairview, Pennsylvania</p>
+        <div class="header-badges">
+            <span class="hbadge hbadge-pink">HIPAA Security Rule</span>
+            <span class="hbadge hbadge-blue">HITECH Act</span>
+            <span class="hbadge hbadge-yellow">FDA Medical Device</span>
+            <span class="hbadge hbadge-red">C2M2 Assessment Candidate</span>
+            <span class="hbadge hbadge-green">IT &amp; IoMT Coverage</span>
+        </div>
+        <div class="disclaimer">
+            ⚠️ <strong>Fictional Training Scenario.</strong> All organization names, personnel, IP addresses, vendor configurations, asset data, and operational details are entirely simulated for educational purposes. Any resemblance to real organizations, patients, or vendors is coincidental.
+        </div>
+    </div>
+
+    <!-- Stat Bar -->
+    <div class="stat-bar">
+        <div class="stat-card"><div class="snum">350</div><div class="slbl">Licensed Beds</div></div>
+        <div class="stat-card"><div class="snum">1,820</div><div class="slbl">FTE Employees</div></div>
+        <div class="stat-card"><div class="snum">4</div><div class="slbl">Sites / Clinics</div></div>
+        <div class="stat-card"><div class="snum">1,240+</div><div class="slbl">IoMT Devices</div></div>
+        <div class="stat-card"><div class="snum">$342M</div><div class="slbl">Annual Revenue</div></div>
+        <div class="stat-card"><div class="snum">28,400</div><div class="slbl">Admissions / Year</div></div>
+        <div class="stat-card"><div class="snum">0</div><div class="slbl">Dedicated CISO</div></div>
+        <div class="stat-card"><div class="snum">3</div><div class="slbl">Cybersecurity FTE</div></div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         1. ORGANIZATION PROFILE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header open" onclick="toggleSection(this)">
+            <h2>🏢 Organization Profile</h2>
+            <span class="section-arrow open">▼</span>
+        </div>
+        <div class="section-body open">
+            <div class="metrics-grid">
+                <div class="metric-box"><div class="mnum">1964</div><div class="mlbl">Year Founded</div></div>
+                <div class="metric-box"><div class="mnum">350</div><div class="mlbl">Licensed Beds</div></div>
+                <div class="metric-box"><div class="mnum">218 mi²</div><div class="mlbl">Primary Service Area</div></div>
+                <div class="metric-box"><div class="mnum">$342M</div><div class="mlbl">FY2024 Net Revenue</div></div>
+            </div>
+
+            <h3>Background</h3>
+            <p><strong>Valley Regional Medical Center (VRMC)</strong> is a nonprofit, community-based acute care hospital serving Fairview County and surrounding areas of central Pennsylvania. Founded in 1964 as Fairview Memorial Hospital and reorganized under its current name in 2002 following a merger with Millcreek Community Health, VRMC operates a 350-bed main campus plus three outpatient and urgent care satellite sites.</p>
+            <p>VRMC is governed by a 12-member Board of Trustees drawn from community leaders, physicians, and regional business executives. The President and CEO reports to the board. VRMC is the only acute care hospital within a 40-mile radius and serves as the regional Level III Trauma Center for Fairview County. The health system employs approximately 1,820 FTEs across clinical, administrative, and support functions.</p>
+            <p>VRMC participates in the <strong>Pennsylvania eHealth Partnership</strong> (statewide HIE), maintains Joint Commission accreditation, and accepts Medicare/Medicaid reimbursement — all of which impose regulatory and contractual cybersecurity obligations. The health system does not have a dedicated Chief Information Security Officer; cybersecurity responsibilities are distributed across the CIO, the Privacy Officer, and a small IT security team.</p>
+
+            <h3>Regulatory &amp; Compliance Obligations</h3>
+            <p>VRMC operates under multiple overlapping frameworks. The <strong>HIPAA Security Rule (45 CFR §164.300–318)</strong> requires administrative, physical, and technical safeguards for electronic Protected Health Information (ePHI). The <strong>HITECH Act</strong> strengthens HIPAA enforcement and mandates breach notification. The <strong>CMS Conditions of Participation</strong> require emergency preparedness plans covering information systems. <strong>FDA guidance</strong> on pre- and post-market medical device cybersecurity (2023) applies to networked clinical devices. Pennsylvania's <strong>Act 62 of 2018</strong> requires breach reporting to the Pennsylvania Department of Health.</p>
+
+            <table class="data-table">
+                <tr><th>Attribute</th><th>Detail</th></tr>
+                <tr><td>Legal Name</td><td>Valley Regional Medical Center (VRMC)</td></tr>
+                <tr><td>Headquarters</td><td>2400 Fairview Blvd, Fairview, PA 17836</td></tr>
+                <tr><td>Organization Type</td><td>Nonprofit Community Hospital (501(c)(3))</td></tr>
+                <tr><td>Accreditation</td><td>The Joint Commission (TJC) — Full Accreditation (renewed 2023)</td></tr>
+                <tr><td>Trauma Designation</td><td>Level III Trauma Center — PA DOH certified</td></tr>
+                <tr><td>NPI</td><td>1528374659</td></tr>
+                <tr><td>Medicare Provider</td><td>39-1042 (CMS Certification Number)</td></tr>
+                <tr><td>HIPAA Covered Entity</td><td>Yes — Business Associate Agreements required with 120+ vendors</td></tr>
+                <tr><td>Health Information Exchange</td><td>Pennsylvania eHealth Partnership (PA HIP) — active participant</td></tr>
+                <tr><td>H-ISAC Member</td><td>Yes — joined 2022, Health-ISAC subscriber</td></tr>
+                <tr><td>Cybersecurity Staff</td><td><span class="tag tag-red">3 IT Security staff (no dedicated CISO)</span></td></tr>
+                <tr><td>Annual IT Budget</td><td>$8.4M (~2.5% of revenue) — cybersecurity sub-line: $620K</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         2. FACILITIES & LOCATIONS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🏭 Facilities &amp; Locations</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="data-table">
+                <thead><tr><th>ID</th><th>Name</th><th>Address</th><th>Type</th><th>Beds / Capacity</th><th>Physical Security</th></tr></thead>
+                <tbody>
+                <tr><td>FAC-01</td><td>Main Hospital Campus</td><td>2400 Fairview Blvd, Fairview, PA</td><td>Acute Care / Trauma / Surgery</td><td>350 licensed beds</td><td><span class="tag tag-green">Card access, CCTV (82 cameras), security desk 24/7</span></td></tr>
+                <tr><td>FAC-02</td><td>Fairview North Outpatient Center</td><td>850 Commerce Pkwy, Fairview, PA</td><td>Outpatient / Imaging / Lab</td><td>30 exam rooms</td><td><span class="tag tag-yellow">Card access, CCTV, no 24/7 security — alarm only after hours</span></td></tr>
+                <tr><td>FAC-03</td><td>Millcreek Medical Arts Building</td><td>112 Millcreek Rd, Millcreek, PA</td><td>Multi-specialty Physician Offices</td><td>24 exam rooms</td><td><span class="tag tag-yellow">Shared building — standard door lock + alarm; limited CCTV (lobby only)</span></td></tr>
+                <tr><td>FAC-04</td><td>Westside Urgent Care</td><td>3300 Route 15, Fairview, PA</td><td>Urgent Care (extended hours)</td><td>12 treatment bays</td><td><span class="tag tag-red">Standard commercial lock + alarm; no CCTV at clinical workstations</span></td></tr>
+                <tr><td>FAC-05</td><td>Data Center / Server Room</td><td>Main Campus (Basement, Bldg A)</td><td>Primary IT / Server Infrastructure</td><td>—</td><td><span class="tag tag-green">Biometric + badge access, UPS, CCTV, raised floor, fire suppression</span></td></tr>
+                <tr><td>FAC-06</td><td>Disaster Recovery Co-location</td><td>DataVault Corp, Harrisburg, PA</td><td>DR / Secondary Data Center</td><td>—</td><td><span class="tag tag-green">SOC 2 Type II facility — contracted DR site</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warning">
+                <strong>Satellite Site Risk:</strong> FAC-03 (Millcreek Medical Arts) and FAC-04 (Westside Urgent Care) connect to the main EHR via site-to-site VPN. Neither site has a dedicated network closet — network equipment is in shared utility rooms accessible to all building tenants at FAC-03.
+            </div>
+            <div class="alert alert-danger">
+                <strong>Critical Gap:</strong> Biomedical equipment at satellite sites (portable ultrasound units, infusion pumps) connects to the hospital wireless network over standard staff Wi-Fi with no VLAN isolation. A compromised satellite workstation could directly reach medical devices on the same segment.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         3. ORGANIZATIONAL STRUCTURE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>👥 Organizational Structure &amp; Staffing</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="alert alert-danger">
+                <strong>Critical Finding:</strong> VRMC has <strong>no dedicated CISO</strong> and only three IT security staff supporting 1,820 employees, 1,240+ networked medical devices, and ePHI spanning four facilities. The CIO (Daniel Reyes) serves as the de facto security lead while simultaneously managing all IT operations, Epic EHR administration, and vendor relationships.
+            </div>
+
+            <div class="org-chart">
+                <div class="org-level">
+                    <div class="org-box top"><div class="oname">Dr. Margaret Holloway</div><div class="otitle">President &amp; CEO</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box dir"><div class="oname">Daniel Reyes</div><div class="otitle">CIO / Acting CISO</div></div>
+                    <div class="org-box dir"><div class="oname">Dr. Priya Nair</div><div class="otitle">CMO</div></div>
+                    <div class="org-box dir"><div class="oname">Karen Walsh</div><div class="otitle">CFO</div></div>
+                    <div class="org-box dir"><div class="oname">Rachel Ng</div><div class="otitle">Privacy Officer</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box staff"><div class="oname">Sandra Wu</div><div class="otitle">IT Director</div></div>
+                    <div class="org-box staff"><div class="oname">Marcus Grant</div><div class="otitle">IT Security Lead</div></div>
+                    <div class="org-box staff"><div class="oname">Thomas Beaumont</div><div class="otitle">Compliance Officer</div></div>
+                    <div class="org-box staff"><div class="oname">Biomed Dept (4 techs)</div><div class="otitle">Clinical Engineering</div></div>
+                </div>
+            </div>
+
+            <br>
+            <table class="data-table">
+                <thead><tr><th>Name / Role</th><th>Title</th><th>Department</th><th>Cybersecurity Assignment</th></tr></thead>
+                <tbody>
+                <tr><td>Dr. Margaret Holloway</td><td>President &amp; CEO</td><td>Executive</td><td><span class="tag tag-yellow">None formal — approves IT budget, receives annual risk summary</span></td></tr>
+                <tr><td>Daniel Reyes</td><td>CIO / Acting CISO</td><td>IT / Security</td><td><span class="tag tag-orange">All IT strategy + de facto security oversight — overextended</span></td></tr>
+                <tr><td>Sandra Wu</td><td>IT Director</td><td>IT Operations</td><td><span class="tag tag-yellow">Manages IT staff; no formal security role</span></td></tr>
+                <tr><td>Marcus Grant</td><td>IT Security Lead</td><td>IT Security</td><td><span class="tag tag-orange">Firewall, endpoint, SIEM alerts — no formal CISSP/certifications</span></td></tr>
+                <tr><td>Kevin Alvarez</td><td>IT Security Analyst</td><td>IT Security</td><td><span class="tag tag-yellow">Log review, vulnerability scanning — part-time security (50%)</span></td></tr>
+                <tr><td>Lisa Townsend</td><td>IT Security Analyst</td><td>IT Security</td><td><span class="tag tag-yellow">Endpoint management, patch coordination — no OT/IoMT expertise</span></td></tr>
+                <tr><td>Rachel Ng</td><td>Privacy Officer</td><td>Compliance</td><td><span class="tag tag-blue">HIPAA compliance, BAA management, breach response coordination</span></td></tr>
+                <tr><td>Thomas Beaumont</td><td>Compliance Officer</td><td>Compliance</td><td><span class="tag tag-gray">Regulatory compliance (Joint Commission, CMS) — limited cyber focus</span></td></tr>
+                <tr><td>Biomed Team (4)</td><td>Biomedical Engineers / Techs</td><td>Clinical Engineering</td><td><span class="tag tag-red">Device maintenance only — no cybersecurity training, no device network visibility</span></td></tr>
+                <tr><td>45 Physicians (employed)</td><td>Attending / Staff Physicians</td><td>Medical Staff</td><td><span class="tag tag-gray">None</span></td></tr>
+                <tr><td>640 Nursing Staff</td><td>RN / LPN / CNA</td><td>Patient Care</td><td><span class="tag tag-gray">Annual HIPAA awareness only</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Board Cybersecurity Oversight</h3>
+            <p>The Board of Trustees has a Finance &amp; Audit Committee but no dedicated Technology or Cybersecurity subcommittee. The CIO presents a brief IT update at the quarterly board meeting. <strong>A formal cybersecurity risk report has never been presented to the full board.</strong> Following a 2023 ransomware incident at a neighboring regional hospital, the CEO requested a "cybersecurity briefing" — a one-page summary was prepared but no formal governance action was taken.</p>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         4. IT ASSET INVENTORY
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🖥️ IT Asset Inventory</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <h3>Servers &amp; Core Infrastructure</h3>
+            <table class="data-table">
+                <thead><tr><th>Asset ID</th><th>Hostname</th><th>OS / Platform</th><th>Function</th><th>Location</th><th>Patch Status</th><th>Criticality</th></tr></thead>
+                <tbody>
+                <tr><td>SRV-01</td><td>VRMC-EPIC-APP01</td><td>Windows Server 2019</td><td>Epic EHR Application Server (Primary)</td><td>FAC-05 Data Center</td><td><span class="tag tag-yellow">4 months behind</span></td><td><span class="tag tag-red">CRITICAL</span></td></tr>
+                <tr><td>SRV-02</td><td>VRMC-EPIC-APP02</td><td>Windows Server 2019</td><td>Epic EHR Application Server (Failover)</td><td>FAC-05 Data Center</td><td><span class="tag tag-yellow">4 months behind</span></td><td><span class="tag tag-red">CRITICAL</span></td></tr>
+                <tr><td>SRV-03</td><td>VRMC-EPIC-DB01</td><td>Windows Server 2019 / SQL Server 2019</td><td>Epic Database (Primary) — ePHI</td><td>FAC-05 Data Center</td><td><span class="tag tag-red">6 months behind</span></td><td><span class="tag tag-red">CRITICAL</span></td></tr>
+                <tr><td>SRV-04</td><td>VRMC-PACS01</td><td>Windows Server 2016</td><td>Radiology PACS / Imaging Archive</td><td>FAC-05 Data Center</td><td><span class="tag tag-red">8 months behind</span></td><td><span class="tag tag-red">CRITICAL</span></td></tr>
+                <tr><td>SRV-05</td><td>VRMC-DC01</td><td>Windows Server 2022</td><td>Active Directory Domain Controller (Primary)</td><td>FAC-05 Data Center</td><td><span class="tag tag-green">Current</span></td><td><span class="tag tag-red">CRITICAL</span></td></tr>
+                <tr><td>SRV-06</td><td>VRMC-DC02</td><td>Windows Server 2022</td><td>Active Directory Domain Controller (Secondary)</td><td>FAC-06 DR Site</td><td><span class="tag tag-green">Current</span></td><td><span class="tag tag-red">CRITICAL</span></td></tr>
+                <tr><td>SRV-07</td><td>VRMC-PHARM01</td><td>Windows Server 2016</td><td>Pyxis MedStation Integration Server</td><td>FAC-05 Data Center</td><td><span class="tag tag-red">Vendor-managed — patches require vendor approval, avg 9 months lag</span></td><td><span class="tag tag-red">HIGH</span></td></tr>
+                <tr><td>SRV-08</td><td>VRMC-LAB01</td><td>Windows Server 2012 R2</td><td>Laboratory Information System (LIS)</td><td>FAC-05 Data Center</td><td><span class="tag tag-red">EOL OS — no patches available</span></td><td><span class="tag tag-red">HIGH</span></td></tr>
+                <tr><td>SRV-09</td><td>VRMC-VDI01</td><td>VMware Horizon 8.x / Windows 10 VMs</td><td>Virtual Desktop Infrastructure (clinical thin clients)</td><td>FAC-05 Data Center</td><td><span class="tag tag-yellow">3 months behind on guest OS</span></td><td><span class="tag tag-orange">HIGH</span></td></tr>
+                <tr><td>SRV-10</td><td>VRMC-BACKUP01</td><td>Linux (CentOS 7)</td><td>Backup Server — Veeam B&amp;R</td><td>FAC-05 Data Center</td><td><span class="tag tag-red">EOL — CentOS 7 support ended June 2024</span></td><td><span class="tag tag-red">CRITICAL</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Workstations &amp; End-User Devices</h3>
+            <table class="data-table">
+                <thead><tr><th>Type</th><th>Count</th><th>OS</th><th>Location</th><th>Endpoint Protection</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Clinical Workstations (COW)</td><td>218</td><td>Windows 10 (various patch levels)</td><td>Main campus — nursing units, ED, ICU</td><td><span class="tag tag-yellow">CrowdStrike Falcon — deployed, some stale agents</span></td><td>Shared login in many nursing areas — no per-session MFA</td></tr>
+                <tr><td>Physician / Provider Workstations</td><td>112</td><td>Windows 10 / 11</td><td>Offices, clinics, on-call rooms</td><td><span class="tag tag-green">CrowdStrike Falcon — current</span></td><td>Physicians use both domain and personal devices for Epic access</td></tr>
+                <tr><td>Administrative Workstations</td><td>95</td><td>Windows 10 / 11</td><td>Admin offices, finance, HR</td><td><span class="tag tag-green">CrowdStrike Falcon — current</span></td><td>MS365 deployed; MFA enforced for this group only</td></tr>
+                <tr><td>Satellite Site Workstations</td><td>48</td><td>Windows 10</td><td>FAC-02, FAC-03, FAC-04</td><td><span class="tag tag-yellow">CrowdStrike — 11 agents offline &gt;60 days</span></td><td>Connect to Epic via site-to-site VPN — patching managed remotely</td></tr>
+                <tr><td>Nursing Station iPads</td><td>64</td><td>iPadOS 17.x</td><td>All nursing units</td><td><span class="tag tag-yellow">MDM (Jamf) — enrolled; 9 devices non-compliant</span></td><td>Used for Epic Haiku, patient education apps</td></tr>
+                <tr><td>Biomedical Laptops</td><td>8</td><td>Windows 10</td><td>Clinical Engineering dept</td><td><span class="tag tag-red">No EDR — excluded from domain, vendor requirement</span></td><td>Used for device firmware updates; direct device USB access</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Business &amp; Clinical Applications</h3>
+            <table class="data-table">
+                <thead><tr><th>Application</th><th>Vendor</th><th>Function</th><th>Hosting</th><th>Authentication</th><th>ePHI</th></tr></thead>
+                <tbody>
+                <tr><td>Epic EHR (Hyperspace)</td><td>Epic Systems</td><td>Primary Electronic Health Record</td><td>On-premises (VRMC-owned)</td><td><span class="tag tag-red">Username + password only (no MFA)</span></td><td><span class="tag tag-red">YES — primary ePHI system</span></td></tr>
+                <tr><td>Epic MyChart</td><td>Epic Systems</td><td>Patient portal</td><td>Epic-hosted cloud</td><td><span class="tag tag-green">MFA optional for patients</span></td><td><span class="tag tag-red">YES</span></td></tr>
+                <tr><td>Cerner RadNet PACS</td><td>Oracle Health</td><td>Radiology image archive &amp; distribution</td><td>On-premises</td><td><span class="tag tag-red">Username + password only</span></td><td><span class="tag tag-red">YES</span></td></tr>
+                <tr><td>Pyxis MedStation ES</td><td>BD (Becton Dickinson)</td><td>Medication dispensing automation</td><td>On-premises (SRV-07)</td><td><span class="tag tag-red">Username + PIN only — shared credentials on floor stations</span></td><td><span class="tag tag-red">YES (medication records)</span></td></tr>
+                <tr><td>Sunquest LIS</td><td>Clinisys</td><td>Laboratory Information System</td><td>On-premises (SRV-08, EOL)</td><td><span class="tag tag-red">Legacy auth — no SSO</span></td><td><span class="tag tag-red">YES</span></td></tr>
+                <tr><td>Microsoft 365 / Exchange</td><td>Microsoft</td><td>Email, collaboration, Teams</td><td>Microsoft Cloud</td><td><span class="tag tag-yellow">MFA enforced for admin only; clinical staff excluded</span></td><td><span class="tag tag-yellow">YES — PHI routinely sent via unencrypted email</span></td></tr>
+                <tr><td>Workday HCM</td><td>Workday</td><td>HR, payroll, timekeeping</td><td>SaaS (Workday cloud)</td><td><span class="tag tag-green">SSO + MFA enforced</span></td><td>No PHI — PII only</td></tr>
+                <tr><td>HealthStream LMS</td><td>HealthStream</td><td>Staff training / compliance education</td><td>SaaS</td><td><span class="tag tag-yellow">Username + password; SSO partial</span></td><td>No PHI</td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Critical Gap:</strong> Epic EHR — the primary system for all patient care — does not require MFA for any clinical users. All 640 nursing staff and 45 employed physicians access ePHI on approximately 218 clinical workstations using shared login credentials. A single compromised account grants full ePHI access.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         5. CLINICAL / IoMT ASSETS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>⚕️ Clinical Technology &amp; IoMT Assets</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="alert alert-health">
+                <strong>Healthcare-Specific Risk:</strong> VRMC has 1,240+ networked medical devices (Internet of Medical Things — IoMT) connected across the hospital network. These devices include life-sustaining equipment such as infusion pumps, ventilators, and cardiac monitors. Many run legacy operating systems that cannot be patched, creating persistent, unmitigable vulnerabilities. VRMC's Clinical Engineering team manages <em>device function</em> but has no visibility into device network behavior.
+            </div>
+
+            <h3>High-Risk IoMT Devices</h3>
+            <table class="data-table">
+                <thead><tr><th>Asset ID</th><th>Device Type</th><th>Manufacturer</th><th>Count</th><th>OS / Firmware</th><th>Network Access</th><th>Cybersecurity Risk</th></tr></thead>
+                <tbody>
+                <tr><td>IOT-01</td><td>IV Infusion Pumps</td><td>Baxter (Spectrum IQ)</td><td>240</td><td>Proprietary — firmware v4.1.1 (2 versions behind)</td><td>Medical Device VLAN (10.20.0.0/16)</td><td><span class="tag tag-red">CRITICAL — known CVE for unauth drug library override</span></td></tr>
+                <tr><td>IOT-02</td><td>Patient Monitors (ICU)</td><td>Philips IntelliVue MX800</td><td>48</td><td>VxWorks — vendor-managed patching</td><td>Medical Device VLAN — clinical VLAN bridging noted</td><td><span class="tag tag-red">HIGH — limited network isolation</span></td></tr>
+                <tr><td>IOT-03</td><td>Vital Signs Monitors</td><td>Mindray VS-900</td><td>120</td><td>Linux embedded — firmware 2023.Q3 (current)</td><td>Medical Device VLAN</td><td><span class="tag tag-yellow">MEDIUM — firmware current, network placement adequate</span></td></tr>
+                <tr><td>IOT-04</td><td>Ventilators</td><td>Medtronic PB980</td><td>22</td><td>Proprietary embedded OS — no remote updates</td><td>Air-gapped (no network) — serial data logging only</td><td><span class="tag tag-green">LOW — physically isolated</span></td></tr>
+                <tr><td>IOT-05</td><td>CT Scanners</td><td>GE Revolution CT</td><td>3</td><td>Windows 10 Enterprise LTSC (vendor-locked)</td><td>Imaging VLAN (10.25.0.0/16) → PACS</td><td><span class="tag tag-red">HIGH — Windows 10, vendor patch lag avg 12 months</span></td></tr>
+                <tr><td>IOT-06</td><td>MRI Systems</td><td>Siemens MAGNETOM Altea</td><td>2</td><td>Windows 10 (vendor-managed)</td><td>Imaging VLAN — physical access restricted</td><td><span class="tag tag-yellow">MEDIUM — vendor patch lag, physical controls adequate</span></td></tr>
+                <tr><td>IOT-07</td><td>Cardiac Telemetry System</td><td>GE MUSE / Centralstation</td><td>1 (+ 68 transmitters)</td><td>Windows 7 Embedded (EOL)</td><td>Clinical VLAN — <strong>no segmentation from workstations</strong></td><td><span class="tag tag-red">CRITICAL — EOL OS, flat network with clinical systems</span></td></tr>
+                <tr><td>IOT-08</td><td>Medication Dispensing Cabinets</td><td>BD Pyxis MedStation ES</td><td>32</td><td>Windows 10 (Pyxis-managed)</td><td>Clinical VLAN → Pharmacy server</td><td><span class="tag tag-yellow">MEDIUM — shared credential concern; network access adequate</span></td></tr>
+                <tr><td>IOT-09</td><td>Nurse Call / Intercom Systems</td><td>Rauland Responder 5</td><td>1 (central) + 380 endpoints</td><td>Proprietary embedded</td><td>Separate VLAN — physical network</td><td><span class="tag tag-yellow">LOW-MEDIUM — vendor-supported, VLAN isolated</span></td></tr>
+                <tr><td>IOT-10</td><td>Portable Ultrasound Units</td><td>Philips Lumify (tablet-based)</td><td>18</td><td>Android (tablet) — enrolled in Jamf</td><td>Staff Wi-Fi — <strong>not on medical device VLAN</strong></td><td><span class="tag tag-red">HIGH — on general staff Wi-Fi, MDM compliance inconsistent</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Biomedical Device Management Program</h3>
+            <p>VRMC's Clinical Engineering department (4 biomedical technicians) is responsible for preventive maintenance and repair of all clinical devices. Their mandate is device <em>function and safety</em> — they have no documented responsibility for cybersecurity, no access to network logs or traffic data, and no liaison relationship with IT Security. A medical device inventory exists in the computerized maintenance management system (CMMS — eMaint) but it does not capture IP addresses, MAC addresses, network segment assignments, or firmware versions.</p>
+            <div class="alert alert-warning">
+                <strong>Inventory Gap:</strong> VRMC's IT Security team estimates 1,240+ networked devices but cannot produce a current, accurate IoMT inventory with network attributes. During a voluntary H-ISAC threat hunt exercise in Q3 2024, security analysts discovered 47 devices communicating on network segments where they were not expected — including 9 devices whose presence could not be explained.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         6. NETWORK ARCHITECTURE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🌐 Network Architecture &amp; Communications</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <h3>Network Segments</h3>
+            <table class="data-table">
+                <thead><tr><th>Segment</th><th>VLAN</th><th>Subnet</th><th>Systems</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Clinical / EHR Network</td><td>VLAN 10</td><td>10.10.0.0/16</td><td>Workstations, EHR servers, VDI, PACS</td><td>Primary care delivery network — high ePHI density</td></tr>
+                <tr><td>Medical Device (IoMT)</td><td>VLAN 20</td><td>10.20.0.0/16</td><td>Infusion pumps, patient monitors, Mindray devices</td><td>Partial segmentation — ACLs in place, not micro-segmented</td></tr>
+                <tr><td>Imaging Network</td><td>VLAN 25</td><td>10.25.0.0/16</td><td>CT, MRI, X-ray, PACS integration</td><td>Connects to PACS server; limited egress filtering</td></tr>
+                <tr><td>Administrative Network</td><td>VLAN 30</td><td>10.30.0.0/16</td><td>Admin workstations, HR, finance, Workday</td><td>MFA enforced for this segment; separate from clinical</td></tr>
+                <tr><td>Server / DMZ</td><td>VLAN 40</td><td>10.40.0.0/24</td><td>Web proxy, Epic MyChart relay, remote access gateway</td><td>DMZ exists but firewall rules not reviewed in 18 months</td></tr>
+                <tr><td>Guest / Patient Wi-Fi</td><td>VLAN 50</td><td>192.168.50.0/22</td><td>Patient and visitor wireless devices</td><td>Isolated — no route to clinical segments (verified)</td></tr>
+                <tr><td>Staff Wireless</td><td>VLAN 60</td><td>10.60.0.0/16</td><td>Nursing iPads, Philips Lumify, some COWs</td><td><span class="tag tag-red">IoMT devices incorrectly placed on this VLAN</span></td></tr>
+                <tr><td>Satellite VPN Tunnels</td><td>VLAN 70</td><td>172.16.10.0/24 – 172.16.40.0/24</td><td>FAC-02, FAC-03, FAC-04 (site-to-site VPN)</td><td>Cisco ASA site-to-site; FAC-03 tunnel uses pre-shared key only</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Internet &amp; WAN Connectivity</h3>
+            <ul>
+                <li><strong>Primary Internet:</strong> 1 Gbps fiber (Comcast Business) — main campus; BGP failover not configured</li>
+                <li><strong>Secondary Internet:</strong> 100 Mbps fiber (Windstream) — failover ISP; activated manually</li>
+                <li><strong>Remote Access VPN:</strong> Cisco AnyConnect (main campus ASA) — used by ~200 remote physicians and vendor support staff; MFA via Duo enforced</li>
+                <li><strong>Epic Remote Access:</strong> Epic Hyperspace via Citrix Published Desktop — requires VPN; MFA applies at VPN layer, not Epic application layer</li>
+                <li><strong>Satellite Sites:</strong> Cisco ASA site-to-site VPN (IKEv2); FAC-03 uses legacy IKEv1 with weak PSK</li>
+                <li><strong>DR / Cloud:</strong> AWS Direct Connect (dedicated 200 Mbps) to DataVault DR co-location; Epic cloud migration in progress (estimated completion Q3 2026)</li>
+            </ul>
+
+            <h3>Network Diagram</h3>
+            <div class="net-diagram">
+<span class="nd-title">VRMC Network Architecture — Simplified Logical Diagram</span>
+<span class="nd-comment">     ┌─────────────────────────────────────────────────────────────┐</span>
+<span class="nd-comment">     │                    INTERNET / WAN                          │</span>
+<span class="nd-comment">     └────────────────────────┬────────────────────────────────────┘</span>
+                             │
+          <span class="nd-yellow">┌────────────────────┴────────────────────┐</span>
+          <span class="nd-yellow">│   Palo Alto PA-3260 Firewall Cluster    │</span>
+          <span class="nd-yellow">│   (Active/Passive HA — FAC-05)          │</span>
+          <span class="nd-yellow">└────────────┬───────────┬─────────────────┘</span>
+                       │           │
+         <span class="nd-blue">┌────────────┴──┐  ┌─────┴──────────────────┐</span>
+         <span class="nd-blue">│  DMZ (VLAN 40) │  │  Core Network          │</span>
+         <span class="nd-blue">│  Web Proxy     │  │  Cisco Catalyst 9500   │</span>
+         <span class="nd-blue">│  MyChart Relay │  │  (Core Switch Pair)    │</span>
+         <span class="nd-blue">└───────────────┘  └──┬──────┬──────┬───────┘</span>
+                              │      │      │
+         <span class="nd-green">┌────────────────────┘  │      │      └─────────────────────┐</span>
+         <span class="nd-green">│  Clinical/EHR         │      │  Admin Network (VLAN 30) │</span>
+         <span class="nd-green">│  VLAN 10              │      │  Admin Workstations       │</span>
+         <span class="nd-green">│  10.10.0.0/16         │      │  MFA Enforced             │</span>
+         <span class="nd-green">│  Epic / PACS / VDI    │      └──────────────────────────┘</span>
+         <span class="nd-green">└───────────────────────┘</span>
+                               │
+         <span class="nd-pink">┌──────────────────────┴───────────────────────────────────────┐</span>
+         <span class="nd-pink">│  Medical Device VLAN 20 (10.20.0.0/16)                      │</span>
+         <span class="nd-pink">│  Infusion Pumps │ Patient Monitors │ Mindray VS              │</span>
+         <span class="nd-pink">│  ⚠ ACL-based isolation — NOT micro-segmented                │</span>
+         <span class="nd-pink">└───────────────────────────────────────────────────────────────┘</span>
+
+         <span class="nd-red">┌─────────────────────────────────────────────────────────────┐</span>
+         <span class="nd-red">│  Staff Wireless VLAN 60 (10.60.0.0/16) — GAP               │</span>
+         <span class="nd-red">│  Nursing iPads │ COW Carts │ Philips Lumify Ultrasound       │</span>
+         <span class="nd-red">│  ⚠ CRITICAL: IoMT devices incorrectly on staff VLAN         │</span>
+         <span class="nd-red">└─────────────────────────────────────────────────────────────┘</span>
+
+         <span class="nd-cyan">┌─────────────────────────────────────────────────────────────┐</span>
+         <span class="nd-cyan">│  Imaging VLAN 25 (10.25.0.0/16)                            │</span>
+         <span class="nd-cyan">│  GE CT (x3) │ Siemens MRI (x2) │ → PACS Server             │</span>
+         <span class="nd-cyan">└─────────────────────────────────────────────────────────────┘</span>
+
+         <span class="nd-orange">┌─────────────────────────────────────────────────────────────┐</span>
+         <span class="nd-orange">│  Satellite Site VPNs (VLAN 70 / 172.16.x.0/24)             │</span>
+         <span class="nd-orange">│  FAC-02 North Clinic │ FAC-03 Millcreek │ FAC-04 Westside   │</span>
+         <span class="nd-orange">│  Cisco ASA site-to-site │ FAC-03 = IKEv1 weak PSK (⚠ Gap)  │</span>
+         <span class="nd-orange">└─────────────────────────────────────────────────────────────┘</span>
+
+         <span class="nd-comment">  [AWS Direct Connect — DR / Epic Cloud Migration in Progress]</span>
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Gap:</strong> The GE cardiac telemetry system (IOT-07), running Windows 7 Embedded (EOL since 2020), is on VLAN 10 with clinical workstations. No compensating controls exist. A vulnerability in this device provides a direct path to all EHR workstations on the same segment.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         7. SECURITY CONTROLS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🔐 Security Controls &amp; Cybersecurity Posture</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="data-table">
+                <thead><tr><th>Control Domain</th><th>Tool / Capability</th><th>Coverage</th><th>Status &amp; Assessment</th></tr></thead>
+                <tbody>
+                <tr><td>Perimeter Firewall</td><td>Palo Alto PA-3260 (HA pair)</td><td>Internet edge, DMZ segmentation</td><td><span class="tag tag-yellow">Deployed — ruleset not reviewed in 18 months; 34 overly permissive rules identified</span></td></tr>
+                <tr><td>Intrusion Detection / Prevention</td><td>Palo Alto Threat Prevention (IPS)</td><td>Internet edge only</td><td><span class="tag tag-red">IPS signatures outdated by 6 months; no east-west traffic inspection</span></td></tr>
+                <tr><td>Endpoint Detection &amp; Response (EDR)</td><td>CrowdStrike Falcon (Prevent)</td><td>Admin + physician workstations (207 agents current)</td><td><span class="tag tag-red">NOT deployed on: servers SRV-04, SRV-07, SRV-08, SRV-10; biomedical laptops excluded</span></td></tr>
+                <tr><td>SIEM / Log Management</td><td>Splunk Enterprise (on-prem)</td><td>AD, firewall, VPN, email — partial</td><td><span class="tag tag-red">Deployed but under-resourced — 3,200+ unacknowledged alerts backlogged; no 24/7 monitoring</span></td></tr>
+                <tr><td>Multi-Factor Authentication</td><td>Cisco Duo</td><td>VPN, admin accounts, Workday only</td><td><span class="tag tag-red">NOT enforced for: Epic EHR clinical access, Microsoft 365 clinical users, satellite VPN (FAC-03)</span></td></tr>
+                <tr><td>Vulnerability Management</td><td>Tenable Nessus</td><td>IT systems — quarterly scans only</td><td><span class="tag tag-red">IoMT devices excluded from scanning (vendor prohibition). 114 HIGH+ findings open &gt;90 days</span></td></tr>
+                <tr><td>Email Security</td><td>Microsoft Defender for Office 365 (P1)</td><td>Exchange Online / M365</td><td><span class="tag tag-yellow">Anti-phishing deployed; PHI sent in unencrypted email identified as ongoing issue</span></td></tr>
+                <tr><td>Privileged Access Management</td><td>None deployed</td><td>—</td><td><span class="tag tag-red">GAP — local admin accounts widely shared; no PAM solution</span></td></tr>
+                <tr><td>Data Loss Prevention</td><td>None deployed</td><td>—</td><td><span class="tag tag-red">GAP — ePHI can be copied to USB drives or personal cloud storage without restriction</span></td></tr>
+                <tr><td>Medical Device Security</td><td>Medigate (limited pilot)</td><td>VLAN 20 only (partial)</td><td><span class="tag tag-red">Pilot covers ~30% of IoMT devices; Staff VLAN 60 devices not visible to Medigate</span></td></tr>
+                <tr><td>Backup &amp; Recovery</td><td>Veeam B&amp;R 11 (SRV-10, EOL OS)</td><td>Epic DB, AD, PACS</td><td><span class="tag tag-red">Backup server on EOL CentOS 7; backup integrity not tested in 14 months; offsite copy to DR site, RTO unknown</span></td></tr>
+                <tr><td>Identity &amp; Access Governance</td><td>Manual AD process + quarterly reviews</td><td>IT-managed accounts only</td><td><span class="tag tag-red">Terminated employee accounts: 12 active accounts found not disabled post-departure in Q4 2024 review</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Summary Gap Assessment:</strong> VRMC's cybersecurity control environment has significant gaps across all 10 C2M2 domains. The most critical patient safety risks are: (1) ransomware susceptibility due to no 24/7 monitoring and inconsistent patching; (2) IoMT device compromise potential due to flat network architecture; (3) wide ePHI exposure due to no MFA on Epic. The health system is not meeting the HIPAA Security Rule requirement for ongoing access review (§164.308(a)(1)).
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         8. THIRD-PARTY & SUPPLY CHAIN
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🤝 Third-Party Relationships &amp; Vendor Risk</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>VRMC has executed Business Associate Agreements (BAAs) with <strong>123 vendors</strong> that access, process, or store ePHI. However, BAA execution is treated as a one-time compliance checkbox — no vendor is subject to ongoing cybersecurity assessment, SOC 2 review, or annual questionnaire. Vendor remote access is managed through a shared Cisco AnyConnect VPN account pool with no per-vendor isolation.</p>
+
+            <div class="vendor-grid">
+                <div class="vendor-card">
+                    <h4>Epic Systems Corporation</h4>
+                    <div class="vendor-type">EHR Vendor — Primary BAA Partner</div>
+                    <ul>
+                        <li>Epic Hyperspace EHR (on-prem + cloud transition)</li>
+                        <li>Epic MyChart patient portal</li>
+                        <li>Epic Care Everywhere (HIE)</li>
+                    </ul>
+                    <span class="tag tag-yellow">MEDIUM risk — Epic support requires periodic remote access for upgrades</span><br>
+                    <span class="tag tag-green">BAA: Active (2019, auto-renewing)</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>BD (Becton Dickinson)</h4>
+                    <div class="vendor-type">Medication Dispensing / Pharmacy Automation</div>
+                    <ul>
+                        <li>Pyxis MedStation ES (32 cabinets)</li>
+                        <li>Remote monitoring + patch management</li>
+                        <li>Integration with Epic pharmacy module</li>
+                    </ul>
+                    <span class="tag tag-red">HIGH risk — Pyxis server patch lag averages 9 months; vendor has persistent remote access</span><br>
+                    <span class="tag tag-yellow">BAA: Active — no security questionnaire ever completed</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>GE HealthCare</h4>
+                    <div class="vendor-type">Radiology &amp; Cardiac Monitoring</div>
+                    <ul>
+                        <li>Revolution CT scanners (x3)</li>
+                        <li>MUSE Cardiac telemetry (Windows 7 EOL)</li>
+                        <li>Remote servicing via dedicated VPN</li>
+                    </ul>
+                    <span class="tag tag-red">CRITICAL risk — EOL cardiac system; GE remote access via unmonitored VPN channel</span><br>
+                    <span class="tag tag-yellow">BAA: Active — no documented access review</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>Baxter International</h4>
+                    <div class="vendor-type">IV Infusion Pump Manufacturer</div>
+                    <ul>
+                        <li>Spectrum IQ infusion pumps (240 units)</li>
+                        <li>DOSE Error Reduction Software (DERS) updates</li>
+                        <li>Drug library management</li>
+                    </ul>
+                    <span class="tag tag-red">CRITICAL risk — known CVE for unauthorized drug library modification; firmware update pending 8 months</span><br>
+                    <span class="tag tag-green">BAA: Active — device security bulletin not acted upon</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>MedHelp IT Solutions (MSP)</h4>
+                    <div class="vendor-type">Managed IT Services — Tier 1/2 Help Desk</div>
+                    <ul>
+                        <li>24/7 Tier 1 help desk (NOC monitoring)</li>
+                        <li>Workstation imaging &amp; deployment</li>
+                        <li>Satellite site IT support (FAC-02–04)</li>
+                    </ul>
+                    <span class="tag tag-red">HIGH risk — MSP has broad admin access; last security review 2021; SOC 2 Type I only</span><br>
+                    <span class="tag tag-red">BAA: Active — MSP's subcontractors not tracked by VRMC</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>DataVault Corp</h4>
+                    <div class="vendor-type">Disaster Recovery Co-location</div>
+                    <ul>
+                        <li>DR server hosting (Harrisburg, PA)</li>
+                        <li>AWS Direct Connect termination</li>
+                        <li>Physical media destruction</li>
+                    </ul>
+                    <span class="tag tag-green">LOW-MEDIUM risk — SOC 2 Type II facility; annual audit reports reviewed by VRMC</span><br>
+                    <span class="tag tag-green">BAA: Active — most mature vendor relationship</span>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Gap:</strong> VRMC has never conducted a formal Third-Party Risk Management (TPRM) assessment for any of its 123 BAA partners. The Privacy Officer maintains a BAA tracker spreadsheet, but no vendor has been assessed for cybersecurity controls, incident response capability, or subcontractor risk. HIPAA §164.308(b)(1) requires covered entities to obtain satisfactory assurances from business associates — the current BAA-only approach does not meet this intent.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         9. POLICIES & GOVERNANCE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>📋 Policies, Governance &amp; Compliance</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <h3>Existing Policy Documents</h3>
+            <table class="data-table">
+                <thead><tr><th>Policy Name</th><th>Status</th><th>Last Reviewed</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Information Security Policy</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>March 2021</td><td>Does not address cloud services, IoMT, or remote work scenarios added post-COVID</td></tr>
+                <tr><td>HIPAA Privacy &amp; Security Policy</td><td><span class="tag tag-green">Exists — Current</span></td><td>November 2024</td><td>Updated annually by Privacy Officer; strong privacy section, weak technical safeguards section</td></tr>
+                <tr><td>Acceptable Use Policy (AUP)</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>2020</td><td>Does not address mobile devices, BYOD, or clinical app downloads</td></tr>
+                <tr><td>Incident Response Plan</td><td><span class="tag tag-green">Exists — Current</span></td><td>September 2024</td><td>Updated after neighboring hospital ransomware incident; tabletop exercise held Q4 2024</td></tr>
+                <tr><td>Disaster Recovery Plan</td><td><span class="tag tag-yellow">Exists — Partial</span></td><td>January 2023</td><td>Covers infrastructure; does not address ransomware-specific recovery or EHR downtime procedures</td></tr>
+                <tr><td>Business Continuity Plan</td><td><span class="tag tag-yellow">Exists — Partial</span></td><td>January 2023</td><td>Clinical downtime procedures exist; IT-specific BCP section not integrated with clinical plan</td></tr>
+                <tr><td>Vendor / Third-Party Risk Policy</td><td><span class="tag tag-red">None</span></td><td>—</td><td>BAA execution process exists but no formal TPRM policy or vendor risk tiering</td></tr>
+                <tr><td>Medical Device Cybersecurity Policy</td><td><span class="tag tag-red">None</span></td><td>—</td><td>No formal policy governing IoMT network placement, patching, or decommissioning</td></tr>
+                <tr><td>Privileged Access Management Policy</td><td><span class="tag tag-red">None</span></td><td>—</td><td>Local admin account use is ad hoc; no formal PAM policy exists</td></tr>
+                <tr><td>Data Classification Policy</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>2019</td><td>Classifies ePHI but no enforcement controls; cloud data not addressed</td></tr>
+                <tr><td>Cybersecurity Awareness Training Policy</td><td><span class="tag tag-yellow">Exists — Minimal</span></td><td>2022</td><td>Annual HIPAA awareness training required; no phishing simulation program</td></tr>
+                <tr><td>Patch Management Policy</td><td><span class="tag tag-yellow">Exists — Weak</span></td><td>2021</td><td>Policy exists but exempts vendor-managed devices and clinical systems; no SLA for critical patches</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Regulatory Framework Summary</h3>
+            <table class="data-table">
+                <thead><tr><th>Framework / Regulation</th><th>Applicability</th><th>Current Compliance Status</th></tr></thead>
+                <tbody>
+                <tr><td>HIPAA Security Rule (45 CFR §164.300–318)</td><td>Fully applicable — HIPAA Covered Entity</td><td><span class="tag tag-red">At risk — multiple Required Implementation Specification gaps</span></td></tr>
+                <tr><td>HITECH Act (45 CFR §164.400–414)</td><td>Applicable — breach notification obligations</td><td><span class="tag tag-yellow">Breach notification SOP exists; response time SLA not tested</span></td></tr>
+                <tr><td>CMS Conditions of Participation (42 CFR §482)</td><td>Applicable — Medicare/Medicaid certification</td><td><span class="tag tag-yellow">Emergency preparedness plan current; cybersecurity not separately assessed by CMS</span></td></tr>
+                <tr><td>FDA Post-Market Medical Device Cybersecurity (2023 Guidance)</td><td>Applicable — networked clinical devices</td><td><span class="tag tag-red">Not formally implemented — no medical device cybersecurity program</span></td></tr>
+                <tr><td>PA Act 62 of 2018 (PA DOH Breach Notification)</td><td>Applicable — Pennsylvania operations</td><td><span class="tag tag-yellow">Privacy Officer tracks reportable incidents; no 2024 breaches reported</span></td></tr>
+                <tr><td>NIST Cybersecurity Framework 2.0</td><td>Voluntary — recommended by HHS/OCR</td><td><span class="tag tag-red">Not formally adopted; informal reference only by IT Security Lead</span></td></tr>
+                <tr><td>C2M2 v2.1</td><td>Voluntary — assessment purpose</td><td><span class="tag tag-blue">No prior formal evaluation — this exercise is the first</span></td></tr>
+                <tr><td>Joint Commission Information Management Standards</td><td>Applicable — TJC accreditation</td><td><span class="tag tag-yellow">Basic IT governance documented; cybersecurity not a direct TJC survey focus</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         10. C2M2 DOMAIN ASSESSMENT
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🎯 C2M2 Domain Assessment Preparation</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>The following summarizes pre-assessment findings for each of the 10 C2M2 v2.1 domains based on discovery interviews and documentation review. These ratings are <em>indicative</em> and serve as starting points for the assessment exercise. Participants should evaluate and challenge these preliminary findings during the exercise.</p>
+
+            <div class="domain-grid">
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>🗂️ ASSET — Asset, Change &amp; Configuration Mgmt</h4>
+                    <ul>
+                        <li>IT asset inventory maintained in ServiceNow (partially current)</li>
+                        <li>IoMT inventory in CMMS (eMaint) — lacks network attributes (IP, MAC, VLAN)</li>
+                        <li>No formal configuration baseline for clinical servers or network devices</li>
+                        <li>Change management process exists for Epic; informal for infrastructure</li>
+                        <li>47 unexpected IoMT devices found during Q3 2024 threat hunt</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>🛡️ THREAT — Threat &amp; Vulnerability Mgmt</h4>
+                    <ul>
+                        <li>H-ISAC membership (2022) — threat bulletins received but response not tracked</li>
+                        <li>Nessus quarterly scans — IT systems only; IoMT excluded</li>
+                        <li>114 HIGH+ vulnerabilities open &gt;90 days</li>
+                        <li>No formal vulnerability prioritization process</li>
+                        <li>Vendor security bulletins (e.g., Baxter infusion pump CVE) not systematically tracked</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>⚖️ RISK — Risk Management</h4>
+                    <ul>
+                        <li>Annual HIPAA Security Risk Assessment (SRA) conducted by Privacy Officer</li>
+                        <li>Risk register exists in spreadsheet — 28 open items, limited remediation tracking</li>
+                        <li>No formal risk acceptance process; IoMT risks not included in SRA</li>
+                        <li>Board has not reviewed cybersecurity risk posture</li>
+                        <li>Cyber insurance in place ($5M limit); last reviewed 2022</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>🔑 ACCESS — Identity &amp; Access Mgmt</h4>
+                    <ul>
+                        <li>Active Directory for user auth — 1,800+ accounts managed</li>
+                        <li>MFA deployed only for VPN, admin accounts, Workday</li>
+                        <li>Epic accessed via username + password only — no MFA for 640+ clinical users</li>
+                        <li>12 terminated employee accounts found active in Q4 2024</li>
+                        <li>No PAM solution; shared local admin accounts on clinical systems</li>
+                        <li>Shared login credentials used at nursing stations (workflow workaround)</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>👁️ SITUATE — Situational Awareness</h4>
+                    <ul>
+                        <li>Splunk SIEM deployed — 3,200+ unacknowledged alerts backlogged</li>
+                        <li>No 24/7 Security Operations Center (SOC) monitoring</li>
+                        <li>Medigate IoMT visibility pilot covers ~30% of devices</li>
+                        <li>No network traffic analysis (NTA) for east-west clinical traffic</li>
+                        <li>H-ISAC threat intel received but not correlated with internal telemetry</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil2">
+                    <span class="mil-badge mil-badge-2">Indicative: MIL 2</span>
+                    <h4>🚨 RESPONSE — Event &amp; Incident Response</h4>
+                    <ul>
+                        <li>Incident Response Plan updated Sept 2024; covers ransomware scenario</li>
+                        <li>Tabletop exercise completed Q4 2024 (ransomware/EHR outage scenario)</li>
+                        <li>Incident response retainer with Mandiant (IR firm)</li>
+                        <li>Clinical downtime procedures documented for EHR outage</li>
+                        <li>Gap: No defined metrics for detection/response time; RTO for Epic not formally tested</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil0">
+                    <span class="mil-badge mil-badge-0">Indicative: MIL 0</span>
+                    <h4>🤝 THIRD-PARTIES — Third-Party Risk Mgmt</h4>
+                    <ul>
+                        <li>123 BAAs executed — no cybersecurity assessment for any</li>
+                        <li>Vendor remote access via shared VPN pool — no per-vendor isolation</li>
+                        <li>MSP (MedHelp IT) has broad admin access; last review 2021</li>
+                        <li>GE and BD have unmonitored persistent remote access</li>
+                        <li>No vendor incident notification SLA in any BAA</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>👷 WORKFORCE — Workforce Management</h4>
+                    <ul>
+                        <li>Annual HIPAA awareness training required and tracked (90%+ completion)</li>
+                        <li>No phishing simulation program</li>
+                        <li>No cybersecurity-specific training beyond HIPAA basics</li>
+                        <li>Background checks conducted at hire; no ongoing monitoring</li>
+                        <li>IT Security Lead (Marcus Grant) has no formal cybersecurity certification</li>
+                        <li>No defined cybersecurity roles for clinical or biomedical staff</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>🏗️ ARCH — Cybersecurity Architecture</h4>
+                    <ul>
+                        <li>Perimeter firewall (Palo Alto) deployed — ruleset stale (18 months unreviewed)</li>
+                        <li>Network segmentation exists but incomplete — IoMT on Staff Wi-Fi VLAN</li>
+                        <li>No micro-segmentation; lateral movement possible across clinical VLAN</li>
+                        <li>Cardiac telemetry (Windows 7 EOL) on clinical VLAN — no compensating control</li>
+                        <li>Encryption: TLS for web apps; data at rest encryption not verified for PACS/LIS</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>📋 PROGRAM — Cybersecurity Program Mgmt</h4>
+                    <ul>
+                        <li>No dedicated CISO; CIO serves as de facto security lead</li>
+                        <li>Cybersecurity sub-budget of $620K (~0.18% of revenue)</li>
+                        <li>Annual HIPAA SRA performed but not linked to C2M2 or NIST CSF</li>
+                        <li>No formal cybersecurity strategic plan or roadmap</li>
+                        <li>Board has not approved a cybersecurity program charter or risk appetite</li>
+                        <li>Cyber insurance policy not reviewed post-2022</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         11. EXERCISE QUESTIONS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>✏️ Exercise Discussion Questions &amp; Scenario Injects</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Assessment Questions</h3>
+
+            <div class="exercise-q">
+                <strong>Q1 — Asset Management (ASSET domain):</strong>
+                <p>VRMC's CMMS tracks 1,240+ medical devices by serial number and maintenance schedule but captures no network attributes. During a threat hunt, 47 unexpected devices were found on the network. What specific data elements should a healthcare-grade medical device inventory include, and which C2M2 ASSET practices apply? What is the business case for investing in a dedicated IoMT discovery and inventory platform (e.g., Medigate, Claroty, Armis)?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q2 — Identity &amp; Access (ACCESS domain):</strong>
+                <p>Epic EHR — the primary ePHI repository — requires only a username and password for access by 640+ clinical staff. Nursing stations use shared credentials as a workflow accommodation. How do you balance clinical workflow efficiency with HIPAA's technical safeguard requirements for unique user identification (§164.312(a)(2)(i))? What compensating controls or alternative authentication approaches exist for high-turnover clinical environments?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q3 — Threat &amp; Vulnerability (THREAT domain):</strong>
+                <p>Baxter issued a security bulletin 8 months ago regarding a known CVE in the Spectrum IQ infusion pump drug library that could allow unauthorized dose modification. VRMC has not acted on it. The device cannot be patched without Baxter on-site service. What immediate compensating controls should be implemented? How should VRMC develop a medical device vulnerability management program that accommodates vendor patch constraints under FDA post-market guidance?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q4 — Situational Awareness (SITUATE domain):</strong>
+                <p>VRMC's Splunk SIEM has 3,200+ unacknowledged alerts and no 24/7 monitoring. The Medigate IoMT visibility pilot covers only 30% of devices. Construct a prioritized monitoring strategy for VRMC given its three-person security team. What is the minimum viable SIEM use case set for a critical access healthcare environment? Should VRMC consider a managed SOC service, and what should they require in a healthcare SOC contract?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q5 — Third-Party Risk (THIRD-PARTIES domain):</strong>
+                <p>VRMC has 123 active BAAs with no cybersecurity assessments. GE HealthCare has unmonitored persistent VPN access to the cardiac telemetry system running Windows 7 EOL. BD (Baxter) has remote access to the Pyxis server with a known unpatched vulnerability. Using C2M2's THIRD-PARTIES domain and HIPAA §164.308(b), design a pragmatic vendor risk tiering program. Which three vendors should VRMC assess first and why?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q6 — Architecture (ARCH domain):</strong>
+                <p>The GE cardiac telemetry system runs Windows 7 Embedded (EOL) on the same VLAN as EHR clinical workstations. Network micro-segmentation and a firewall rule review have been on the IT backlog for 18 months. What compensating controls can be implemented immediately without disrupting clinical operations? Develop a network segmentation roadmap for VRMC prioritizing IoMT isolation, considering clinical workflow constraints and implementation cost.</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q7 — Program Management (PROGRAM domain):</strong>
+                <p>VRMC's CIO serves as the de facto CISO while managing all IT operations. The Board of Trustees has never received a formal cybersecurity risk report. Using C2M2's PROGRAM domain practices, what organizational changes would establish a minimum viable healthcare cybersecurity governance structure? Draft the key elements of a Board-level cybersecurity risk briefing appropriate for hospital trustees with no technical background.</p>
+            </div>
+
+            <hr style="margin: 1.5rem 0; border-color: #f0d8e4;">
+
+            <h3>Scenario Injects (Optional Tabletop Extensions)</h3>
+
+            <div class="inject-card">
+                <div class="inject-title">🚨 Inject A — Ransomware During Surgical Cases</div>
+                <p><strong>Scenario:</strong> At 6:42 AM on a Tuesday, clinical staff begin reporting that Epic workstations are displaying a ransom note. The EMR is inaccessible. Two patients are currently in surgery. The OR team is working from paper downtime records. Three ICU patients on Baxter infusion pumps cannot confirm current infusion rates because the pharmacy integration is down. The ED has 14 patients in treatment bays.</p>
+                <ul>
+                    <li>What are your immediate clinical safety priorities in the first 15 minutes?</li>
+                    <li>Who activates the IRP? Who notifies law enforcement and HHS OCR?</li>
+                    <li>How does the clinical downtime procedure work if the printed downtime packets are stored on a network share that is also encrypted?</li>
+                    <li>How do you communicate with physicians who rely on their personal smartphones for Epic access?</li>
+                    <li>What are the HIPAA breach notification obligations and timeline?</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">💉 Inject B — Infusion Pump Anomaly Alert</div>
+                <p><strong>Scenario:</strong> Medigate generates an alert at 2:15 AM indicating that 12 Baxter Spectrum IQ infusion pumps are communicating with an unexpected external IP address (185.220.x.x, flagged as Tor exit node). The IT Security Lead is not on-call — the overnight help desk escalates to the on-call IT Director who has no security training. Two of the affected pumps are in the Medical ICU administering vasopressors to critical patients.</p>
+                <ul>
+                    <li>Who is authorized to take clinical network segments offline? What is the clinical risk of isolating the medical device VLAN?</li>
+                    <li>What is the escalation path at 2:15 AM when the Security Lead is unreachable?</li>
+                    <li>How do you engage Baxter's emergency device security team?</li>
+                    <li>What evidence collection must occur before systems are remediated?</li>
+                    <li>How does this event trigger (or not trigger) mandatory HHS OCR breach notification?</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">🔗 Inject C — MSP Compromise (Supply Chain)</div>
+                <p><strong>Scenario:</strong> MedHelp IT Solutions (VRMC's MSP) notifies VRMC on a Friday afternoon that they have detected a breach of their RMM (Remote Monitoring &amp; Management) platform. MedHelp has broad admin access to VRMC's workstations, satellite site networks, and the VDI infrastructure. The breach is attributed to a nation-state actor targeting healthcare MSPs. MedHelp cannot confirm when access was first compromised — their logs only go back 30 days.</p>
+                <ul>
+                    <li>What are your immediate containment actions for MedHelp's access? How long will it take and what clinical disruption will result?</li>
+                    <li>What HIPAA obligations does VRMC have if the MSP is a Business Associate?</li>
+                    <li>How do you assess whether ePHI was accessed given MedHelp's limited log retention?</li>
+                    <li>What C2M2 THIRD-PARTIES practices would have reduced this risk?</li>
+                    <li>What contractual terms should VRMC require in future MSP agreements?</li>
+                </ul>
+            </div>
+
+            <hr style="margin: 1.5rem 0; border-color: #f0d8e4;">
+
+            <h3>Remediation Planning Exercise</h3>
+            <p><strong>Constraints:</strong> VRMC's Board has approved a one-time cybersecurity improvement budget of <strong>$250,000</strong> (FY2025 supplemental). The CIO must present a prioritized remediation roadmap at next month's board meeting. The roadmap must identify Quick Wins (0–90 days), Short-Term actions (90 days – 1 year), and Strategic investments (1–3 years). Staff capacity is limited — the security team cannot absorb more than 20 hours/week of new project work above BAU.</p>
+            <ul>
+                <li>Which three security gaps represent the highest patient safety risk and should be addressed first?</li>
+                <li>Assign rough cost estimates and effort levels to the top 10 remediation items.</li>
+                <li>What is the business case for hiring a dedicated CISO, and what qualifications should VRMC prioritize for a healthcare CISO role?</li>
+                <li>Which controls, if implemented, would have the greatest impact on VRMC's HIPAA Security Rule compliance posture?</li>
+                <li>How would you communicate the risk/impact trade-offs to non-technical board members?</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>🏥 Valley Regional Medical Center — C2M2 v2.1 Training Case Study | Fictional Scenario</p>
+        <p style="opacity: 0.65; font-size: 0.8rem;">All data is simulated for educational use. Not for operational or compliance purposes.</p>
+    </div>
+</div>
+
+<script>
+    // ── Section toggle ──
+    function toggleSection(header) {
+        const body = header.nextElementSibling;
+        const arrow = header.querySelector('.section-arrow');
+        const isOpen = body.classList.contains('open');
+        body.classList.toggle('open', !isOpen);
+        body.style.display = isOpen ? 'none' : 'block';
+        arrow.classList.toggle('open', !isOpen);
+        header.classList.toggle('open', !isOpen);
+    }
+
+    function expandAll() {
+        document.querySelectorAll('.section-body').forEach(b => {
+            b.style.display = 'block'; b.classList.add('open');
+        });
+        document.querySelectorAll('.section-arrow').forEach(a => a.classList.add('open'));
+        document.querySelectorAll('.section-header').forEach(h => h.classList.add('open'));
+    }
+
+    function collapseAll() {
+        document.querySelectorAll('.section-body').forEach(b => {
+            b.style.display = 'none'; b.classList.remove('open');
+        });
+        document.querySelectorAll('.section-arrow').forEach(a => a.classList.remove('open'));
+        document.querySelectorAll('.section-header').forEach(h => h.classList.remove('open'));
+    }
+
+    // ── Edit mode ──
+    let editMode = false;
+    function toggleEditMode() {
+        editMode = !editMode;
+        document.body.classList.toggle('edit-active', editMode);
+        const btn = document.getElementById('editBtn');
+        btn.textContent = editMode ? '🔒 Lock Edits' : '✏️ Edit Mode';
+        btn.classList.toggle('active', editMode);
+        document.querySelectorAll('td, th, p, h3, h4, li').forEach(el => {
+            el.contentEditable = editMode ? 'true' : 'false';
+        });
+        if (editMode) expandAll();
+    }
+
+    // ── Export HTML ──
+    function exportHTML() {
+        const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'case-study-health-VRMC.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    // ── Persist to localStorage ──
+    window.addEventListener('beforeunload', () => {
+        if (editMode) localStorage.setItem('vrmc-case-study', document.body.innerHTML);
+    });
+    window.addEventListener('load', () => {
+        const saved = localStorage.getItem('vrmc-case-study');
+        if (saved) document.body.innerHTML = saved;
+    });
+</script>
+</body>
+</html>
