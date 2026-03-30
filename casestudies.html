@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,6 +123,8 @@
         .badge-finance   { background: #e8eaf6; color: #283593; }
         .badge-govt      { background: #e8f4f8; color: #1a3a4a; }
         .badge-research  { background: #e9d8fd; color: #553c9a; }
+        .badge-chem      { background: #e8f5e9; color: #1a5c35; }
+        .badge-cfats     { background: #fce4ec; color: #880e4f; }
 
         .case-card-meta h3 { font-size: 1.2rem; color: #1a3a4a; font-weight: 800; line-height: 1.2; }
         .case-card-meta .case-org { font-size: 0.85rem; color: #2a6478; font-weight: 600; margin-top: 0.2rem; }
@@ -246,8 +249,8 @@
         <h1>C2M2 Training <span>Case Studies</span></h1>
         <p class="subtitle">Sector-specific fictional organizations with realistic IT/OT environments, network diagrams, asset inventories, and security gaps — designed for hands-on C2M2 assessment practice.</p>
         <div class="header-stats">
-            <div class="hstat"><div class="snum">3</div><div class="slbl">Available Now</div></div>
-            <div class="hstat"><div class="snum">5</div><div class="slbl">In Development</div></div>
+            <div class="hstat"><div class="snum">4</div><div class="slbl">Available Now</div></div>
+            <div class="hstat"><div class="snum">4</div><div class="slbl">In Development</div></div>
             <div class="hstat"><div class="snum">8</div><div class="slbl">Sectors Planned</div></div>
             <div class="hstat"><div class="snum">10</div><div class="slbl">Domains Covered</div></div>
         </div>
@@ -283,8 +286,8 @@
             </div>
             <div class="progress-row">
                 <span class="progress-label">🏭 Industrial / OT</span>
-                <div class="progress-bar-bg"><div class="progress-bar-fill fill-planned"></div></div>
-                <span class="progress-status status-plan">Planned</span>
+                <div class="progress-bar-bg"><div class="progress-bar-fill fill-complete"></div></div>
+                <span class="progress-status status-done">✓ Complete</span>
             </div>
             <div class="progress-row">
                 <span class="progress-label">🏥 Healthcare</span>
@@ -310,7 +313,7 @@
     </div>
 
     <!-- Available Case Studies -->
-    <div class="section-label">Available Now — 3 of 8 Sectors</div>
+    <div class="section-label">Available Now — 4 of 8 Sectors</div>
     <div class="cases-grid">
 
         <!-- MVEC — Electric Utilities -->
@@ -417,36 +420,45 @@
             </div>
         </div>
 
+        <!-- MSCI — Industrial / OT -->
+        <div class="case-card">
+            <div class="case-card-top-bar" style="background: linear-gradient(90deg, #1a5c35, #2d8a55);"></div>
+            <div class="case-card-body">
+                <div class="case-card-header">
+                    <div class="case-card-icon" style="background: #e8f5e9;">🧪</div>
+                    <div class="case-card-meta">
+                        <span class="case-sector-badge badge-chem">Industrial / OT</span>
+                        <h3>Meridian Specialty Chemicals Inc.</h3>
+                        <div class="case-org">MSCI — Baton Rouge, Louisiana Chemical Corridor</div>
+                    </div>
+                </div>
+                <p class="case-description">Mid-size specialty chemical manufacturer with DCS/batch process controls, CFATS Tier 3 obligations, and a Safety Instrumented System. Zero dedicated cybersecurity staff, Windows XP DCS workstation, utilities PLCs on a flat corporate network, and an unknown internet-facing batch server port — an ideal scenario for ICS/OT C2M2 assessment in a manufacturing environment.</p>
+                <div class="case-facts">
+                    <div class="case-fact"><strong>Manufacturing Capacity</strong>4 Batch Reactor Trains · 2 Distillation Columns</div>
+                    <div class="case-fact"><strong>Employees</strong>340 FT + 45 Contractors</div>
+                    <div class="case-fact"><strong>Annual Revenue</strong>$187.3 Million</div>
+                    <div class="case-fact"><strong>Key OT System</strong>Honeywell Experion PKS DCS</div>
+                    <div class="case-fact"><strong>C2M2 Score Range</strong>MIL 0–1 (most domains)</div>
+                    <div class="case-fact"><strong>Regulation</strong>CFATS Tier 3 · EPA RMP · OSHA PSM</div>
+                </div>
+                <div class="case-tags">
+                    <span class="case-tag">Honeywell Experion DCS</span>
+                    <span class="case-tag">Batch Reactors</span>
+                    <span class="case-tag">Safety Manager SIS</span>
+                    <span class="case-tag">CFATS Tier 3</span>
+                    <span class="case-tag">Flat Network Gap</span>
+                    <span class="case-tag">Windows XP OT</span>
+                    <span class="case-tag">5 Scenario Injects</span>
+                </div>
+                <a href="case-study-chem.html" class="case-open-btn">🏫 Open Case Study</a>
+            </div>
+        </div>
+
     </div>
 
     <!-- Coming Soon Case Studies -->
-    <div class="section-label">In Development — 5 Sectors Remaining</div>
+    <div class="section-label">In Development — 4 Sectors Remaining</div>
     <div class="cases-grid">
-
-        <!-- Industrial / OT -->
-        <div class="case-card-soon">
-            <div class="case-card-top-bar" style="background: linear-gradient(90deg, #37474f, #546e7a, #78909c);"></div>
-            <div class="coming-soon-badge">Coming Soon</div>
-            <div class="case-card-body">
-                <div class="case-card-header">
-                    <div class="case-card-icon" style="background: #eceff1;">🏭</div>
-                    <div class="case-card-meta">
-                        <span class="case-sector-badge badge-industrial">Industrial / OT</span>
-                        <h3>Specialty Chemical Manufacturer</h3>
-                        <div class="case-org">Fictional mid-size chemical processing facility</div>
-                    </div>
-                </div>
-                <p class="case-description">A specialty chemical manufacturer with DCS/PLC-controlled batch processes, Safety Instrumented Systems, and CFATS (Chemical Facility Anti-Terrorism Standards) obligations. Covers IEC 62443, the Purdue Model, IT/OT convergence in manufacturing, and OT ransomware scenarios.</p>
-                <div class="case-tags">
-                    <span class="case-tag">DCS / PLC</span>
-                    <span class="case-tag">Batch Processes</span>
-                    <span class="case-tag">CFATS</span>
-                    <span class="case-tag">IEC 62443</span>
-                    <span class="case-tag">OT Ransomware</span>
-                </div>
-                <span class="soon-btn">🔒 In Development</span>
-            </div>
-        </div>
 
         <!-- Healthcare -->
         <div class="case-card-soon">
