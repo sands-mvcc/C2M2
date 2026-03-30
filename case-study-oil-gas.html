@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2M2 Case Study — Lone Star Midstream LLC | LSML</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* ── Header ── */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2.5rem 2rem;
+            background: rgba(255,255,255,0.97);
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #c05621, #dd6b20, #2a6478, #28a745, #ffc107);
+        }
+        .header .doe-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #fde8d8;
+            border: 1px solid #f6b89a;
+            color: #7b3a10;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .header h1 { font-size: 2.4rem; color: #1a3a4a; margin-bottom: 0.4rem; font-weight: 800; }
+        .header h1 span { color: #c05621; }
+        .header .subtitle { font-size: 1.05rem; color: #666; margin-bottom: 1.2rem; }
+        .header .badges { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .badge-green  { background: #d4edda; color: #155724; }
+        .badge-blue   { background: #d1ecf1; color: #0c5460; }
+        .badge-yellow { background: #fff3cd; color: #856404; }
+        .badge-red    { background: #f8d7da; color: #721c24; }
+        .badge-purple { background: #e2d9f3; color: #4a235a; }
+        .badge-oil    { background: #fde8d8; color: #7b3a10; }
+
+        /* ── Navigation breadcrumb ── */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.75);
+        }
+        .breadcrumb a { color: rgba(255,255,255,0.85); text-decoration: none; font-weight: 600; }
+        .breadcrumb a:hover { color: white; }
+        .breadcrumb span { opacity: 0.5; }
+
+        /* ── Section Cards ── */
+        .section-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .section-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.3rem 1.8rem;
+            background: linear-gradient(135deg, #1a3a4a, #2a6478);
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-card-header .sec-icon { font-size: 1.6rem; }
+        .section-card-header h2 { font-size: 1.2rem; font-weight: 700; flex: 1; }
+        .section-card-header .sec-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.7rem;
+            border-radius: 10px;
+            font-size: 0.73rem;
+            font-weight: 700;
+        }
+        .section-card-header .toggle-icon { font-size: 1rem; transition: transform 0.25s; }
+        .section-card-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+        .section-body { padding: 1.8rem; }
+        .section-body.hidden { display: none; }
+
+        /* ── Stat Grid ── */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-item {
+            background: #f0f8fc;
+            border: 1px solid #c8e4ef;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        .stat-item .si-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #2a6478; letter-spacing: 0.8px; margin-bottom: 0.35rem; }
+        .stat-item .si-value { font-size: 1.1rem; font-weight: 700; color: #1a3a4a; }
+        .stat-item .si-sub   { font-size: 0.78rem; color: #666; margin-top: 0.15rem; }
+
+        /* ── Detail Tables ── */
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-bottom: 1rem; }
+        th {
+            background: #1a3a4a;
+            color: white;
+            padding: 0.65rem 0.9rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #e9ecef; vertical-align: top; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        tr:hover td { background: #eef6fb; }
+        td .tag {
+            display: inline-block;
+            padding: 0.1rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .tag-red    { background: #f8d7da; color: #721c24; }
+        .tag-yellow { background: #fff3cd; color: #856404; }
+        .tag-green  { background: #d4edda; color: #155724; }
+        .tag-blue   { background: #d1ecf1; color: #0c5460; }
+        .tag-gray   { background: #e9ecef; color: #495057; }
+        .tag-purple { background: #e2d9f3; color: #4a235a; }
+
+        /* ── Info Boxes ── */
+        .info-box {
+            border-left: 4px solid;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .info-box.warning { border-color: #ffc107; background: #fff9e6; }
+        .info-box.danger  { border-color: #dc3545; background: #fdf2f3; }
+        .info-box.info    { border-color: #17a2b8; background: #e8f7fa; }
+        .info-box.success { border-color: #28a745; background: #eaf6ec; }
+        .info-box strong  { display: block; margin-bottom: 0.3rem; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ── Two-column layouts ── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+        /* ── Network Diagram (ASCII-style) ── */
+        .network-diagram {
+            background: #0f1e26;
+            color: #7dd3fc;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            padding: 1.5rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .network-diagram .nd-green  { color: #86efac; }
+        .network-diagram .nd-yellow { color: #fde68a; }
+        .network-diagram .nd-red    { color: #fca5a5; }
+        .network-diagram .nd-blue   { color: #93c5fd; }
+        .network-diagram .nd-gray   { color: #6b7280; }
+        .network-diagram .nd-orange { color: #fdba74; }
+
+        /* ── Domain Assessment Prep ── */
+        .domain-prep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+        .domain-prep-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .domain-prep-card .dpc-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .dpc-asset    { background: #e8f4f8; color: #1a3a4a; }
+        .dpc-threat   { background: #fdf2f3; color: #721c24; }
+        .dpc-risk     { background: #fff9e6; color: #856404; }
+        .dpc-access   { background: #eaf6ec; color: #155724; }
+        .dpc-situate  { background: #e2d9f3; color: #4a235a; }
+        .dpc-response { background: #fdf2f3; color: #721c24; }
+        .dpc-third    { background: #d1ecf1; color: #0c5460; }
+        .dpc-work     { background: #d4edda; color: #155724; }
+        .dpc-arch     { background: #e8f4f8; color: #1a3a4a; }
+        .dpc-program  { background: #fff9e6; color: #856404; }
+        .domain-prep-card .dpc-body { padding: 0.9rem 1rem; font-size: 0.83rem; }
+        .domain-prep-card .dpc-body ul { padding-left: 1.2rem; }
+        .domain-prep-card .dpc-body li { margin-bottom: 0.35rem; line-height: 1.45; color: #444; }
+        .dpc-mil-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; background: #f8f9fa; border-top: 1px solid #eee; font-size: 0.78rem; font-weight: 700; color: #555; }
+        .mil-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+        .mil-0 { background: #dee2e6; }
+        .mil-1 { background: #ffc107; }
+        .mil-2 { background: #fd7e14; }
+        .mil-3 { background: #dc3545; }
+
+        /* ── Print / Section Labels ── */
+        .section-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.8rem;
+            margin-top: 2rem;
+        }
+        h3.sub-heading { font-size: 1rem; color: #1a3a4a; margin-bottom: 0.8rem; font-weight: 700; padding-bottom: 0.4rem; border-bottom: 2px solid #e8f4f8; }
+        p.body-text { line-height: 1.7; color: #555; margin-bottom: 1rem; font-size: 0.9rem; }
+        ul.body-list { padding-left: 1.4rem; margin-bottom: 1rem; }
+        ul.body-list li { margin-bottom: 0.4rem; line-height: 1.6; color: #555; font-size: 0.9rem; }
+
+        /* ── Org Chart ── */
+        .org-chart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+        .org-level { display: flex; gap: 1rem; justify-content: center; position: relative; padding: 0.5rem 0; }
+        .org-box {
+            background: #1a3a4a;
+            color: white;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 130px;
+        }
+        .org-box.ob-it { background: #2a6478; }
+        .org-box.ob-ops { background: #155724; }
+        .org-box.ob-contract { background: #856404; border: 2px dashed #ffc107; color: #333; background: #fff9e6; }
+        .org-line { width: 2px; height: 24px; background: #ccc; margin: 0 auto; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            color: rgba(255,255,255,0.85);
+            margin-top: 2rem;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .footer p { margin-bottom: 0.4rem; font-size: 0.9rem; }
+        .footer .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 0.25rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+        }
+
+        @media (max-width: 900px) {
+            .two-col   { grid-template-columns: 1fr; }
+            .three-col { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.8rem; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .section-body { padding: 1rem; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* ── Edit Mode ── */
+        .edit-toolbar {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            align-items: flex-end;
+        }
+        .et-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.82rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            transition: transform 0.15s, box-shadow 0.15s;
+            white-space: nowrap;
+        }
+        .et-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+        .et-edit   { background: #1a3a4a; color: white; }
+        .et-edit.active { background: #28a745; }
+        .et-export { background: #2a6478; color: white; }
+        .et-reset  { background: #dc3545; color: white; }
+
+        .edit-banner {
+            display: none;
+            background: linear-gradient(90deg, #28a745, #218838);
+            color: white;
+            text-align: center;
+            padding: 0.55rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            letter-spacing: 0.3px;
+        }
+        .edit-mode .edit-banner { display: block; }
+
+        .edit-mode [contenteditable="true"] {
+            outline: 2px dashed rgba(42,100,120,0.35);
+            border-radius: 3px;
+            cursor: text;
+            min-width: 20px;
+            min-height: 1em;
+            transition: outline 0.15s, background 0.15s;
+        }
+        .edit-mode [contenteditable="true"]:hover {
+            outline-color: #2a6478;
+            background: rgba(42,100,120,0.06);
+        }
+        .edit-mode [contenteditable="true"]:focus {
+            outline: 2px solid #2a6478;
+            background: rgba(42,100,120,0.1);
+        }
+
+        .del-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .del-btn:hover { background: #a71d2a; }
+        .del-btn[contenteditable="false"] { -webkit-user-select: none; user-select: none; }
+
+        th.del-col, td.del-col {
+            width: 34px;
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.3rem 0.25rem !important;
+        }
+        td.del-col { background: #fff5f5 !important; }
+        th.del-col { background: #3a1a1a !important; }
+
+        .add-row-btn, .add-item-btn, .add-stat-btn, .add-box-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            background: transparent;
+            border: 2px dashed #28a745;
+            color: #155724;
+            border-radius: 8px;
+            padding: 0.45rem 1rem;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 0.5rem;
+            transition: background 0.15s;
+        }
+        .add-row-btn:hover, .add-item-btn:hover,
+        .add-stat-btn:hover, .add-box-btn:hover { background: #d4edda; }
+
+        .stat-item { position: relative; }
+        .si-del-btn {
+            position: absolute;
+            top: 5px; right: 5px;
+            width: 18px; height: 18px;
+            font-size: 0.72rem;
+            line-height: 18px;
+            display: none;
+        }
+        .edit-mode .si-del-btn { display: block; }
+
+        .info-box { position: relative; }
+        .ib-del-btn {
+            position: absolute;
+            top: 6px; right: 6px;
+            display: none;
+        }
+        .edit-mode .ib-del-btn { display: block; }
+
+        li { display: flex; align-items: flex-start; gap: 0.35rem; }
+        li .li-del-btn { flex-shrink: 0; margin-top: 0.1rem; display: none; }
+        .edit-mode li .li-del-btn { display: block; }
+
+        .edit-mode .section-card { outline: 2px dashed rgba(42,100,120,0.18); }
+        .edit-mode .section-card:hover { outline-color: rgba(42,100,120,0.35); }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Edit Toolbar -->
+    <div class="edit-toolbar">
+        <button class="et-btn et-edit" id="editToggleBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="et-btn et-export" onclick="exportHTML()">💾 Export HTML</button>
+        <button class="et-btn et-reset" onclick="resetChanges()">🔄 Reset</button>
+    </div>
+
+    <!-- Edit Mode Banner -->
+    <div class="edit-banner">✏️ EDIT MODE ACTIVE — Click any cell, list item, or text to edit &nbsp;|&nbsp; Use ＋ buttons to add rows or items &nbsp;|&nbsp; Click × to delete</div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">C2M2 Portal</a>
+        <span>›</span>
+        <a href="casestudies.html">Case Studies</a>
+        <span>›</span>
+        <span>Case Study: Lone Star Midstream LLC</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="doe-badge">🛢️ C2M2 Training Exercise | Fictional Case Study</div>
+        <h1>Lone Star Midstream <span>LLC</span></h1>
+        <p class="subtitle">Permian Basin Natural Gas Gathering &amp; Transmission — C2M2 Assessment Exercise Scenario</p>
+        <div class="badges">
+            <span class="badge badge-oil">Oil &amp; Natural Gas</span>
+            <span class="badge badge-blue">Midstream Pipeline</span>
+            <span class="badge badge-yellow">TSA SD-02C</span>
+            <span class="badge badge-red">MIL 0–1 Baseline</span>
+            <span class="badge badge-purple">Exercise: All 10 Domains</span>
+        </div>
+    </div>
+
+    <div class="info-box warning">
+        <strong>Exercise Notice</strong>
+        This case study is entirely fictional and created for C2M2 training purposes. All company names, personnel,
+        addresses, IP addresses, vendor configurations, and operational data are simulated. Any resemblance to an
+        actual pipeline operator is coincidental. Participants should use this data to practice a full C2M2 v2.1
+        self-evaluation across all 10 cybersecurity domains, with particular attention to TSA Pipeline Security
+        Directive SD-02C compliance requirements.
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 – COMPANY PROFILE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 1 &mdash; Company Profile</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🏢</span>
+            <h2>Company Overview</h2>
+            <span class="sec-tag">PROFILE</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="si-label">Company Name</div>
+                    <div class="si-value">Lone Star Midstream LLC</div>
+                    <div class="si-sub">LSML</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Legal Status</div>
+                    <div class="si-value">Privately Held LLC</div>
+                    <div class="si-sub">Texas Limited Liability Company</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Founded</div>
+                    <div class="si-value">1987</div>
+                    <div class="si-sub">Midland, Texas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Headquarters</div>
+                    <div class="si-value">Midland, TX 79701</div>
+                    <div class="si-sub">1402 W. Texas Ave., Suite 300</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Annual Revenue</div>
+                    <div class="si-value">$94.2 Million</div>
+                    <div class="si-sub">FY 2024 (unaudited)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Total Employees</div>
+                    <div class="si-value">112 Full-Time</div>
+                    <div class="si-sub">+ 18 Active Contractors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Pipeline Miles</div>
+                    <div class="si-value">~847 Miles</div>
+                    <div class="si-sub">Gathering &amp; Transmission</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Compressor Stations</div>
+                    <div class="si-value">6 Stations</div>
+                    <div class="si-sub">West TX / SE New Mexico</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">C2M2 Score Range</div>
+                    <div class="si-value">MIL 0–1</div>
+                    <div class="si-sub">Baseline assessment (most domains)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Primary Regulation</div>
+                    <div class="si-value">TSA SD-02C</div>
+                    <div class="si-sub">DOT PHMSA 49 CFR Part 192 · EPA RMP</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">Primary Contact</div>
+                    <div class="si-value">Sandra Reyes</div>
+                    <div class="si-sub">VP of Operations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="si-label">IT Staff</div>
+                    <div class="si-value">3 FTE</div>
+                    <div class="si-sub">IT Manager + 2 Generalist Technicians</div>
+                </div>
+            </div>
+
+            <h3 class="sub-heading">Company Description</h3>
+            <p class="body-text">Lone Star Midstream LLC (LSML) is a privately held midstream energy company operating approximately 847 miles of natural gas gathering and transmission pipeline across the Permian Basin in West Texas and southeastern New Mexico. Founded in 1987 to serve the growing upstream production base in the Midland and Delaware sub-basins, LSML provides gathering, compression, dehydration, and limited processing services to independent oil and gas producers, transporting natural gas to downstream interstate pipeline interconnects operated by third-party transmission companies. LSML also operates two natural gas liquids (NGL) processing facilities that extract ethane, propane, and natural gas liquids from the raw gas stream before redelivery.</p>
+            <p class="body-text">LSML's customer base consists primarily of small to mid-size upstream operators, and the company holds long-term firm capacity agreements with six producers accounting for approximately 80% of throughput. The company is subject to DOT Pipeline and Hazardous Materials Safety Administration (PHMSA) integrity management requirements under 49 CFR Part 192, EPA Risk Management Program (RMP) obligations at its NGL processing facilities, and TSA Pipeline Security Directive SD-02C cybersecurity requirements. LSML has a three-person IT department and zero dedicated cybersecurity staff — cybersecurity responsibilities are informally assigned as a collateral duty to the IT Manager, Marcus Webb.</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2 – FACILITIES & PHYSICAL INFRASTRUCTURE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 2 &mdash; Facilities &amp; Physical Infrastructure</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🏭</span>
+            <h2>Facilities &amp; Physical Infrastructure</h2>
+            <span class="sec-tag">8 SITES</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Facility</th>
+                        <th>Location</th>
+                        <th>Function</th>
+                        <th>Physical Security</th>
+                        <th>IT / OT Presence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Midland Control Room (HQ)</strong></td>
+                        <td>Midland, TX 79701</td>
+                        <td>SCADA control room, corporate IT, administrative offices, 24/7 operations staff</td>
+                        <td><span class="tag tag-green">Card Access</span> <span class="tag tag-green">CCTV</span> <span class="tag tag-yellow">No Mantrap</span></td>
+                        <td>Domain controller, SCADA master, historian, corporate LAN, HMI workstations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Odessa Compressor Station</strong></td>
+                        <td>Ector County, TX</td>
+                        <td>Natural gas compression (4 × Caterpillar G3616 engines), custody transfer metering</td>
+                        <td><span class="tag tag-yellow">Perimeter Fence</span> <span class="tag tag-yellow">Padlock Gate</span> <span class="tag tag-red">No CCTV</span></td>
+                        <td>Allen-Bradley ControlLogix PLC, Fisher ROC RTU, local HMI panel, Cisco IW3702 wireless</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pecos River Compressor Station</strong></td>
+                        <td>Reeves County, TX</td>
+                        <td>Mid-line compression, pig launcher/receiver, emergency shutdown system</td>
+                        <td><span class="tag tag-yellow">Perimeter Fence</span> <span class="tag tag-red">No Lock Alarm</span> <span class="tag tag-red">No CCTV</span></td>
+                        <td>Allen-Bradley ControlLogix PLC, Fisher ROC RTU, dial-up modem backup, Hirschmann unmanaged switch</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hobbs Compressor Station</strong></td>
+                        <td>Lea County, NM</td>
+                        <td>Natural gas compression, interconnect with interstate pipeline, gas quality monitoring</td>
+                        <td><span class="tag tag-yellow">Perimeter Fence</span> <span class="tag tag-yellow">Card Access (single door)</span></td>
+                        <td>Allen-Bradley ControlLogix PLC, Fisher ROC RTU, Cisco IW3702 wireless, local historian node</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Permian North M&amp;R Station</strong></td>
+                        <td>Andrews County, TX</td>
+                        <td>Gas measurement, pressure regulation, odorization injection, custody transfer</td>
+                        <td><span class="tag tag-red">Padlock Only</span> <span class="tag tag-red">No CCTV</span> <span class="tag tag-red">Unmanned 24/7</span></td>
+                        <td>Fisher ROC809 RTU (default credentials), Emerson Daniel flow computer, Hirschmann unmanaged switch</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Permian South M&amp;R Station</strong></td>
+                        <td>Midland County, TX</td>
+                        <td>Gas measurement, pressure regulation, custody transfer metering for two producers</td>
+                        <td><span class="tag tag-red">Padlock Only</span> <span class="tag tag-red">No CCTV</span> <span class="tag tag-red">Unmanned 24/7</span></td>
+                        <td>Fisher ROC809 RTU (default credentials), Emerson Daniel flow computer, dial-up modem backup</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Winkler NGL Processing Facility</strong></td>
+                        <td>Winkler County, TX</td>
+                        <td>NGL extraction, ethane/propane separation, NGL storage, EPA RMP covered process</td>
+                        <td><span class="tag tag-green">Card Access</span> <span class="tag tag-green">CCTV (partial)</span> <span class="tag tag-yellow">No Visitor Log Policy</span></td>
+                        <td>Honeywell Experion PKS DCS, Safety Instrumented System (SIS), corporate network extension via T1 line</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Loving County NGL Processing Facility</strong></td>
+                        <td>Loving County, TX</td>
+                        <td>NGL extraction and condensate stabilization, gas sweetening (amine unit)</td>
+                        <td><span class="tag tag-yellow">Perimeter Fence</span> <span class="tag tag-yellow">Card Access (main gate only)</span></td>
+                        <td>Honeywell Experion PKS DCS, Safety Instrumented System (SIS), Cisco IE-4000 industrial switches</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3 – ORGANIZATIONAL STRUCTURE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 3 &mdash; Organizational Structure &amp; Staffing</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">👥</span>
+            <h2>Organizational Structure &amp; Staffing</h2>
+            <span class="sec-tag">10 KEY ROLES</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box warning">
+                <strong>Critical Gap — No Dedicated Cybersecurity Staff</strong>
+                LSML has zero dedicated cybersecurity full-time employees. Cybersecurity responsibilities are assigned as a collateral duty to IT Manager Marcus Webb, who estimates he spends less than 10% of his time on security-related tasks. There is no CISO, no security analyst, and no formal security operations function. TSA SD-02C requires designation of a Cybersecurity Coordinator — LSML has designated Webb in this role, but he has not received formal cybersecurity training or certification.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Cybersecurity Responsibility</th>
+                        <th>System Access Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>VP of Operations</strong></td>
+                        <td>Sandra Reyes</td>
+                        <td>Executive</td>
+                        <td>TSA Cybersecurity Coordinator (backup); incident escalation approval</td>
+                        <td><span class="tag tag-blue">Executive — Read-Only SCADA</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>IT Manager</strong> (Cybersecurity Coordinator)</td>
+                        <td>Marcus Webb</td>
+                        <td>Information Technology</td>
+                        <td>Primary TSA Cybersecurity Coordinator; all IT/OT security decisions; patch management; vendor access</td>
+                        <td><span class="tag tag-red">Domain Admin + SCADA Admin</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>IT Technician I</strong></td>
+                        <td>Javier Morales</td>
+                        <td>Information Technology</td>
+                        <td>Workstation support; basic network troubleshooting; backup monitoring</td>
+                        <td><span class="tag tag-yellow">Helpdesk Admin</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>IT Technician II</strong></td>
+                        <td>Amber Liu</td>
+                        <td>Information Technology</td>
+                        <td>Server patching support; Office 365 administration; user account provisioning</td>
+                        <td><span class="tag tag-yellow">Server Local Admin</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Field Operations Supervisor</strong></td>
+                        <td>Dale Hutchins</td>
+                        <td>Operations</td>
+                        <td>Approves field technician access to OT panels; reports equipment anomalies</td>
+                        <td><span class="tag tag-blue">OT Local Panel Access</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Control Room Operator (Lead)</strong></td>
+                        <td>Rosa Trevino</td>
+                        <td>Operations</td>
+                        <td>Monitors SCADA; reports abnormal readings; executes shutdown procedures</td>
+                        <td><span class="tag tag-yellow">SCADA Operator (Read/Control)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Control Room Operator</strong></td>
+                        <td>Kevin Park</td>
+                        <td>Operations</td>
+                        <td>SCADA monitoring; shift reports; alarm response</td>
+                        <td><span class="tag tag-yellow">SCADA Operator (Read/Control)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Control Room Operator</strong></td>
+                        <td>Tanya Osei</td>
+                        <td>Operations</td>
+                        <td>SCADA monitoring; shift reports; alarm response</td>
+                        <td><span class="tag tag-yellow">SCADA Operator (Read/Control)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Control Room Operator</strong></td>
+                        <td>Bill Ferris</td>
+                        <td>Operations</td>
+                        <td>SCADA monitoring; shift reports; alarm response</td>
+                        <td><span class="tag tag-yellow">SCADA Operator (Read/Control)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>SCADA Engineer</strong> (Contractor)</td>
+                        <td>Emerson Field Services</td>
+                        <td>Contractor — Emerson Automation Solutions</td>
+                        <td>SCADA application maintenance; configuration changes; software updates; remote troubleshooting</td>
+                        <td><span class="tag tag-red">Remote VPN — SCADA Full Admin</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 4 – IT ASSET INVENTORY
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 4 &mdash; IT Asset Inventory</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">💻</span>
+            <h2>IT Asset Inventory</h2>
+            <span class="sec-tag">SERVERS &amp; WORKSTATIONS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <h3 class="sub-heading">Server Inventory</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Description</th>
+                        <th>Hardware</th>
+                        <th>Operating System</th>
+                        <th>Location</th>
+                        <th>Key Gaps / Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SRV-001</td>
+                        <td>Primary Domain Controller</td>
+                        <td>Dell PowerEdge R640</td>
+                        <td>Windows Server 2019 Standard</td>
+                        <td>Midland HQ Server Room</td>
+                        <td><span class="tag tag-green">Patched Current</span> <span class="tag tag-yellow">No Privileged Access Workstation</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-002</td>
+                        <td>SCADA Application Server (Emerson Ovation)</td>
+                        <td>HP ProLiant DL380 G10</td>
+                        <td>Windows Server 2016 Standard</td>
+                        <td>Midland HQ Server Room</td>
+                        <td><span class="tag tag-red">CRITICAL: No MFA on SCADA HMI</span> <span class="tag tag-red">Domain-joined OT server</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-003</td>
+                        <td>Process Data Historian (OSIsoft PI)</td>
+                        <td>Dell PowerEdge R430</td>
+                        <td>Windows Server 2012 R2 — <strong>EOL</strong></td>
+                        <td>Midland HQ Server Room</td>
+                        <td><span class="tag tag-red">EOL OS — No Security Patches Since 2023</span> <span class="tag tag-red">IT/OT Bridge Risk</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-004</td>
+                        <td>Corporate File &amp; Print Server</td>
+                        <td>Dell PowerEdge R340</td>
+                        <td>Windows Server 2019 Standard</td>
+                        <td>Midland HQ Server Room</td>
+                        <td><span class="tag tag-green">Patched Current</span> <span class="tag tag-yellow">No DLP Controls</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-005</td>
+                        <td>Azure AD Connect / Office 365 Proxy</td>
+                        <td>Virtual (VMware ESXi 7.0)</td>
+                        <td>Windows Server 2019 Standard</td>
+                        <td>Midland HQ Server Room (VM)</td>
+                        <td><span class="tag tag-yellow">MFA enabled for O365 only — not internal AD</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-006</td>
+                        <td>ERP Server (SAP Business One — Accounting &amp; HR)</td>
+                        <td>Dell PowerEdge R540</td>
+                        <td>Windows Server 2019 Standard</td>
+                        <td>Midland HQ Server Room</td>
+                        <td><span class="tag tag-yellow">SAP B1 v10.0 — Vendor remote access quarterly</span></td>
+                    </tr>
+                    <tr>
+                        <td>SRV-007</td>
+                        <td>Engineering Workstation Server (AutoCAD, GIS)</td>
+                        <td>Virtual (VMware ESXi 7.0)</td>
+                        <td>Windows Server 2016 Standard</td>
+                        <td>Midland HQ Server Room (VM)</td>
+                        <td><span class="tag tag-yellow">GIS pipeline mapping data — no data classification</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-heading">Workstation Inventory</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Description</th>
+                        <th>Hardware</th>
+                        <th>OS</th>
+                        <th>Location</th>
+                        <th>Key Gaps / Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>WS-001 through WS-004</td>
+                        <td>Control Room HMI Workstations (4 units)</td>
+                        <td>Dell OptiPlex 7090 (hardened)</td>
+                        <td>Windows 10 LTSC 2021</td>
+                        <td>Midland Control Room</td>
+                        <td><span class="tag tag-red">No MFA</span> <span class="tag tag-yellow">Shared Operator Credentials on 2 units</span></td>
+                    </tr>
+                    <tr>
+                        <td>WS-005</td>
+                        <td>SCADA / OT Engineering Workstation</td>
+                        <td>Dell Precision 3650</td>
+                        <td>Windows 10 Pro</td>
+                        <td>Midland HQ — IT Office</td>
+                        <td><span class="tag tag-red">Dual-homed: IT LAN + SCADA network</span> <span class="tag tag-red">USB ports unrestricted</span></td>
+                    </tr>
+                    <tr>
+                        <td>WS-006</td>
+                        <td>IT Admin Workstation</td>
+                        <td>Dell Precision 3450</td>
+                        <td>Windows 10 Pro</td>
+                        <td>Midland HQ — IT Office</td>
+                        <td><span class="tag tag-green">Local admin only</span> <span class="tag tag-yellow">No PAM tool — direct RDP to servers</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 5 – OT / ICS / SCADA ASSETS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 5 &mdash; OT / ICS / SCADA Asset Inventory</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">⚙️</span>
+            <h2>OT / ICS / SCADA Asset Inventory</h2>
+            <span class="sec-tag">PIPELINE &amp; PROCESS CONTROL</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box danger">
+                <strong>Critical Finding — Default Credentials on Field RTUs</strong>
+                Five (5) of fourteen Fisher ROC809 remote terminal units deployed at unmanned M&amp;R stations and remote valve sites are still configured with factory-default usernames and passwords. Additionally, three of these units retain a legacy dial-up modem connection originally installed in 2003 as a backup communication path. These modems have never been disabled and are not monitored. An attacker with knowledge of the dial-up number and default credentials could issue control commands to these RTUs without traversing the corporate network.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Description</th>
+                        <th>Vendor / Model</th>
+                        <th>Firmware / Version</th>
+                        <th>Location</th>
+                        <th>Security Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OT-001</td>
+                        <td>SCADA Master Station</td>
+                        <td>Emerson Ovation v3.4</td>
+                        <td>Ovation 3.4.1 (2021)</td>
+                        <td>Midland Control Room</td>
+                        <td><span class="tag tag-yellow">Patch 3.4.2 available — not yet applied</span> <span class="tag tag-red">No application whitelisting</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-002 through OT-007</td>
+                        <td>Compressor Station PLCs (6 units — one per station)</td>
+                        <td>Allen-Bradley ControlLogix L71</td>
+                        <td>Firmware 32.011 (2020)</td>
+                        <td>Odessa, Pecos River, Hobbs, three gathering stations</td>
+                        <td><span class="tag tag-yellow">Firmware 33.013 available — update requires outage window</span> <span class="tag tag-red">No keyswitch locks on two units</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-008 through OT-021</td>
+                        <td>Remote Terminal Units — M&amp;R Stations &amp; Valve Sites (14 units)</td>
+                        <td>Fisher ROC809</td>
+                        <td>Firmware 1.86 (varies)</td>
+                        <td>Remote M&amp;R and valve sites across pipeline</td>
+                        <td><span class="tag tag-red">5 units: Factory-default credentials</span> <span class="tag tag-red">3 units: Active dial-up modem backup</span> <span class="tag tag-yellow">No firmware change log</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-022 through OT-025</td>
+                        <td>Custody Transfer Flow Computers (4 units)</td>
+                        <td>Emerson Daniel Senior Sonic</td>
+                        <td>Daniel MeterLink v3.9</td>
+                        <td>Odessa, Hobbs, Winkler, Loving County</td>
+                        <td><span class="tag tag-yellow">Audit log enabled — logs not reviewed regularly</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-026 through OT-027</td>
+                        <td>Distributed Control System — NGL Facilities (2 units)</td>
+                        <td>Honeywell Experion PKS R511</td>
+                        <td>R511.2 (2022)</td>
+                        <td>Winkler NGL Facility, Loving County NGL Facility</td>
+                        <td><span class="tag tag-yellow">SIS on separate network — no formal change control</span> <span class="tag tag-red">IT staff have DCS read access with corporate credentials</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-028 through OT-035</td>
+                        <td>Industrial Ethernet Switches — Managed (8 units)</td>
+                        <td>Cisco IE-4000-8GT8GP4G</td>
+                        <td>IOS 15.2(7)E4</td>
+                        <td>Compressor stations and NGL facilities</td>
+                        <td><span class="tag tag-yellow">SNMP v2c enabled — community string "public"</span> <span class="tag tag-red">No port security or 802.1X</span></td>
+                    </tr>
+                    <tr>
+                        <td>OT-036 through OT-046</td>
+                        <td>Industrial Ethernet Switches — Unmanaged (11 units)</td>
+                        <td>Hirschmann RS20-0400M2M2-0A</td>
+                        <td>N/A (unmanaged)</td>
+                        <td>Remote gathering sites and M&amp;R stations</td>
+                        <td><span class="tag tag-red">Unmanaged — no visibility, no logging</span> <span class="tag tag-red">Cannot enforce VLANs or port security</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 6 – NETWORK ARCHITECTURE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 6 &mdash; Network Architecture</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🌐</span>
+            <h2>Network Architecture</h2>
+            <span class="sec-tag">IT / OT TOPOLOGY</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="network-diagram"><span class="nd-gray">╔══════════════════════════════════════════════════════════════════════════════════════════╗
+║                    LONE STAR MIDSTREAM LLC — NETWORK TOPOLOGY (SIMPLIFIED)               ║
+╚══════════════════════════════════════════════════════════════════════════════════════════╝</span>
+
+<span class="nd-blue">  ┌─────────────────────────────────────────────────────────┐
+  │               INTERNET / CLOUD SERVICES                 │
+  │  Office 365 (M365 E3)  ·  Azure AD Connect  ·  SAP B1  │
+  └───────────────────────────┬─────────────────────────────┘
+                              │  Internet Circuit (AT&amp;T Fiber 200Mbps)
+                              ▼</span>
+<span class="nd-green">  ┌─────────────────────────────────────────────────────────┐
+  │              CORPORATE PERIMETER FIREWALL               │
+  │           Cisco ASA 5545-X  (IOS-XE 9.18.2)            │
+  │  ✓ Stateful packet inspection  ✓ IPS module (limited)  │
+  └───────────────────────────┬─────────────────────────────┘
+                              │  Corporate LAN (VLAN 10 — 192.168.10.0/24)
+                              ▼</span>
+<span class="nd-green">  ┌─────────────────────────────────────────────────────────┐
+  │                  CORPORATE IT NETWORK                    │
+  │  SRV-001 Domain Controller  ·  SRV-004 File/Print       │
+  │  SRV-005 Azure AD Connect   ·  SRV-006 SAP ERP          │
+  │  SRV-007 Engineering Workstation Server                  │
+  │  Cisco Catalyst 3850 Core Switch                        │
+  └──────────────┬──────────────────────────┬───────────────┘
+                 │  VLAN 20 (192.168.20.0/24)│ VLAN 30 (Mgmt)
+                 ▼                          │</span>
+<span class="nd-yellow">  ┌──────────────────────────┐              │
+  │    SCADA / OT NETWORK    │◄─────────────┘
+  │  (Partial Segmentation)  │   <span class="nd-red">⚠ IT/OT boundary NOT enforced</span>
+  │  SRV-002 Ovation SCADA   │   <span class="nd-red">  at remote compressor stations</span>
+  │  SRV-003 PI Historian    │   <span class="nd-red">  (no firewall at Pecos River,</span>
+  │  WS-001 to WS-004 HMIs   │   <span class="nd-red">  Odessa, or M&amp;R sites)</span>
+  │  WS-005 OT Eng. WS       │
+  └──────┬───────────────────┘</span>
+         │  MPLS / T1 Leased Lines to Field Sites (Lumen / AT&amp;T)
+         │  + Cisco IW3702 Industrial Wireless (AES-128, WPA2)
+         ▼
+<span class="nd-orange">  ┌─────────────────────────────────────────────────────────┐
+  │               FIELD SITE OT NETWORKS                    │
+  │                                                         │
+  │  [Odessa CS]    AB ControlLogix PLC  ·  Fisher ROC RTU  │
+  │                 Cisco IW3702 Wireless  ·  Local HMI      │
+  │                                                         │
+  │  [Pecos River]  AB ControlLogix PLC  ·  Fisher ROC RTU  │
+  │                 <span class="nd-red">Dial-Up Modem (active, unmonitored)</span>  │
+  │                 Hirschmann Unmanaged Switch              │
+  │                                                         │
+  │  [Hobbs NM CS]  AB ControlLogix PLC  ·  Fisher ROC RTU  │
+  │                 Cisco IW3702 Wireless  ·  Local Historian│
+  │                                                         │
+  │  [M&amp;R Stations] Fisher ROC809 RTUs (14 units)           │
+  │                 <span class="nd-red">5 units: Default credentials</span>         │
+  │                 Emerson Daniel Flow Computers            │
+  │                 Hirschmann Unmanaged Switches            │
+  │                                                         │
+  │  [NGL Facilities] Honeywell Experion DCS  ·  SIS        │
+  │                   Cisco IE-4000 Managed Switches         │
+  └─────────────────────────────────────────────────────────┘</span>
+
+<span class="nd-gray">  REMOTE VENDOR ACCESS:
+  ─────────────────────────────────────────────────────────
+  Emerson Field Services  → Cisco AnyConnect VPN → SRV-002 (SCADA Admin)
+  Permian Basin Managed IT → Cisco AnyConnect VPN → SRV-001 (Domain Admin)
+  SAP B1 Partner          → Cisco AnyConnect VPN → SRV-006 (ERP Admin)
+  ⚠ No MFA on VPN  ·  No session recording  ·  No access review policy</span></div>
+
+            <div class="info-box warning">
+                <strong>IT/OT Segmentation Gap</strong>
+                IT/OT network segmentation is only partially implemented. VLAN separation exists between corporate IT (VLAN 10) and the SCADA network (VLAN 20) at the Midland HQ, enforced by the Cisco ASA firewall. However, no equivalent network boundary exists at the three remote compressor stations (Odessa, Pecos River, Hobbs) or at any of the 14 M&amp;R/valve sites, where OT devices share a flat network with IT management traffic routed over leased T1 lines.
+            </div>
+            <div class="info-box danger">
+                <strong>Dual-Homed Engineering Workstation (WS-005)</strong>
+                The OT engineering workstation (WS-005) is configured with two active network interfaces — one connected to the corporate IT LAN (VLAN 10) and one directly connected to the SCADA network. This creates a direct bridge between the two network segments that bypasses the Cisco ASA firewall, effectively nullifying the IT/OT segmentation control at the HQ site.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 7 – CYBERSECURITY CONTROLS ASSESSMENT
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 7 &mdash; Cybersecurity Controls Assessment</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🔒</span>
+            <h2>Cybersecurity Controls Assessment</h2>
+            <span class="sec-tag">12 CONTROL DOMAINS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>Current Control / Status</th>
+                        <th>Implementation</th>
+                        <th>Key Gap / Finding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Access Management</strong></td>
+                        <td>Active Directory with role-based groups; VPN for remote access; no PAM tool</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>No MFA on SCADA HMIs or VPN; shared operator credentials on two HMIs; no privileged access review process</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Threat &amp; Vulnerability Management</strong></td>
+                        <td>Qualys vulnerability scanner deployed on IT network; no OT scanning; informal patch process</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>OT assets (PLCs, RTUs, DCS) not included in vulnerability management program; EOL historian (SRV-003) not patched since Jan 2023</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Situation Awareness</strong></td>
+                        <td>Windows Event Logs collected; no SIEM; Cisco ASA logs to local storage only; no OT monitoring</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No centralized log management or SIEM; OT network has no intrusion detection or anomaly detection capability; log retention is less than 30 days on most systems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incident Response</strong></td>
+                        <td>Draft Incident Response Plan (IRP) exists; never tested; no OT-specific runbooks; TSA reporting process identified</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>IRP is IT-focused only; no OT incident scenarios; TSA SD-02C requires 24-hour reporting of cybersecurity incidents — LSML has not exercised this capability; no tabletop exercises conducted</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Service Continuity</strong></td>
+                        <td>Tape backups for servers; no tested recovery; BCP does not cover cyber scenarios; manual pipeline operations documented for safety shutdown only</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No cyber-specific BCP/DR plan; SCADA historian backups not tested for restoration; no defined RTO/RPO for critical OT systems; SCADA backup server not maintained</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk Management</strong></td>
+                        <td>PHMSA integrity risk assessment performed for pipeline physical integrity; no formal cyber risk assessment exists</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No documented cybersecurity risk register; no cyber-physical risk analysis; TSA SD-02C requires a Cybersecurity Implementation Plan (CIP) — LSML's CIP filed in 2023 is partially implemented</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Asset Management</strong></td>
+                        <td>IT asset inventory maintained in spreadsheet; OT asset inventory partially documented; no automated discovery</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>OT asset inventory is incomplete — RTU firmware versions inconsistently tracked; no configuration baseline for PLCs or flow computers; no software license management for OT</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Identity Management</strong></td>
+                        <td>Active Directory for IT users; OT identities managed locally on SCADA server; no identity lifecycle management process</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>Three former employee accounts still active in AD (departed within last 12 months); no formal user access review; SCADA accounts not synchronized with HR termination process</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Supply Chain &amp; Third-Party Risk</strong></td>
+                        <td>Vendor contracts reference general security requirements; MSP has domain admin access; no vendor risk program</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No third-party cybersecurity risk assessment program; Emerson remote access not monitored with session recording; no annual vendor review; MSP contract does not specify security requirements</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Workforce Management</strong></td>
+                        <td>Annual safety training required; cybersecurity training not formalized; background checks for new hires; no security awareness program</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>No cybersecurity awareness training program; social engineering/phishing simulations never conducted; control room operators have not received ICS-specific security training; TSA Cybersecurity Coordinator (Webb) has no formal security certification</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Physical Security</strong></td>
+                        <td>HQ has card access and partial CCTV; remote compressor stations have perimeter fencing; M&amp;R stations are padlock-only</td>
+                        <td><span class="tag tag-yellow">Partial</span></td>
+                        <td>Fourteen M&amp;R and valve sites have only padlock security with no CCTV, no intrusion alarm, and no visitor log; no formal policy for escorting vendor personnel to OT equipment rooms</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Configuration Management</strong></td>
+                        <td>IT change management policy exists (informal); no OT change management; PLC/RTU configurations not baselined</td>
+                        <td><span class="tag tag-red">Missing</span></td>
+                        <td>No formal OT change management process; firmware updates on PLCs and RTUs performed on an ad-hoc basis; no configuration backup or version control for OT devices; no integrity monitoring for OT configurations</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 8 – THIRD-PARTY RELATIONSHIPS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 8 &mdash; Third-Party Relationships &amp; Vendor Access</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🤝</span>
+            <h2>Third-Party Relationships &amp; Vendor Access</h2>
+            <span class="sec-tag">7 VENDORS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box warning">
+                <strong>Vendor Access Monitoring Gap</strong>
+                Remote vendor access to LSML systems is authenticated via Cisco AnyConnect VPN using shared credentials (no MFA). Active sessions are not recorded or monitored. No vendor access review has been performed in the past 18 months. Three vendors — Emerson, Permian Basin Managed IT, and the SAP partner — hold administrative-level access to critical systems and are not subject to any formal vetting, access limitation, or periodic review process.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Vendor</th>
+                        <th>Service Provided</th>
+                        <th>Access Level</th>
+                        <th>Risk Rating</th>
+                        <th>Notes / Gaps</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Emerson Automation Solutions</strong></td>
+                        <td>Ovation SCADA application support, configuration changes, software updates</td>
+                        <td><span class="tag tag-red">Remote VPN — SCADA Full Admin</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                        <td>No MFA; sessions not recorded; access not time-limited; shared credential used by multiple Emerson engineers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Permian Basin Managed IT (PBMIT)</strong></td>
+                        <td>IT managed services — helpdesk, server monitoring, patch management support</td>
+                        <td><span class="tag tag-red">Remote VPN — Domain Admin (AD)</span></td>
+                        <td><span class="tag tag-red">HIGH</span></td>
+                        <td>MSP holds full domain admin; contract does not specify security requirements; last security review of MSP: never; MSP accesses SCADA application server (SRV-002) indirectly via domain admin</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Allen-Bradley / Rockwell Automation</strong></td>
+                        <td>PLC firmware updates, Studio 5000 configuration support</td>
+                        <td><span class="tag tag-yellow">Onsite + USB Media</span></td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                        <td>Firmware updates delivered via USB thumb drives without hash verification; no malware scan on removable media before OT use</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SAP Business One Partner (TexasBiz ERP LLC)</strong></td>
+                        <td>SAP B1 ERP support, quarterly updates and customizations</td>
+                        <td><span class="tag tag-yellow">Remote VPN — SRV-006 Admin (quarterly)</span></td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                        <td>Remote access quarterly; no MFA; session not recorded; vendor personnel turnover not communicated to LSML; same credentials since 2021</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Halliburton (Field Inspection Contractor)</strong></td>
+                        <td>Pipeline integrity inspections, in-line inspection tool runs, hydrostatic testing</td>
+                        <td><span class="tag tag-green">Physical Site Access (escorted)</span></td>
+                        <td><span class="tag tag-green">LOW</span></td>
+                        <td>Physical access only; no IT/OT system access; badge access issued for duration of project; escorted at all sites</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AT&amp;T / Lumen Technologies</strong></td>
+                        <td>MPLS network, T1 leased lines to field sites, internet connectivity</td>
+                        <td><span class="tag tag-yellow">Physical Infrastructure — Carrier Access</span></td>
+                        <td><span class="tag tag-yellow">MEDIUM</span></td>
+                        <td>LSML does not encrypt traffic on internal T1/MPLS circuits; telecom provider access to network infrastructure not reviewed; no redundant carrier for critical pipeline sites</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PHMSA / TSA Inspector Access</strong></td>
+                        <td>Regulatory compliance audits — pipeline integrity and cybersecurity inspections</td>
+                        <td><span class="tag tag-blue">Read-Only Historian Data Access (on-site)</span></td>
+                        <td><span class="tag tag-blue">REGULATORY</span></td>
+                        <td>Inspectors granted temporary read-only access to OSIsoft PI historian during audits; no formal process for provisioning and deprovisioning temporary regulatory access accounts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 9 – POLICIES & GOVERNANCE
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 9 &mdash; Policies &amp; Governance</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">📋</span>
+            <h2>Policies &amp; Governance</h2>
+            <span class="sec-tag">POLICY INVENTORY</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box danger">
+                <strong>Critical Gap — No Cyber Incident Has Ever Been Declared</strong>
+                LSML has never formally declared a cybersecurity incident in its operational history. The draft Incident Response Plan has never been exercised, and no tabletop exercises have been conducted. The IRP contains no OT-specific runbooks, no contact list for TSA incident reporting, and no guidance on distinguishing a cyber event from a process safety emergency. Control room operators are not trained on cyber incident indicators and do not know the IRP exists.
+            </div>
+            <h3 class="sub-heading">Policy &amp; Procedure Inventory</h3>
+            <ul class="body-list">
+                <li><span class="tag tag-green" style="margin-right:0.4rem;">In Place — 2023</span> <strong>Acceptable Use Policy (AUP)</strong> — Covers IT systems and internet use; employees sign annually; does not address OT systems or mobile devices</li>
+                <li><span class="tag tag-yellow" style="margin-right:0.4rem;">Draft — Never Exercised</span> <strong>Incident Response Plan (IRP)</strong> — Draft document created 2022; IT-focused only; no OT runbooks; no tabletop exercise history; TSA 24-hour reporting obligation not addressed in procedure</li>
+                <li><span class="tag tag-yellow" style="margin-right:0.4rem;">Informal — Not Enforced for OT</span> <strong>Change Management Procedure</strong> — IT change tickets tracked in ServiceNow; OT changes performed verbally by field technicians without documentation; no change advisory board</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Exist</span> <strong>Patch Management Policy for OT Systems</strong> — No formal policy; OT patches applied ad-hoc when vendor recommends; no risk-based patching schedule; no compensating controls for unpatched OT systems</li>
+                <li><span class="tag tag-yellow" style="margin-right:0.4rem;">IT Only — OT Not Addressed</span> <strong>Access Control Policy</strong> — IT user provisioning and deprovisioning process documented; OT account management not addressed; no periodic access certification; former employee accounts not consistently removed</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Cover Cyber</span> <strong>Business Continuity Plan (BCP)</strong> — Physical BCP exists for natural disaster and equipment failure; does not address cyber-induced operational disruption; no defined RTO/RPO for IT or OT systems; no cyber BCP testing</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Exist</span> <strong>Third-Party / Vendor Access Policy</strong> — No documented policy for vendor remote access; no requirements for vendor MFA, session recording, access scope limitation, or periodic review</li>
+                <li><span class="tag tag-yellow" style="margin-right:0.4rem;">Filed 2023 — Partially Implemented</span> <strong>TSA Cybersecurity Implementation Plan (CIP)</strong> — Required by TSA SD-02C; submitted to TSA in October 2023; several required controls not yet implemented including MFA, network segmentation at remote sites, and OT monitoring capability</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Exist</span> <strong>Removable Media Policy</strong> — No policy restricting use of USB drives or external media on OT systems; WS-005 USB ports unrestricted; Rockwell firmware delivered on unverified USB media</li>
+                <li><span class="tag tag-red" style="margin-right:0.4rem;">Does Not Exist</span> <strong>Cybersecurity Awareness Training Program</strong> — No annual cybersecurity training; no phishing simulation history; no ICS/OT security awareness content; TSA Cybersecurity Coordinator has no formal certification</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 10 – C2M2 DOMAIN ASSESSMENT
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 10 &mdash; C2M2 Domain Assessment Data</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">📊</span>
+            <h2>C2M2 Domain Assessment — Indicative Scores</h2>
+            <span class="sec-tag">10 DOMAINS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box info">
+                <strong>Assessment Scope Note</strong>
+                The following indicative C2M2 v2.1 maturity scores are based on the asset inventory, controls assessment, and policy review documented in this case study. Students should validate these scores by mapping individual C2M2 practices to the evidence presented, identifying where the organization's actual practices fall short of the documented MIL threshold. Scores represent LSML's estimated <em>current</em> baseline — not a target or aspirational state.
+            </div>
+            <div class="domain-prep-grid">
+                <!-- ASSET -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-asset">🗂️ ASSET — Asset, Change &amp; Configuration Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">LSML maintains a partial IT asset inventory in spreadsheets and has begun tracking OT assets, earning the highest relative score. However, OT configuration baselines and change management for field devices are absent.</p>
+                        <ul>
+                            <li>IT asset inventory exists but is manually maintained and incomplete for OT</li>
+                            <li>No configuration baseline for PLCs, RTUs, or DCS systems</li>
+                            <li>No formal OT change management process</li>
+                            <li>Top Practice: ASSET-2a — Establish and maintain a documented OT asset inventory with configuration baselines</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-2"></span> Current MIL: 2 (IT Assets) / MIL 1 (OT Assets)</div>
+                </div>
+                <!-- THREAT -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-threat">🎯 THREAT — Threat and Vulnerability Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">Qualys scanner deployed on IT network provides some vulnerability visibility, but OT assets are entirely excluded. No threat intelligence program exists and no OT-specific vulnerability sources are monitored.</p>
+                        <ul>
+                            <li>OT assets not scanned — PLCs, RTUs, and DCS excluded from vulnerability program</li>
+                            <li>EOL historian (SRV-003) unpatched for 24+ months</li>
+                            <li>No ICS-CERT or DHS CISA alert monitoring process</li>
+                            <li>Top Practice: THREAT-1a — Establish vulnerability management that includes OT/ICS assets</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- RISK -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-risk">⚖️ RISK — Risk Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">No formal cyber risk assessment or risk register exists. Physical pipeline integrity risk is well-managed under PHMSA requirements, but cybersecurity risk is not systematically identified, evaluated, or documented.</p>
+                        <ul>
+                            <li>No documented cybersecurity risk register</li>
+                            <li>TSA CIP submitted but risk-based prioritization not performed</li>
+                            <li>No cyber-physical risk analysis for pipeline OT scenarios</li>
+                            <li>Top Practice: RISK-1a — Establish and maintain a cybersecurity risk register aligned to OT/pipeline operations</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- ACCESS -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-access">🔑 ACCESS — Identity and Access Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">Active Directory provides basic IT identity management. SCADA HMI and VPN access lack MFA, and OT identities are locally managed outside AD. Former employee accounts have not been fully deprovisioned.</p>
+                        <ul>
+                            <li>No MFA on SCADA HMIs or VPN — highest priority remediation</li>
+                            <li>Shared operator credentials on two HMI workstations</li>
+                            <li>Three former employee AD accounts still active</li>
+                            <li>Top Practice: ACCESS-2b — Implement MFA for all remote access and OT HMI authentication</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- SITUATION -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-situate">👁️ SITUATION — Situational Awareness</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">No SIEM, no OT network monitoring, and no centralized log management. Windows event logs are collected locally but not aggregated or analyzed. OT network activity is completely invisible from a cybersecurity perspective.</p>
+                        <ul>
+                            <li>No SIEM or centralized log aggregation</li>
+                            <li>OT network has zero intrusion detection or anomaly monitoring</li>
+                            <li>Log retention less than 30 days on most systems</li>
+                            <li>Top Practice: SITUATION-1a — Establish log collection and centralized monitoring for IT and OT systems</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Current MIL: 0</div>
+                </div>
+                <!-- RESPONSE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-response">🚨 RESPONSE — Event and Incident Response, Continuity</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">A draft IRP exists but has never been tested and contains no OT-specific content. No tabletop exercises have been conducted. TSA SD-02C 24-hour incident reporting requirements are not proceduralized. Service continuity plans do not address cyber scenarios.</p>
+                        <ul>
+                            <li>IRP never exercised — no tabletop or functional exercise history</li>
+                            <li>No OT incident runbooks or cyber-safety decision trees</li>
+                            <li>TSA 24-hour reporting not proceduralized</li>
+                            <li>Top Practice: RESPONSE-1b — Develop and exercise OT-specific incident response procedures including TSA reporting</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- THIRD-PARTIES -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-third">🏢 THIRD-PARTIES — Third-Party Risk Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">No third-party risk management program exists. Critical vendors (Emerson, MSP) hold administrative access without MFA, session recording, access time limits, or annual review. No vendor security requirements in contracts.</p>
+                        <ul>
+                            <li>No vendor cybersecurity risk assessment program</li>
+                            <li>Emerson remote SCADA access: no MFA, no recording, shared credential</li>
+                            <li>MSP holds domain admin — no security requirements in contract</li>
+                            <li>Top Practice: THIRD-1a — Establish a vendor access management policy with MFA and session monitoring requirements</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Current MIL: 0</div>
+                </div>
+                <!-- WORKFORCE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-work">👷 WORKFORCE — Workforce Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">Background checks are performed for new hires and annual safety training is mandatory, but no cybersecurity awareness training program exists. Control room operators have not received ICS security training. The TSA Cybersecurity Coordinator has no security certification.</p>
+                        <ul>
+                            <li>No cybersecurity awareness training — no phishing simulations</li>
+                            <li>Control room operators untrained on cyber incident indicators</li>
+                            <li>TSA Cybersecurity Coordinator lacks formal security training</li>
+                            <li>Top Practice: WORKFORCE-1a — Implement role-based cybersecurity awareness training including OT/ICS-specific content</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- ARCHITECTURE -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-arch">🏗️ ARCHITECTURE — Cybersecurity Architecture</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">A partial IT/OT segmentation boundary exists at HQ but is bypassed by WS-005 (dual-homed engineering workstation). Remote sites have no network boundary. Unmanaged switches at field sites create blind spots. SNMP community string "public" is widely deployed.</p>
+                        <ul>
+                            <li>IT/OT boundary at HQ bypassed by dual-homed workstation (WS-005)</li>
+                            <li>No IT/OT segmentation at remote compressor or M&amp;R sites</li>
+                            <li>11 unmanaged switches — no visibility, VLAN capability, or port security</li>
+                            <li>Top Practice: ARCHITECTURE-2a — Implement and enforce IT/OT network segmentation at all pipeline sites</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-1"></span> Current MIL: 1</div>
+                </div>
+                <!-- PROGRAM -->
+                <div class="domain-prep-card">
+                    <div class="dpc-header dpc-program">🗓️ PROGRAM — Cybersecurity Program Management</div>
+                    <div class="dpc-body">
+                        <p style="margin-bottom:0.6rem; color:#444; font-size:0.83rem;">No formal cybersecurity program exists. The TSA CIP was filed to meet regulatory requirements but lacks executive sponsorship, budget allocation, or a structured roadmap. Cybersecurity is treated as an IT function rather than an enterprise risk management priority.</p>
+                        <ul>
+                            <li>No cybersecurity budget line item — funded ad-hoc from IT budget</li>
+                            <li>No executive cybersecurity governance (no CISO, no security committee)</li>
+                            <li>TSA CIP filed but not operationalized as a program</li>
+                            <li>Top Practice: PROGRAM-1a — Establish executive-sponsored cybersecurity program with dedicated budget and governance structure</li>
+                        </ul>
+                    </div>
+                    <div class="dpc-mil-bar"><span class="mil-dot mil-0"></span> Current MIL: 0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 11 – EXERCISE DISCUSSION QUESTIONS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Section 11 &mdash; Exercise Discussion Questions</div>
+
+    <div class="section-card">
+        <div class="section-card-header collapsed" onclick="toggleSection(this)">
+            <span class="sec-icon">🎓</span>
+            <h2>Exercise Discussion Questions &amp; Scenario Injects</h2>
+            <span class="sec-tag">5 SCENARIOS</span>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-body hidden">
+            <div class="info-box info">
+                <strong>Scenario A — Spear-Phishing Targeting a Control Room Operator</strong>
+                A control room operator (Rosa Trevino) receives a convincing spear-phishing email appearing to come from Emerson Automation Solutions, asking her to click a link to "review and approve a scheduled SCADA maintenance window." The link installs credential-harvesting malware on her HMI workstation (WS-001). The malware attempts to move laterally to SRV-002 (SCADA application server) using her cached Windows credentials.<br><br>
+                <em>Discussion:</em> Walk through LSML's detection and response capability at each stage of this attack chain. What logging, monitoring, or alerting would catch this? What does the draft IRP require Rosa to do? How does the absence of MFA affect the blast radius? What C2M2 practices, if implemented, would have disrupted this attack?
+            </div>
+            <div class="info-box warning">
+                <strong>Scenario B — Unauthorized Firmware Change Discovered on a Field RTU</strong>
+                During a routine site visit, a field technician at the Pecos River Compressor Station notices that the Fisher ROC RTU (OT-009) is running firmware version 1.87, but LSML's informal asset spreadsheet shows version 1.86. The technician is unsure whether this was an authorized Emerson update or an unauthorized change. He calls Marcus Webb, who has no change log or configuration baseline to compare against.<br><br>
+                <em>Discussion:</em> What does LSML's change management process require in this situation — and what's missing? How would LSML determine whether this was an authorized vendor update or a compromise indicator? Which C2M2 domains are most directly implicated by this gap? What is the TSA SD-02C reporting obligation, if any?
+            </div>
+            <div class="info-box danger">
+                <strong>Scenario C — TSA Pipeline Security Compliance Audit (SD-02C)</strong>
+                TSA security inspectors arrive at Midland HQ for a scheduled SD-02C compliance audit. They request documentation of: (1) the Cybersecurity Implementation Plan, (2) network architecture diagrams showing IT/OT separation, (3) evidence of MFA deployment on OT systems and remote access, (4) incident reporting procedures and exercise records, and (5) the most recent vulnerability assessment of OT systems.<br><br>
+                <em>Discussion:</em> For each of the five documentation requests, assess LSML's ability to provide adequate evidence. Which items are likely to generate audit findings? What is the potential penalty exposure for non-compliance? Prioritize a 90-day remediation roadmap based on the most likely TSA findings.
+            </div>
+            <div class="info-box info">
+                <strong>Scenario D — Compressor Station PLC Stops Responding</strong>
+                At 2:15 AM, the SCADA master station (OT-001) loses communications with the Allen-Bradley ControlLogix PLC at the Odessa Compressor Station (OT-002). The compressor automatically trips to safe state per its Emergency Shutdown System (ESD) logic. The on-call control room operator (Bill Ferris) receives the SCADA alarm. He cannot determine whether the communication loss is due to a network equipment failure, a PLC hardware fault, or a cybersecurity incident.<br><br>
+                <em>Discussion:</em> How does LSML's current incident response capability support Bill's decision-making at 2:15 AM? What is the process for distinguishing a cyber event from a process safety or equipment failure? Who gets called and when? What are the TSA SD-02C implications if this turns out to be cyber-related? What OT monitoring capability would have provided earlier warning?
+            </div>
+            <div class="info-box warning">
+                <strong>Scenario E — Ransomware Encrypts the SCADA Historian</strong>
+                A ransomware variant encrypts SRV-003 (OSIsoft PI Historian, Windows Server 2012 R2 — EOL) and begins attempting to propagate to SRV-002 (SCADA application server). The historian becomes unavailable. SCADA real-time data continues to flow, but all historical process data is inaccessible and LSML cannot generate production reports, custody transfer accounting records, or PHMSA-required integrity management data.<br><br>
+                <em>Discussion:</em> Does LSML's BCP/DR plan cover this scenario? How long can LSML operate without historian data before regulatory and commercial obligations are affected? What is the recovery path — does LSML have tested backups of the PI historian? What is the containment strategy to prevent the ransomware from reaching SRV-002 (live SCADA)? Map this incident to the C2M2 RESPONSE domain practices and identify which are absent.
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Cybersecurity Capability Maturity Model (C2M2) Program</strong></p>
+        <p>Developed by the U.S. Department of Energy (DOE) Office of Cybersecurity, Energy Security, and Emergency Response (CESER)</p>
+        <p>C2M2 Version 2.1 | Training Case Study — Lone Star Midstream LLC (LSML)</p>
+        <p style="font-size: 0.85rem; margin-top: 1rem; opacity: 0.7;">All case study organizations, personnel, and data are entirely fictional and for educational use only.</p>
+        <div class="version-badge">🛢️ Oil &amp; Natural Gas Sector | TSA SD-02C | Permian Basin | March 2026</div>
+    </div>
+
+</div>
+
+<script>
+/* ── Section collapse / expand ── */
+function toggleSection(headerEl) {
+    const body = headerEl.nextElementSibling;
+    const icon = headerEl.querySelector('.toggle-icon');
+    if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        headerEl.classList.remove('collapsed');
+        icon.textContent = '▼';
+    } else {
+        body.classList.add('hidden');
+        headerEl.classList.add('collapsed');
+        icon.textContent = '▼';
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   COUNTER ANIMATION
+═══════════════════════════════════════════════════ */
+function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const duration = 1200;
+    const start = performance.now();
+    function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = target;
+    }
+    requestAnimationFrame(update);
+}
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            document.querySelectorAll('.count-anim').forEach(el => animateCounter(el));
+            observer.disconnect();
+        }
+    });
+}, { threshold: 0.3 });
+const statsRow = document.querySelector('.stats-row');
+if (statsRow) observer.observe(statsRow);
+
+/* ═══════════════════════════════════════════════════
+   EDIT MODE ENGINE
+═══════════════════════════════════════════════════ */
+const STORAGE_KEY = 'lsml_cs_v1';
+let editMode = false;
+
+function toggleEditMode() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    const btn = document.getElementById('editToggleBtn');
+    if (editMode) {
+        btn.textContent = '✅ Done Editing';
+        btn.classList.add('active');
+        enableEditing();
+    } else {
+        btn.textContent = '✏️ Edit Mode';
+        btn.classList.remove('active');
+        disableEditing();
+        saveToStorage();
+    }
+}
+
+/* ── Enable ── */
+function enableEditing() {
+
+    /* 1. Tables inside section-body: add delete column + Add Row button */
+    document.querySelectorAll('.section-body table').forEach(tbl => {
+        const headerRow = tbl.querySelector('thead tr');
+        if (headerRow && !headerRow.querySelector('th.del-col')) {
+            const th = document.createElement('th');
+            th.className = 'del-col';
+            headerRow.appendChild(th);
+        }
+        tbl.querySelectorAll('tbody tr').forEach(tr => {
+            tr.querySelectorAll('td:not(.del-col)').forEach(td => {
+                td.contentEditable = 'true';
+            });
+            if (!tr.querySelector('td.del-col')) {
+                const td = mkDelCell(() => tr.remove());
+                tr.appendChild(td);
+            }
+        });
+        if (!tbl.nextElementSibling || !tbl.nextElementSibling.classList.contains('add-row-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-row-btn';
+            btn.textContent = '＋ Add Row';
+            btn.onclick = () => addTableRow(tbl);
+            tbl.after(btn);
+        }
+    });
+
+    /* 2. List items: make editable + add delete buttons */
+    document.querySelectorAll('.section-body li, .dpc-body li').forEach(li => {
+        li.contentEditable = 'true';
+        if (!li.querySelector('.li-del-btn')) {
+            const btn = mkDelBtn(() => li.remove());
+            btn.classList.add('li-del-btn');
+            btn.contentEditable = 'false';
+            li.appendChild(btn);
+        }
+    });
+
+    /* 3. Add Item buttons after each UL */
+    document.querySelectorAll('.section-body ul, .dpc-body ul').forEach(ul => {
+        if (!ul.nextElementSibling || !ul.nextElementSibling.classList.contains('add-item-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-item-btn';
+            btn.textContent = '＋ Add Item';
+            btn.onclick = () => addListItem(ul);
+            ul.after(btn);
+        }
+    });
+
+    /* 4. Stat items: make label/value/sub editable + delete button */
+    document.querySelectorAll('.stat-item').forEach(item => {
+        item.querySelectorAll('.si-label, .si-value, .si-sub').forEach(el => {
+            el.contentEditable = 'true';
+        });
+        if (!item.querySelector('.si-del-btn')) {
+            const btn = mkDelBtn(() => item.remove());
+            btn.className += ' si-del-btn';
+            btn.contentEditable = 'false';
+            item.appendChild(btn);
+        }
+    });
+
+    /* 5. Add Stat button after the stat grid */
+    const statGrid = document.querySelector('.stat-grid');
+    if (statGrid && (!statGrid.nextElementSibling || !statGrid.nextElementSibling.classList.contains('add-stat-btn'))) {
+        const btn = document.createElement('button');
+        btn.className = 'add-stat-btn';
+        btn.textContent = '＋ Add Stat Item';
+        btn.onclick = addStatItem;
+        statGrid.after(btn);
+    }
+
+    /* 6. Info boxes: make editable + delete button */
+    document.querySelectorAll('.info-box').forEach(box => {
+        box.contentEditable = 'true';
+        if (!box.querySelector('.ib-del-btn')) {
+            const btn = mkDelBtn(() => box.remove());
+            btn.className += ' ib-del-btn';
+            btn.contentEditable = 'false';
+            box.appendChild(btn);
+        }
+    });
+
+    /* 7. Add Info Box buttons — one per section-body */
+    document.querySelectorAll('.section-body').forEach(body => {
+        if (!body.querySelector('.add-box-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-box-btn';
+            btn.textContent = '＋ Add Info Box';
+            btn.onclick = () => addInfoBox(btn);
+            body.appendChild(btn);
+        }
+    });
+
+    /* 8. Section headings editable */
+    document.querySelectorAll('.section-card-header h2, .section-body h3.sub-heading, .section-body .body-text, .dpc-header, .dpc-mil-bar').forEach(el => {
+        el.contentEditable = 'true';
+    });
+
+    /* 9. Network diagram editable */
+    document.querySelectorAll('.network-diagram').forEach(el => {
+        el.contentEditable = 'true';
+    });
+}
+
+/* ── Disable ── */
+function disableEditing() {
+
+    document.querySelectorAll('th.del-col, td.del-col').forEach(el => el.remove());
+    document.querySelectorAll('.add-row-btn, .add-item-btn, .add-stat-btn, .add-box-btn').forEach(el => el.remove());
+    document.querySelectorAll('.section-body tbody td[contenteditable]').forEach(td => td.removeAttribute('contenteditable'));
+    document.querySelectorAll('.li-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('li[contenteditable]').forEach(li => li.removeAttribute('contenteditable'));
+    document.querySelectorAll('.si-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.si-label[contenteditable], .si-value[contenteditable], .si-sub[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.querySelectorAll('.ib-del-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.info-box[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.querySelectorAll('.section-card-header h2[contenteditable], h3.sub-heading[contenteditable], .body-text[contenteditable], .dpc-header[contenteditable], .dpc-mil-bar[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    document.querySelectorAll('.network-diagram[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+}
+
+/* ── Helpers ── */
+function mkDelBtn(onClickFn) {
+    const btn = document.createElement('button');
+    btn.className = 'del-btn';
+    btn.textContent = '×';
+    btn.title = 'Delete';
+    btn.onclick = (e) => { e.stopPropagation(); onClickFn(); };
+    return btn;
+}
+
+function mkDelCell(onClickFn) {
+    const td = document.createElement('td');
+    td.className = 'del-col';
+    td.appendChild(mkDelBtn(onClickFn));
+    return td;
+}
+
+function addTableRow(tbl) {
+    const headerRow = tbl.querySelector('thead tr');
+    const dataCols = headerRow
+        ? [...headerRow.cells].filter(c => !c.classList.contains('del-col')).length
+        : 3;
+    const tr = document.createElement('tr');
+    for (let i = 0; i < dataCols; i++) {
+        const td = document.createElement('td');
+        td.contentEditable = 'true';
+        td.textContent = 'Click to edit';
+        tr.appendChild(td);
+    }
+    tr.appendChild(mkDelCell(() => tr.remove()));
+    tbl.querySelector('tbody').appendChild(tr);
+    tr.cells[0].focus();
+}
+
+function addListItem(ul) {
+    const li = document.createElement('li');
+    li.contentEditable = 'true';
+    li.textContent = 'New item — click to edit';
+    const btn = mkDelBtn(() => li.remove());
+    btn.classList.add('li-del-btn');
+    btn.contentEditable = 'false';
+    li.appendChild(btn);
+    ul.appendChild(li);
+    const range = document.createRange();
+    const textNode = li.firstChild;
+    if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        range.setStart(textNode, 0);
+        range.collapse(true);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+    li.focus();
+}
+
+function addStatItem() {
+    const grid = document.querySelector('.stat-grid');
+    if (!grid) return;
+    const item = document.createElement('div');
+    item.className = 'stat-item';
+    item.innerHTML =
+        '<div class="si-label" contenteditable="true">Label</div>' +
+        '<div class="si-value" contenteditable="true">Value</div>' +
+        '<div class="si-sub"  contenteditable="true">Sub-detail</div>';
+    const btn = mkDelBtn(() => item.remove());
+    btn.className += ' si-del-btn';
+    btn.contentEditable = 'false';
+    item.appendChild(btn);
+    grid.appendChild(item);
+    item.querySelector('.si-value').focus();
+}
+
+function addInfoBox(addBtn) {
+    const box = document.createElement('div');
+    box.className = 'info-box info';
+    box.contentEditable = 'true';
+    box.innerHTML = '<strong contenteditable="false">Heading</strong> Enter your text here.';
+    const delBtn = mkDelBtn(() => box.remove());
+    delBtn.className += ' ib-del-btn';
+    delBtn.contentEditable = 'false';
+    box.appendChild(delBtn);
+    addBtn.before(box);
+    box.focus();
+}
+
+/* ═══════════════════════════════════════════════════
+   PERSISTENCE
+═══════════════════════════════════════════════════ */
+function saveToStorage() {
+    try {
+        const container = document.querySelector('.container');
+        localStorage.setItem(STORAGE_KEY, container.innerHTML);
+    } catch(e) {
+        console.warn('localStorage save failed:', e);
+    }
+}
+
+function loadFromStorage() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            document.querySelector('.container').innerHTML = saved;
+        }
+    } catch(e) {}
+}
+
+function resetChanges() {
+    if (confirm('Reset all edits and restore the original case study?\n\nThis cannot be undone.')) {
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+        if (editMode) {
+            editMode = false;
+            document.body.classList.remove('edit-mode');
+        }
+        location.reload();
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════════════════ */
+function exportHTML() {
+    const wasEditing = editMode;
+    if (wasEditing) {
+        editMode = false;
+        document.body.classList.remove('edit-mode');
+        disableEditing();
+    }
+
+    const clone = document.documentElement.cloneNode(true);
+    const toolbar = clone.querySelector('.edit-toolbar');
+    if (toolbar) toolbar.remove();
+    const banner = clone.querySelector('.edit-banner');
+    if (banner) banner.remove();
+    clone.querySelector('body')?.classList.remove('edit-mode');
+
+    const blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'lsml-case-study.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+
+    if (wasEditing) {
+        editMode = true;
+        document.body.classList.add('edit-mode');
+        enableEditing();
+    }
+}
+
+/* ── Load saved state on page load ── */
+// loadFromStorage(); // Uncomment to auto-restore saved edits on load
+</script>
+</body>
+</html>
