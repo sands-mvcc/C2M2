@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study: Lakewood Community Bank | C2M2 Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1150px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 0.95rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+
+        /* ── Edit toolbar ── */
+        .edit-toolbar {
+            position: fixed; top: 1rem; right: 1rem; z-index: 999;
+            display: flex; gap: 0.5rem; flex-direction: column; align-items: flex-end;
+        }
+        .toolbar-btn {
+            background: rgba(26,35,126,0.92); color: white; border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.45rem 0.9rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer;
+            font-family: inherit; font-weight: 600; transition: all 0.2s; white-space: nowrap;
+            backdrop-filter: blur(4px);
+        }
+        .toolbar-btn:hover { background: #283593; border-color: rgba(255,255,255,0.4); }
+        .toolbar-btn.active { background: #3949ab; border-color: #3949ab; }
+
+        /* ── Page header ── */
+        .page-header {
+            background: rgba(255,255,255,0.97); border-radius: 16px; padding: 2.2rem 2rem;
+            margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .page-header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, #1a237e, #283593, #3949ab, #5c6bc0, #ffc107);
+        }
+        .page-header .org-label {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: #e8eaf6; border: 1px solid #c5cae9; color: #1a237e;
+            padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 0.82rem;
+            font-weight: 600; margin-bottom: 0.8rem;
+        }
+        .page-header h1 { font-size: 2.3rem; color: #1a3a4a; font-weight: 800; margin-bottom: 0.3rem; }
+        .page-header h1 span { color: #1a237e; }
+        .page-header .subtitle { font-size: 1.05rem; color: #666; font-weight: 300; margin-bottom: 1rem; }
+        .header-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .hbadge {
+            display: inline-block; padding: 0.28rem 0.8rem; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 700;
+        }
+        .hbadge-blue   { background: #d1ecf1; color: #0c5460; }
+        .hbadge-green  { background: #d4edda; color: #155724; }
+        .hbadge-yellow { background: #fff3cd; color: #856404; }
+        .hbadge-red    { background: #f8d7da; color: #721c24; }
+        .hbadge-indigo { background: #e8eaf6; color: #1a237e; }
+        .disclaimer {
+            margin-top: 1rem; padding: 0.6rem 1rem;
+            background: #fff8e1; border-left: 4px solid #ffc107;
+            border-radius: 6px; font-size: 0.8rem; color: #856404; text-align: left;
+        }
+
+        /* ── Stat bar ── */
+        .stat-bar {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.9rem; margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 12px; padding: 1.2rem 0.9rem; text-align: center;
+            color: white; backdrop-filter: blur(4px); transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card .snum { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+        .stat-card .slbl { font-size: 0.78rem; opacity: 0.85; margin-top: 0.3rem; }
+
+        /* ── Collapsible section cards ── */
+        .section-card {
+            background: rgba(255,255,255,0.97); border-radius: 14px;
+            margin-bottom: 1.5rem; box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.2rem 1.6rem; cursor: pointer; user-select: none;
+            border-bottom: 2px solid transparent; transition: background 0.2s;
+        }
+        .section-header:hover { background: #f3f4fc; }
+        .section-header.open { border-bottom-color: #1a237e; }
+        .section-header h2 {
+            font-size: 1.2rem; color: #1a3a4a; font-weight: 700;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .section-arrow { font-size: 0.8rem; color: #888; transition: transform 0.3s; }
+        .section-arrow.open { transform: rotate(180deg); }
+        .section-body { display: none; padding: 1.6rem; }
+        .section-body.open { display: block; }
+
+        /* ── General typography inside sections ── */
+        .section-body p { color: #555; line-height: 1.75; margin-bottom: 0.8rem; font-size: 0.93rem; }
+        .section-body h3 { font-size: 1.05rem; color: #1a3a4a; font-weight: 700; margin: 1.2rem 0 0.5rem; }
+        .section-body ul { padding-left: 1.4rem; color: #555; line-height: 1.85; font-size: 0.93rem; }
+        .section-body li { margin-bottom: 0.3rem; }
+
+        /* ── Info alert boxes ── */
+        .alert { border-radius: 8px; padding: 0.85rem 1.1rem; margin-bottom: 1rem; font-size: 0.88rem; line-height: 1.6; }
+        .alert-danger  { background: #fdf0f0; border-left: 4px solid #dc3545; color: #6b1c1c; }
+        .alert-warning { background: #fffbf0; border-left: 4px solid #ffc107; color: #7a5a00; }
+        .alert-info    { background: #f0f8ff; border-left: 4px solid #17a2b8; color: #0c4a56; }
+        .alert-success { background: #f0fff4; border-left: 4px solid #28a745; color: #1a4a2a; }
+        .alert-finance { background: #e8eaf6; border-left: 4px solid #1a237e; color: #1a237e; }
+        .alert strong { font-weight: 700; }
+
+        /* ── Tables ── */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-bottom: 1rem; }
+        .data-table th { background: #1a237e; color: white; padding: 0.65rem 0.9rem; text-align: left; font-weight: 600; }
+        .data-table td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #e8eaf6; color: #444; vertical-align: top; }
+        .data-table tr:nth-child(even) td { background: #f3f4fc; }
+        .data-table tr:hover td { background: #e8eaf6; }
+
+        /* ── Tags / status badges ── */
+        .tag { display: inline-block; padding: 0.18rem 0.6rem; border-radius: 12px; font-size: 0.74rem; font-weight: 700; margin: 1px; }
+        .tag-red    { background: #f8d7da; color: #721c24; }
+        .tag-yellow { background: #fff3cd; color: #856404; }
+        .tag-green  { background: #d4edda; color: #155724; }
+        .tag-blue   { background: #d1ecf1; color: #0c5460; }
+        .tag-gray   { background: #e2e8f0; color: #4a5568; }
+        .tag-purple { background: #e9d8fd; color: #553c9a; }
+        .tag-orange { background: #fde8d8; color: #7b3a10; }
+        .tag-indigo { background: #e8eaf6; color: #1a237e; }
+
+        /* ── Key metrics grid ── */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .metric-box {
+            background: linear-gradient(135deg, #f3f4fc, #e8eaf6);
+            border-radius: 10px; padding: 1.1rem; border-left: 4px solid #1a237e; text-align: center;
+        }
+        .metric-box .mnum { font-size: 2rem; font-weight: 800; color: #1a237e; }
+        .metric-box .mlbl { font-size: 0.82rem; color: #666; margin-top: 0.2rem; }
+
+        /* ── Network diagram ── */
+        .net-diagram {
+            background: #0a1520; border-radius: 12px; padding: 1.5rem;
+            font-family: 'Courier New', Courier, monospace; font-size: 0.78rem;
+            line-height: 1.8; overflow-x: auto; color: #a8d8ea;
+            border: 1px solid #1e3a4a;
+        }
+        .net-diagram .nd-title  { color: #9fa8da; font-weight: bold; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .net-diagram .nd-green  { color: #66bb6a; }
+        .net-diagram .nd-yellow { color: #ffca28; }
+        .net-diagram .nd-red    { color: #ef5350; }
+        .net-diagram .nd-blue   { color: #42a5f5; }
+        .net-diagram .nd-white  { color: #e0e0e0; }
+        .net-diagram .nd-cyan   { color: #26c6da; }
+        .net-diagram .nd-orange { color: #ffa726; }
+        .net-diagram .nd-indigo { color: #9fa8da; }
+        .net-diagram .nd-comment{ color: #546e7a; font-style: italic; }
+
+        /* ── C2M2 domain cards ── */
+        .domain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; }
+        .domain-card {
+            border-radius: 12px; padding: 1.2rem; border: 1px solid #c5cae9;
+            background: #f3f4fc; position: relative; overflow: hidden;
+        }
+        .domain-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        }
+        .dc-mil0::before { background: #dc3545; }
+        .dc-mil1::before { background: #ffc107; }
+        .dc-mil2::before { background: #17a2b8; }
+        .dc-mil3::before { background: #28a745; }
+        .domain-card h4 { font-size: 0.95rem; color: #1a3a4a; font-weight: 700; margin-bottom: 0.5rem; }
+        .domain-card p { font-size: 0.84rem; color: #666; line-height: 1.65; margin-bottom: 0.5rem; }
+        .domain-card ul { padding-left: 1.2rem; font-size: 0.82rem; color: #666; line-height: 1.7; }
+        .mil-badge {
+            display: inline-block; font-size: 0.72rem; font-weight: 700;
+            padding: 0.18rem 0.55rem; border-radius: 10px; margin-bottom: 0.5rem;
+        }
+        .mil-badge-0 { background: #f8d7da; color: #721c24; }
+        .mil-badge-1 { background: #fff3cd; color: #856404; }
+        .mil-badge-2 { background: #d1ecf1; color: #0c5460; }
+        .mil-badge-3 { background: #d4edda; color: #155724; }
+
+        /* ── Org chart ── */
+        .org-chart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+        .org-level { display: flex; justify-content: center; gap: 1rem; position: relative; margin-bottom: 0; flex-wrap: wrap; }
+        .org-box {
+            background: #1a3a4a; color: white; border-radius: 8px;
+            padding: 0.55rem 0.9rem; text-align: center; font-size: 0.8rem;
+            min-width: 130px; position: relative;
+        }
+        .org-box .oname { font-weight: 700; }
+        .org-box .otitle { opacity: 0.75; font-size: 0.72rem; margin-top: 0.15rem; }
+        .org-box.top  { background: #1a237e; }
+        .org-box.dir  { background: #283593; }
+        .org-box.staff{ background: #3949ab; font-size: 0.75rem; min-width: 110px; }
+        .org-connector { width: 2px; height: 20px; background: #1a237e; margin: 0 auto; }
+        .org-h-line { height: 2px; background: #1a237e; flex: 1; align-self: center; }
+
+        /* ── Exercise section ── */
+        .exercise-q { background: #f3f4fc; border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 0.8rem; }
+        .exercise-q strong { color: #1a237e; font-size: 0.93rem; }
+        .exercise-q p { margin-top: 0.3rem; color: #666; font-size: 0.88rem; line-height: 1.65; margin-bottom: 0; }
+        .inject-card {
+            border: 2px solid #dc3545; border-radius: 10px; padding: 1.2rem;
+            margin-bottom: 1rem; background: #fff8f8;
+        }
+        .inject-card .inject-title { color: #dc3545; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .inject-card p { font-size: 0.88rem; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+        .inject-card ul { font-size: 0.87rem; padding-left: 1.3rem; color: #555; line-height: 1.75; }
+
+        /* ── Vendor cards ── */
+        .vendor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .vendor-card {
+            border: 1px solid #c5cae9; border-radius: 10px; padding: 1.1rem;
+            background: #f3f4fc;
+        }
+        .vendor-card h4 { font-size: 0.92rem; font-weight: 700; color: #1a3a4a; margin-bottom: 0.3rem; }
+        .vendor-card .vendor-type { font-size: 0.75rem; color: #1a237e; font-weight: 600; margin-bottom: 0.5rem; }
+        .vendor-card ul { padding-left: 1.2rem; font-size: 0.82rem; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+
+        /* ── Editable mode ── */
+        [contenteditable="true"] { outline: 2px dashed #1a237e; border-radius: 4px; min-height: 1em; }
+        .edit-active [contenteditable] { background: rgba(26,35,126,0.04); }
+        .add-row-btn {
+            background: transparent; border: 2px dashed #1a237e; color: #1a237e;
+            padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+            font-size: 0.8rem; font-family: inherit; font-weight: 600; margin-top: 0.4rem;
+            transition: all 0.2s;
+        }
+        .add-row-btn:hover { background: #1a237e; color: white; }
+        .del-btn {
+            background: #dc3545; color: white; border: none; border-radius: 4px;
+            padding: 0.15rem 0.45rem; cursor: pointer; font-size: 0.72rem;
+            font-family: inherit; opacity: 0;
+        }
+        .edit-active .del-btn { opacity: 1; }
+        td:hover .del-btn { opacity: 1; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.1);
+            border-radius: 14px; color: white; margin-top: 1.5rem;
+        }
+        .footer p { font-size: 0.88rem; opacity: 0.85; margin-bottom: 0.3rem; }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .page-header h1 { font-size: 1.7rem; }
+            .stat-bar { grid-template-columns: repeat(2, 1fr); }
+            .domain-grid { grid-template-columns: 1fr; }
+            .edit-toolbar { display: none; }
+        }
+
+        @media print {
+            body { background: white; }
+            .edit-toolbar, .back-link { display: none; }
+            .section-body { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="casestudies.html" class="back-link">← Back to Case Studies</a>
+
+    <!-- Edit Toolbar -->
+    <div class="edit-toolbar">
+        <button class="toolbar-btn" id="editBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="toolbar-btn" onclick="exportHTML()">💾 Export HTML</button>
+        <button class="toolbar-btn" onclick="window.print()">🖨️ Print</button>
+        <button class="toolbar-btn" onclick="expandAll()">📂 Expand All</button>
+        <button class="toolbar-btn" onclick="collapseAll()">📁 Collapse All</button>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="org-label">🏦 C2M2 Program Portal — Financial Services Sector</div>
+        <h1>Lakewood Community <span>Bank</span></h1>
+        <p class="subtitle">OCC-Chartered Community Bank · Lakewood, Ohio · C2M2 v2.1 Training Case Study</p>
+        <div class="header-badges">
+            <span class="hbadge hbadge-indigo">🏦 Financial Services</span>
+            <span class="hbadge hbadge-yellow">FFIEC CAT · GLBA · PCI DSS</span>
+            <span class="hbadge hbadge-red">No Dedicated CISO</span>
+            <span class="hbadge hbadge-red">ATM EOL Systems</span>
+            <span class="hbadge hbadge-green">C2M2 v2.1 Assessment</span>
+        </div>
+        <div class="disclaimer">
+            ⚠️ <strong>Fictional Training Scenario.</strong> All organization names, personnel, IP addresses, routing numbers, vendor configurations, asset data, and operational details are entirely simulated for educational purposes. Any resemblance to real organizations, customers, or vendors is coincidental.
+        </div>
+    </div>
+
+    <!-- Stat Bar -->
+    <div class="stat-bar">
+        <div class="stat-card"><div class="snum">185</div><div class="slbl">FTE Employees</div></div>
+        <div class="stat-card"><div class="snum">7</div><div class="slbl">Branch Locations</div></div>
+        <div class="stat-card"><div class="snum">14</div><div class="slbl">ATM Units</div></div>
+        <div class="stat-card"><div class="snum">$620M</div><div class="slbl">Total Assets</div></div>
+        <div class="stat-card"><div class="snum">$28.4M</div><div class="slbl">Annual Net Revenue</div></div>
+        <div class="stat-card"><div class="snum">0</div><div class="slbl">Dedicated CISO</div></div>
+        <div class="stat-card"><div class="snum">6</div><div class="slbl">IT Staff FTE</div></div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         1. ORGANIZATION PROFILE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header open" onclick="toggleSection(this)">
+            <h2>🏢 Organization Profile</h2>
+            <span class="section-arrow open">▼</span>
+        </div>
+        <div class="section-body open">
+            <div class="metrics-grid">
+                <div class="metric-box"><div class="mnum">1958</div><div class="mlbl">Year Founded</div></div>
+                <div class="metric-box"><div class="mnum">$620M</div><div class="mlbl">Total Assets</div></div>
+                <div class="metric-box"><div class="mnum">$28.4M</div><div class="mlbl">Net Revenue</div></div>
+                <div class="metric-box"><div class="mnum">7</div><div class="mlbl">Branch Locations</div></div>
+            </div>
+
+            <h3>Background</h3>
+            <p><strong>Lakewood Community Bank (LCB)</strong> is an OCC-chartered national bank headquartered at 1450 Detroit Avenue, Lakewood, Ohio 44107. Founded in 1958 as Lakewood Savings &amp; Loan, LCB converted to a national bank charter in 1994 and has grown organically to serve Cuyahoga County's western suburbs. LCB offers retail and small business checking and savings, consumer and commercial lending, residential mortgage origination, and digital banking services through a Q2 ebanking platform. The bank is FDIC-insured, a member of the Federal Home Loan Bank of Cincinnati, and participates in the Ohio Financial Institutions Cybersecurity Coalition (OFICC).</p>
+            <p>LCB is governed by an 11-member Board of Directors with a Bank Secrecy Act/AML Committee and an Audit Committee. The President &amp; CEO reports to the Board. The bank employs 185 FTEs across retail, commercial, operations, and technology functions. Technology operations are managed by a CIO/IT Director, who also serves as the de facto Information Security Officer — LCB has no dedicated CISO. Cybersecurity responsibilities are shared informally between the IT Director (infrastructure/security tools), the Compliance Officer (GLBA/regulatory), and the Operations Manager (fraud/ACH).</p>
+
+            <h3>Regulatory &amp; Compliance Obligations</h3>
+            <p>LCB operates under the <strong>GLBA Safeguards Rule (16 CFR Part 314, revised 2023)</strong> as a financial institution, requiring a written information security program with specific technical controls including encryption, MFA, and access controls. The <strong>FFIEC IT Examination Handbook</strong> and the <strong>FFIEC Cybersecurity Assessment Tool (CAT)</strong> guide examination expectations from the OCC. As a PCI DSS merchant and service provider for card processing, LCB is classified as a <strong>Level 4 merchant</strong> under Visa/Mastercard rules. <strong>FinCEN BSA/AML</strong> requirements apply to all transactions. <strong>OCC Heightened Standards (12 CFR Part 30, Appendix D)</strong> apply to front-line risk management. The 2023 GLBA updates added a 30-day breach notification requirement to the primary federal regulator.</p>
+
+            <table class="data-table">
+                <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+                <tbody>
+                <tr><td>Legal Name</td><td>Lakewood Community Bank (LCB)</td></tr>
+                <tr><td>Charter</td><td>OCC National Bank Charter #22847</td></tr>
+                <tr><td>Headquarters</td><td>1450 Detroit Avenue, Lakewood, OH 44107</td></tr>
+                <tr><td>ABA Routing Number</td><td>042103889 (fictional)</td></tr>
+                <tr><td>FDIC Certificate</td><td>58341 (fictional)</td></tr>
+                <tr><td>Founded</td><td>1958 (as Lakewood Savings &amp; Loan; converted to national bank charter 1994)</td></tr>
+                <tr><td>Total Assets (FY2024)</td><td>$620 million</td></tr>
+                <tr><td>Total Deposits</td><td>$548 million</td></tr>
+                <tr><td>Net Revenue (FY2024)</td><td>$28.4 million</td></tr>
+                <tr><td>Tier 1 Capital Ratio</td><td>11.2% (well-capitalized per OCC standards)</td></tr>
+                <tr><td>Primary Regulator</td><td>Office of the Comptroller of the Currency (OCC)</td></tr>
+                <tr><td>Deposit Insurance</td><td>FDIC — insured to applicable limits</td></tr>
+                <tr><td>FFIEC CAT Maturity</td><td>Baseline (self-assessed, 2023)</td></tr>
+                <tr><td>Information Security Staff</td><td><span class="tag tag-red">1 IT Security Analyst (no dedicated CISO)</span></td></tr>
+                <tr><td>Annual IT Budget</td><td>$1.8M (~6.3% of revenue); cybersecurity sub-line: $142K</td></tr>
+                <tr><td>Cyber Insurance</td><td>$5M limit; AIG CyberEdge; last reviewed 2022</td></tr>
+                <tr><td>FS-ISAC Member</td><td>Yes — participant since 2021; Alert subscriber</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         2. BRANCH FACILITIES
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🏦 Branch Facilities &amp; Service Territory</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>LCB operates seven branch locations plus two drive-through-only satellite windows in western Cuyahoga County. The main office (FAC-01) houses the data center, wire room, and IT operations. All branches connect to FAC-01 via AT&amp;T MPLS (primary) with Comcast Business broadband (failover). Branch connectivity is managed through Cisco Meraki MX appliances at each location.</p>
+
+            <table class="data-table">
+                <thead><tr><th>Facility ID</th><th>Location</th><th>Type</th><th>ATMs</th><th>Employees</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>FAC-01</td><td>1450 Detroit Ave, Lakewood (Main Office)</td><td>Main Office + Branch</td><td>2 Diebold Nixdorf</td><td>62</td><td>Data center, wire room, vault, IT ops</td></tr>
+                <tr><td>FAC-02</td><td>12300 Madison Ave, Lakewood</td><td>Retail Branch</td><td>2 Diebold Nixdorf</td><td>18</td><td>Drive-through; high-traffic retail</td></tr>
+                <tr><td>FAC-03</td><td>25000 Center Ridge Rd, Westlake</td><td>Retail Branch</td><td>2 Diebold Nixdorf</td><td>22</td><td>New construction 2019; newest branch</td></tr>
+                <tr><td>FAC-04</td><td>4900 Rocky River Dr, Cleveland</td><td>Retail Branch</td><td>2 Diebold Nixdorf</td><td>19</td><td>Shared parking lot; older building</td></tr>
+                <tr><td>FAC-05</td><td>14500 Pearl Rd, Strongsville</td><td>Retail Branch</td><td>2 Diebold Nixdorf</td><td>21</td><td><span class="tag tag-yellow">Isolated Meraki connectivity issue (unresolved 60 days)</span></td></tr>
+                <tr><td>FAC-06</td><td>5800 Turney Rd, Garfield Heights</td><td>Retail Branch</td><td>1 Diebold Nixdorf</td><td>17</td><td>Lower-volume; 1 teller + platform staff</td></tr>
+                <tr><td>FAC-07</td><td>800 Crocker Rd, Westlake</td><td>Drive-Through + Vault</td><td>1 Diebold Nixdorf</td><td>8</td><td>Vault facility; limited IT footprint</td></tr>
+                <tr><td>DT-01</td><td>Clague Rd &amp; Westwood Dr, Westlake</td><td>Drive-Through Satellite</td><td>0</td><td>—</td><td>No on-site staff; Meraki camera only</td></tr>
+                <tr><td>DT-02</td><td>W 117th St &amp; Madison Ave, Lakewood</td><td>Drive-Through Satellite</td><td>0</td><td>—</td><td>No on-site staff; camera monitored</td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — ATM End-of-Life:</strong> 9 of 14 ATMs (FAC-01 through FAC-05 and FAC-07) are Diebold Nixdorf DN200 units running <strong>Windows 7 Embedded (EOL January 2020)</strong>. Diebold's extended support program for these units expired in Q3 2023. The three ATMs at FAC-03 and FAC-06 run Windows 10 IoT LTSC. Diebold has quoted $34,000 per unit for replacement — full fleet replacement would cost $306,000; budget has not been approved. These EOL ATMs connect to LCB's corporate LAN segment (not an isolated ATM network) and are managed via RealTime ATM Manager software on SRV-08.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         3. ORGANIZATIONAL STRUCTURE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>👥 Organizational Structure &amp; Staffing</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="org-chart">
+                <div class="org-level">
+                    <div class="org-box top"><div class="oname">Robert Halverson</div><div class="otitle">President &amp; CEO</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box dir"><div class="oname">Susan Park</div><div class="otitle">CFO</div></div>
+                    <div class="org-box dir"><div class="oname">David Reyes</div><div class="otitle">COO / Operations Mgr</div></div>
+                    <div class="org-box dir"><div class="oname">Kevin Merritt</div><div class="otitle">CIO / IT Director</div></div>
+                    <div class="org-box dir"><div class="oname">Patricia Greene</div><div class="otitle">Chief Lending Officer</div></div>
+                    <div class="org-box dir"><div class="oname">Angela Foster</div><div class="otitle">Compliance &amp; BSA Officer</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box staff"><div class="oname">IT Systems Admin (2 FTE)</div><div class="otitle">Reports to Kevin Merritt</div></div>
+                    <div class="org-box staff"><div class="oname">Help Desk (2 FTE)</div><div class="otitle">Reports to Kevin Merritt</div></div>
+                    <div class="org-box staff"><div class="oname">Jamie Walters</div><div class="otitle">IT Security Analyst</div></div>
+                    <div class="org-box staff"><div class="oname">Core Banking Admin (1 FTE)</div><div class="otitle">Reports to Kevin Merritt</div></div>
+                    <div class="org-box staff"><div class="oname">BSA/AML Analysts (2 FTE)</div><div class="otitle">Reports to Angela Foster</div></div>
+                </div>
+            </div>
+
+            <br>
+            <table class="data-table">
+                <thead><tr><th>Department</th><th>FTE</th><th>Cybersecurity Role / Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Retail Banking (all branches)</td><td>98</td><td>End users; annual security awareness training required</td></tr>
+                <tr><td>Lending / Mortgage</td><td>22</td><td>Handle PII, SSN, financial data — high-risk users for data exposure</td></tr>
+                <tr><td>Operations / ACH / Wire</td><td>14</td><td><span class="tag tag-red">Wire transfer initiators — BEC risk; dual-control only partially enforced</span></td></tr>
+                <tr><td>Finance / Accounting</td><td>9</td><td>Access to general ledger, payroll systems</td></tr>
+                <tr><td>IT Department</td><td>6</td><td><span class="tag tag-red">One security analyst (Jamie Walters); no certifications (CISSP/CISM/Security+)</span></td></tr>
+                <tr><td>Compliance / BSA</td><td>3</td><td>GLBA program owner; FFIEC CAT custodian; Angela Foster leads</td></tr>
+                <tr><td>Executive / Admin</td><td>6</td><td><span class="tag tag-yellow">CEO/CFO have admin-level email — high phishing / BEC risk</span></td></tr>
+                <tr><td>HR</td><td>4</td><td>Access to employee PII, W-2 data, payroll accounts</td></tr>
+                <tr><td>Facilities / Physical Security</td><td>8</td><td>Physical security; camera systems not integrated with IT</td></tr>
+                <tr><td>Marketing</td><td>5</td><td>Manage social media, website CMS; limited IT access</td></tr>
+                <tr><td><strong>TOTAL</strong></td><td><strong>185</strong></td><td></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warning">
+                <strong>Governance Gap — No Dedicated CISO:</strong> LCB has no dedicated Chief Information Security Officer (CISO). Kevin Merritt (CIO/IT Director) manages all technology operations and serves informally as Information Security Officer. The sole security-focused staff member is <strong>Jamie Walters (IT Security Analyst)</strong>, a 2-year employee with no formal cybersecurity certification (no CISSP, CISM, or Security+). The <strong>GLBA Safeguards Rule (2023)</strong> requires a "qualified individual" to oversee the information security program — the current dual-hat arrangement does not fully satisfy the rule's intent for a financial institution of LCB's complexity and asset size.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         4. IT ASSET INVENTORY
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>💻 Information Technology (IT) Assets</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <h3>Servers &amp; Core Infrastructure</h3>
+            <table class="data-table">
+                <thead><tr><th>Asset ID</th><th>Description</th><th>OS / Platform</th><th>Location</th><th>Status / Notes</th></tr></thead>
+                <tbody>
+                <tr><td>SRV-01</td><td>Jack Henry Silverlake Core Banking (Primary)</td><td>Windows Server 2019</td><td>FAC-01 Data Center</td><td><span class="tag tag-green">Production — patched current; managed by Jack Henry remote support</span></td></tr>
+                <tr><td>SRV-02</td><td>Jack Henry Silverlake Core Banking (DR/Failover)</td><td>Windows Server 2019</td><td>FAC-01 (isolated rack)</td><td><span class="tag tag-yellow">DR not tested in 18 months; failover process undocumented</span></td></tr>
+                <tr><td>SRV-03</td><td>Q2 ebanking Integration Middleware</td><td>Windows Server 2016</td><td>FAC-01 Data Center</td><td><span class="tag tag-red">Server 2016 mainstream support ended Oct 2025; patch lag ~4 months</span></td></tr>
+                <tr><td>SRV-04</td><td>Microsoft Active Directory / DNS / DHCP</td><td>Windows Server 2022</td><td>FAC-01 Data Center</td><td><span class="tag tag-green">Current; manages 210 domain accounts</span></td></tr>
+                <tr><td>SRV-05</td><td>Microsoft Exchange (on-prem email)</td><td>Exchange Server 2016</td><td>FAC-01 Data Center</td><td><span class="tag tag-red">Exchange 2016 EOL October 2025; migration to M365 planned but unfunded</span></td></tr>
+                <tr><td>SRV-06</td><td>File Server / Branch Shared Drives</td><td>Windows Server 2019</td><td>FAC-01 Data Center</td><td><span class="tag tag-yellow">No DLP controls; contains loan application PII and financial records</span></td></tr>
+                <tr><td>SRV-07</td><td>Backup Server (Veeam B&amp;R 12)</td><td>Windows Server 2022</td><td>FAC-01 Data Center</td><td><span class="tag tag-yellow">Backup integrity not tested since March 2024; offsite copy to Iron Mountain weekly</span></td></tr>
+                <tr><td>SRV-08</td><td>RealTime ATM Manager</td><td>Windows Server 2016</td><td>FAC-01 Data Center</td><td><span class="tag tag-red">ATM management server on corporate LAN — not isolated; EOL OS</span></td></tr>
+                <tr><td>SRV-09</td><td>Fiserv CheckFree ACH Processing</td><td>SaaS / Cloud (Fiserv-hosted)</td><td>Cloud</td><td><span class="tag tag-green">Fiserv-managed; SOC 2 Type II</span></td></tr>
+                <tr><td>SRV-10</td><td>Symitar Episys (Credit Union Division — legacy)</td><td>IBM iSeries AS/400</td><td>FAC-01 Data Center</td><td><span class="tag tag-red">Legacy platform from 2004 credit union merger; decommission delayed 3 years</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Workstations &amp; End-User Devices</h3>
+            <table class="data-table">
+                <thead><tr><th>Type</th><th>Count</th><th>OS</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Branch Teller Workstations</td><td>68</td><td>Windows 10 Pro (mixed build versions)</td><td><span class="tag tag-yellow">14 stations running build 21H1 (unsupported); MECM patching deployed but 22% non-compliant</span></td></tr>
+                <tr><td>Lending Officer Laptops</td><td>22</td><td>Windows 11 Pro</td><td><span class="tag tag-green">Current; BitLocker enabled; CrowdStrike agent installed</span></td></tr>
+                <tr><td>Operations / Wire Room Workstations</td><td>8</td><td>Windows 10 Pro</td><td><span class="tag tag-red">Wire transfer terminals — no MFA on Jack Henry Silverlake access</span></td></tr>
+                <tr><td>IT Staff Workstations</td><td>6</td><td>Windows 11 Pro</td><td><span class="tag tag-green">Admin systems; CrowdStrike + SentinelOne (pilot)</span></td></tr>
+                <tr><td>Executive Laptops</td><td>6</td><td>Windows 11 Pro / MacBook Pro</td><td><span class="tag tag-yellow">CEO and CFO use personal Apple iCloud accounts for some document storage</span></td></tr>
+                <tr><td>ATM Units (Windows 10 IoT)</td><td>5</td><td>Windows 10 IoT LTSC 2021</td><td><span class="tag tag-green">FAC-03 (2 units), FAC-06 (1 unit), FAC-07 (2 units) — current patching</span></td></tr>
+                <tr><td>ATM Units (Windows 7 EOL)</td><td>9</td><td>Windows 7 Embedded (EOL)</td><td><span class="tag tag-red">EOL Jan 2020; extended Diebold support expired Q3 2023; on corporate LAN (VLAN 1)</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Business Applications</h3>
+            <table class="data-table">
+                <thead><tr><th>Application</th><th>Vendor</th><th>Function</th><th>Risk Note</th></tr></thead>
+                <tbody>
+                <tr><td>Silverlake Core Banking</td><td>Jack Henry &amp; Associates</td><td>Core deposits, loans, GL</td><td><span class="tag tag-yellow">Remote admin access for Jack Henry support — access not time-limited; persistent VPN</span></td></tr>
+                <tr><td>Q2 ebanking</td><td>Q2 Holdings (SaaS)</td><td>Online / mobile banking (22,400 customers)</td><td><span class="tag tag-yellow">OAuth integration reviewed annually; Q2 SOC 2 Type II current; customer MFA optional only</span></td></tr>
+                <tr><td>Fiserv CheckFree</td><td>Fiserv (SaaS)</td><td>ACH origination / receiving</td><td><span class="tag tag-green">SOC 2 Type II; dual-control enforced by Fiserv platform</span></td></tr>
+                <tr><td>RealTime ATM Manager</td><td>Crane Payment Innovations</td><td>ATM fleet management</td><td><span class="tag tag-red">Admin console on corporate LAN; last security review 2020</span></td></tr>
+                <tr><td>Encompass (ICE Mortgage)</td><td>ICE Mortgage Technology (SaaS)</td><td>Mortgage origination</td><td><span class="tag tag-yellow">Stores SSN, income data; MFA not enforced for all users; external broker access</span></td></tr>
+                <tr><td>Jack Henry JHA PayCenter</td><td>Jack Henry (SaaS)</td><td>Debit/credit card processing</td><td><span class="tag tag-green">PCI DSS compliant per Visa/MC registry; QSA attestation 2023</span></td></tr>
+                <tr><td>Microsoft 365 (Business Premium)</td><td>Microsoft</td><td>Email, Teams, SharePoint</td><td><span class="tag tag-yellow">MFA enforced for IT/exec only; 140 branch staff accounts without MFA</span></td></tr>
+                <tr><td>Kronos Workforce Ready</td><td>UKG (SaaS)</td><td>HR / Payroll</td><td><span class="tag tag-yellow">Contains SSN, bank account data for all employees; MFA not enforced</span></td></tr>
+                <tr><td>Nessus Essentials</td><td>Tenable</td><td>Vulnerability scanning</td><td><span class="tag tag-red">Free version — no authenticated scanning; last scan 90 days ago; ATMs never scanned</span></td></tr>
+                <tr><td>EventLog Analyzer</td><td>ManageEngine</td><td>Log management / basic SIEM</td><td><span class="tag tag-red">Covers AD and firewall only; ATM logs, core banking logs not ingested; 1,400+ unreviewed alerts</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         5. CORE BANKING & PAYMENT SYSTEMS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>💳 Core Banking, Payment Systems &amp; ATM Infrastructure</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>LCB's payment and core banking infrastructure represents the highest-criticality technology environment — equivalent to OT/ICS systems in industrial sectors. Compromise of core banking, ACH origination, or wire transfer systems directly impacts customer funds, regulatory standing, and the bank's ability to continue operations. Unlike industrial OT systems, attacks on financial infrastructure can result in near-immediate, irreversible monetary loss.</p>
+
+            <table class="data-table">
+                <thead><tr><th>System</th><th>Platform</th><th>Function</th><th>Connectivity</th><th>Security Notes</th></tr></thead>
+                <tbody>
+                <tr>
+                    <td>Jack Henry Silverlake</td>
+                    <td>On-prem Windows Server 2019</td>
+                    <td>Core deposits, loans, GL, teller</td>
+                    <td>Internal LAN (VLAN 10) + Jack Henry VPN for remote support</td>
+                    <td><span class="tag tag-red">No MFA for teller access; Jack Henry support VPN persistent (always-on)</span></td>
+                </tr>
+                <tr>
+                    <td>ACH Origination</td>
+                    <td>Fiserv CheckFree (SaaS)</td>
+                    <td>ACH batches — payroll, bill pay, transfers</td>
+                    <td>Internet via encrypted HTTPS; Fiserv-managed</td>
+                    <td><span class="tag tag-green">Dual-control enforced; Fiserv-managed security; SOC 2 Type II</span></td>
+                </tr>
+                <tr>
+                    <td>Wire Transfer System</td>
+                    <td>Silverlake Wire Module + manual process</td>
+                    <td>Domestic wire transfers (avg $4.2M/day)</td>
+                    <td>Internal LAN (VLAN 10)</td>
+                    <td><span class="tag tag-red">Dual-control inconsistent — 3 of 8 high-value wires in Q4 2024 processed by single operator; no callback verification for new payees</span></td>
+                </tr>
+                <tr>
+                    <td>Debit/ATM Card Processing</td>
+                    <td>JHA PayCenter (SaaS)</td>
+                    <td>Debit card authorization, ATM switching</td>
+                    <td>Internet via encrypted API; JHA-managed</td>
+                    <td><span class="tag tag-green">PCI DSS compliant; QSA attestation current</span></td>
+                </tr>
+                <tr>
+                    <td>ATM Cash Management</td>
+                    <td>RealTime ATM Manager (on-prem)</td>
+                    <td>ATM monitoring, cash forecasting, remote control</td>
+                    <td>Corporate LAN (VLAN 1 — flat)</td>
+                    <td><span class="tag tag-red">ATM management on flat corporate network; no dedicated ATM VLAN; SRV-08 on VLAN 1</span></td>
+                </tr>
+                <tr>
+                    <td>Online/Mobile Banking</td>
+                    <td>Q2 ebanking (SaaS)</td>
+                    <td>Customer-facing digital banking (22,400 users)</td>
+                    <td>Internet-facing; Q2-hosted</td>
+                    <td><span class="tag tag-yellow">Q2 WAF in place; customer MFA = optional (not enforced); 31% of users have MFA disabled</span></td>
+                </tr>
+                <tr>
+                    <td>Mortgage Origination</td>
+                    <td>Encompass ICE (SaaS)</td>
+                    <td>Loan origination, docs, closings</td>
+                    <td>Internet HTTPS; ICE-managed</td>
+                    <td><span class="tag tag-yellow">Contains SSN, income data; 6 external realtors/brokers have access — no security review conducted</span></td>
+                </tr>
+                <tr>
+                    <td>Correspondent Banking</td>
+                    <td>FHLB Cincinnati + 2 correspondents</td>
+                    <td>Large-dollar transfers, liquidity</td>
+                    <td>FHLB-secure portal</td>
+                    <td><span class="tag tag-yellow">FHLB access credentials managed by CFO only — no succession plan; MFA enforced by FHLB portal</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — Wire Transfer Fraud Risk:</strong> LCB processes an average of <strong>$4.2 million in domestic wire transfers daily</strong>. The wire room has 3 operators and 1 supervisor. Review of Q4 2024 wire logs identified <strong>3 instances where high-value wires ($75,000 to $210,000) were released by a single operator</strong> without independent verification — a direct violation of LCB's own Wire Transfer Policy (Section 4.3) and FFIEC guidance on dual-control for wire operations. Additionally, LCB has <strong>no automated callback or out-of-band verification process for first-time wire payees</strong> — a known Business Email Compromise (BEC) attack vector specifically identified in FinCEN advisories targeting community bank wire rooms. A successful BEC attack could result in an unrecoverable wire loss within a single business day.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         6. NETWORK ARCHITECTURE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🌐 Network Architecture &amp; Communications</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <h3>Network Segments</h3>
+            <table class="data-table">
+                <thead><tr><th>VLAN</th><th>Name</th><th>Subnet</th><th>Systems</th><th>Security Notes</th></tr></thead>
+                <tbody>
+                <tr><td>VLAN 1</td><td>Corporate / Default</td><td>10.1.0.0/16</td><td>Workstations, ATM Manager (SRV-08), printers, 9 EOL ATMs</td><td><span class="tag tag-red">Flat default VLAN — ATMs and workstations share segment; no microsegmentation</span></td></tr>
+                <tr><td>VLAN 10</td><td>Core Banking</td><td>10.10.0.0/24</td><td>Silverlake servers (SRV-01/02), wire terminals, teller workstations</td><td><span class="tag tag-yellow">Core banking isolated but wire terminals share segment with general teller systems</span></td></tr>
+                <tr><td>VLAN 20</td><td>Management / IT</td><td>10.20.0.0/24</td><td>Server management, backup (SRV-07), IT admin</td><td><span class="tag tag-green">Restricted ACL; only IT staff can reach; best-controlled segment</span></td></tr>
+                <tr><td>VLAN 30</td><td>Branch Connectivity</td><td>10.30.x.0/24 (per branch)</td><td>Branch workstations, Meraki MX appliances</td><td><span class="tag tag-yellow">All branches route to FAC-01 via AT&amp;T MPLS; Meraki MX SD-WAN failover to Comcast</span></td></tr>
+                <tr><td>VLAN 40</td><td>Guest / Customer Wi-Fi</td><td>192.168.40.0/22</td><td>Customer lobby Wi-Fi (all branches)</td><td><span class="tag tag-green">Isolated — no route to corporate LAN; Meraki content filtering active</span></td></tr>
+                <tr><td>VLAN 50</td><td>VoIP</td><td>10.50.0.0/24</td><td>Cisco IP phones (all locations)</td><td><span class="tag tag-yellow">VoIP VLAN — call recording server logs not included in SIEM</span></td></tr>
+                <tr><td>ATM (proposed)</td><td>ATM Network</td><td>Not assigned</td><td>14 ATMs (planned isolation)</td><td><span class="tag tag-red">ATM isolation VLAN approved in 2022 network refresh — never implemented; ATMs remain on VLAN 1</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Logical Network Diagram</h3>
+            <div class="net-diagram">
+<span class="nd-title">LAKEWOOD COMMUNITY BANK — NETWORK ARCHITECTURE (FAC-01 CORE + BRANCH)</span>
+
+<span class="nd-white">                          INTERNET</span>
+<span class="nd-white">                             │</span>
+<span class="nd-white">              ┌──────────────┴──────────────┐</span>
+<span class="nd-indigo">              │   AT&T BGP (Primary WAN)     │</span>
+<span class="nd-yellow">              │   Comcast Business (Failover) │</span>
+<span class="nd-white">              └──────────────┬──────────────┘</span>
+<span class="nd-white">                             │</span>
+<span class="nd-green"> ┌───────────────────────────▼──────────────────────────────┐</span>
+<span class="nd-green"> │    FAC-01 Perimeter — Fortinet FortiGate 200F (HA Pair)  │</span>
+<span class="nd-green"> │    NGFW + IPS (Internet Edge) · FortiManager managed     │</span>
+<span class="nd-green"> └───────────────────────────┬──────────────────────────────┘</span>
+<span class="nd-white">                             │</span>
+<span class="nd-blue"> ┌───────────────────────────▼──────────────────────────────┐</span>
+<span class="nd-blue"> │       CORE SWITCH — Cisco Catalyst 9300 Stack            │</span>
+<span class="nd-blue"> └──┬──────────┬──────────┬──────────┬──────────────────────┘</span>
+<span class="nd-white">    │          │          │          │</span>
+<span class="nd-indigo"> [VLAN10]   [VLAN20]  [VLAN1⚠]  [VLAN30→Branches]</span>
+<span class="nd-indigo"> Core       IT Mgmt   FLAT!     AT&amp;T MPLS / Meraki MX</span>
+<span class="nd-indigo"> Banking    Server    Corp LAN  FAC-02 through FAC-07</span>
+<span class="nd-white">    │          │          │</span>
+<span class="nd-yellow"> [SRV-01]  [SRV-04]  [SRV-08 ATM Mgr] ← ON FLAT VLAN 1 ⚠</span>
+<span class="nd-yellow"> [SRV-02]  [SRV-07]  [9x ATM Win7 EOL] ← ON FLAT VLAN 1 ⚠</span>
+<span class="nd-red"> [Wire Rm]  [SRV-06]  [Workstations]   ← ALL ON SAME VLAN</span>
+<span class="nd-red"> [SRV-10]              [Printers]</span>
+<span class="nd-red"> iSeries AS/400</span>
+
+<span class="nd-comment">  ⚠ CRITICAL GAP: ATMs + ATM Manager server + corporate workstations</span>
+<span class="nd-comment">    share VLAN 1 — lateral movement path from EOL ATM to wire room</span>
+
+<span class="nd-cyan"> ┌─────────────────────────────────────────────────────────┐</span>
+<span class="nd-cyan"> │  BRANCH FAC-02 through FAC-07                           │</span>
+<span class="nd-cyan"> │  [Cisco Meraki MX] ←AT&amp;T MPLS→ FAC-01 Core             │</span>
+<span class="nd-cyan"> │    └── Branch workstations (VLAN 30 per branch)         │</span>
+<span class="nd-red"> │    └── ATMs → route to VLAN 1 corporate ⚠ not isolated  │</span>
+<span class="nd-cyan"> │    └── Guest Wi-Fi (VLAN 40 — isolated ✓)               │</span>
+<span class="nd-cyan"> └─────────────────────────────────────────────────────────┘</span>
+
+<span class="nd-indigo"> ┌─────────────────────────────────────────────────────────┐</span>
+<span class="nd-indigo"> │  EXTERNAL / VENDOR CONNECTIONS                          │</span>
+<span class="nd-indigo"> │  Jack Henry Support VPN (persistent / always-on) ⚠      │</span>
+<span class="nd-green"> │  Fiserv ACH (dedicated private circuit — encrypted ✓)   │</span>
+<span class="nd-green"> │  Q2 ebanking (AWS CloudFront / TLS 1.3 ✓)               │</span>
+<span class="nd-green"> │  FHLB Cincinnati correspondent portal ✓                 │</span>
+<span class="nd-indigo"> └─────────────────────────────────────────────────────────┘</span>
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Gap — ATM Network Isolation Failure:</strong> 9 of 14 ATMs connect to VLAN 1 (the flat corporate default VLAN) alongside employee workstations and the RealTime ATM Manager server (SRV-08). An ATM running Windows 7 EOL that is compromised would have direct network adjacency to workstations, the ATM management console, and — through permissive ACL rules — the core banking VLAN. This architecture creates a viable attack path from an ATM compromise to the wire transfer system. The planned "ATM isolation VLAN" approved in the 2022 network refresh was never implemented due to resource constraints. Firewall rules between VLAN 1 and VLAN 10 were last reviewed in February 2023.
+            </div>
+
+            <h3>Internet &amp; WAN Connectivity</h3>
+            <table class="data-table">
+                <thead><tr><th>Link</th><th>Carrier</th><th>Bandwidth</th><th>Purpose</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Primary WAN</td><td>AT&amp;T MPLS</td><td>100 Mbps</td><td>Branch MPLS + internet egress</td><td><span class="tag tag-green">SLA 99.9%; managed by AT&amp;T NOC</span></td></tr>
+                <tr><td>Backup WAN</td><td>Comcast Business</td><td>500 Mbps fiber</td><td>Internet failover; branch SD-WAN backup</td><td><span class="tag tag-yellow">Failover tested annually; last test Sept 2024 — passed; asymmetric bandwidth</span></td></tr>
+                <tr><td>Jack Henry Support VPN</td><td>Jack Henry &amp; Associates</td><td>Dedicated MPLS VPN</td><td>Core banking remote support (SRV-01/02)</td><td><span class="tag tag-red">Always-on persistent connection; no activity monitoring; 24/7 Jack Henry privileged access</span></td></tr>
+                <tr><td>Q2 ebanking CDN</td><td>Q2 Holdings / AWS CloudFront</td><td>SaaS</td><td>Online/mobile banking customer platform</td><td><span class="tag tag-green">Q2-managed; TLS 1.3; Q2 WAF active; LCB has no visibility into WAF events</span></td></tr>
+                <tr><td>Fiserv ACH</td><td>Fiserv private network</td><td>Dedicated circuit</td><td>ACH origination / receiving</td><td><span class="tag tag-green">Fiserv-managed dedicated circuit; encrypted; NACHA compliant</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         7. SECURITY CONTROLS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🔐 Security Controls &amp; Cybersecurity Posture</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="data-table">
+                <thead><tr><th>Control Domain</th><th>Tool / Capability</th><th>Coverage</th><th>Status &amp; Assessment</th></tr></thead>
+                <tbody>
+                <tr><td>Perimeter Firewall</td><td>Fortinet FortiGate 200F (HA pair)</td><td>Internet edge, DMZ, branch VPN</td><td><span class="tag tag-yellow">Deployed — firewall policy last reviewed Feb 2023; 28 overly-permissive rules; no NGFW application inspection enabled</span></td></tr>
+                <tr><td>Intrusion Detection / Prevention</td><td>FortiGate IPS (inline)</td><td>Internet edge only</td><td><span class="tag tag-red">IPS signatures 45 days behind; no east-west inspection between VLAN 1 and VLAN 10</span></td></tr>
+                <tr><td>Endpoint Detection &amp; Response (EDR)</td><td>CrowdStrike Falcon Prevent</td><td>Lending laptops, IT staff (28 agents)</td><td><span class="tag tag-red">NOT deployed on teller workstations, wire room terminals, ATM Manager server (SRV-08), or servers SRV-05/SRV-10</span></td></tr>
+                <tr><td>Antivirus (legacy)</td><td>Windows Defender (built-in)</td><td>Teller workstations, branch systems</td><td><span class="tag tag-yellow">Defender active; not centrally managed; 14 workstations on unsupported Windows 10 build</span></td></tr>
+                <tr><td>SIEM / Log Management</td><td>ManageEngine EventLog Analyzer</td><td>AD, Fortinet firewall, VPN</td><td><span class="tag tag-red">Free-tier deployment — ATM logs, core banking audit logs, ACH logs NOT ingested; 1,400+ unreviewed alerts in queue; no 24/7 monitoring</span></td></tr>
+                <tr><td>Multi-Factor Authentication</td><td>Microsoft Authenticator (M365)</td><td>M365 for IT + exec (46 accounts)</td><td><span class="tag tag-red">NOT enforced for: 140 branch M365 accounts, core banking (Silverlake) teller access, wire room terminals, Encompass mortgage platform, Kronos HR/payroll</span></td></tr>
+                <tr><td>Vulnerability Management</td><td>Tenable Nessus Essentials (free)</td><td>External IP scan only — no authenticated scan</td><td><span class="tag tag-red">Unauthenticated scans miss internal vulnerabilities; ATMs and core banking servers never scanned; last scan 90+ days ago</span></td></tr>
+                <tr><td>Email Security</td><td>Microsoft Defender for Office 365 (P1)</td><td>Exchange Online (M365)</td><td><span class="tag tag-yellow">Anti-phishing deployed; on-prem Exchange 2016 (SRV-05) not covered by Defender; SPF/DKIM configured, DMARC policy = "none" (not enforced)</span></td></tr>
+                <tr><td>Web Application Firewall</td><td>Q2 ebanking WAF (Q2-managed)</td><td>Online/mobile banking platform only</td><td><span class="tag tag-yellow">Q2 manages WAF for customer portal; LCB has no visibility into WAF alerts or logs</span></td></tr>
+                <tr><td>Privileged Access Management</td><td>None deployed</td><td>—</td><td><span class="tag tag-red">GAP — shared admin credentials used for server management; no PAM solution; Jack Henry support VPN has persistent privileged access</span></td></tr>
+                <tr><td>Data Loss Prevention</td><td>None deployed</td><td>—</td><td><span class="tag tag-red">GAP — loan application data, customer SSNs, and financial records can be copied to USB or personal email without restriction</span></td></tr>
+                <tr><td>Backup &amp; Recovery</td><td>Veeam B&amp;R 12 (SRV-07)</td><td>Silverlake DB, AD, file server</td><td><span class="tag tag-red">Backup integrity last tested March 2024; Iron Mountain weekly offsite; legacy iSeries (SRV-10) not covered by Veeam — manual tape backup only; RTO for Silverlake core never formally tested</span></td></tr>
+                <tr><td>Physical Security</td><td>Branch cameras + alarm monitoring</td><td>Branch lobbies, vault areas</td><td><span class="tag tag-yellow">Camera footage retained 30 days; FAC-01 server room badge access — no logging or audit trail of physical access events</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Summary Gap Assessment:</strong> LCB's cybersecurity control posture is assessed at FFIEC CAT Baseline with multiple gaps even at that level. The most critical financial risk vectors are: (1) <strong>wire fraud via BEC</strong> due to lack of out-of-band verification and inconsistent dual-control; (2) <strong>ATM compromise</strong> due to Windows 7 EOL units on flat corporate network with direct adjacency to the ATM Manager console; (3) <strong>core banking compromise</strong> due to persistent Jack Henry support VPN with no monitoring and no MFA on teller/wire access. A ransomware attack encrypting SRV-01 (Silverlake primary) would halt all teller transactions, ACH, and wire processing within minutes, with no tested RTO or recovery playbook.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         8. THIRD-PARTY RELATIONSHIPS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🤝 Third-Party Relationships &amp; Vendor Risk</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>LCB relies on a network of technology vendors and fintech partners for core banking, payments, digital banking, and IT services. The <strong>GLBA Safeguards Rule (16 CFR §314.4(f))</strong> requires financial institutions to select and oversee service providers that implement appropriate safeguards. LCB has executed vendor agreements with <strong>31 technology providers</strong>, but only 4 have been assessed for cybersecurity controls in the past 24 months. No vendors are subject to ongoing security monitoring or annual questionnaires.</p>
+
+            <div class="vendor-grid">
+                <div class="vendor-card">
+                    <h4>Jack Henry &amp; Associates</h4>
+                    <div class="vendor-type">Core Banking Vendor — Primary Technology Partner</div>
+                    <ul>
+                        <li>Silverlake core banking (on-prem, SRV-01/02)</li>
+                        <li>JHA PayCenter debit/card processing (SaaS)</li>
+                        <li>Dedicated remote support VPN (persistent, always-on)</li>
+                    </ul>
+                    <span class="tag tag-red">CRITICAL risk — persistent always-on VPN with privileged DB access; no session monitoring</span><br>
+                    <span class="tag tag-yellow">Contract: Active (2008, auto-renewing); SOC 2 Type II available but not reviewed by LCB in 3 years</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>Q2 Holdings</h4>
+                    <div class="vendor-type">Digital Banking Platform — SaaS</div>
+                    <ul>
+                        <li>Online banking platform (22,400 customers)</li>
+                        <li>Q2 mobile app; Q2 Biller (bill pay)</li>
+                        <li>Q2 Fraud Analytics (limited LCB visibility)</li>
+                    </ul>
+                    <span class="tag tag-yellow">MEDIUM risk — Q2 SOC 2 Type II reviewed 2024; customer MFA optional only; 31% of customers have MFA disabled</span><br>
+                    <span class="tag tag-green">Contract: Active (2021–2026); annual security review by Q2</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>Fiserv (CheckFree)</h4>
+                    <div class="vendor-type">ACH Processing — Payments Processor</div>
+                    <ul>
+                        <li>ACH origination/receiving — all business and consumer ACH</li>
+                        <li>NACHA-compliant dual-control enforced by platform</li>
+                        <li>Fiserv-managed hosted environment</li>
+                    </ul>
+                    <span class="tag tag-green">LOW risk — Fiserv-managed with dual-control enforced; SOC 2 Type II current; NACHA compliant</span><br>
+                    <span class="tag tag-green">Contract: Active; Fiserv PCI DSS Level 1 compliant</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>Diebold Nixdorf</h4>
+                    <div class="vendor-type">ATM Hardware &amp; Software Vendor</div>
+                    <ul>
+                        <li>14 ATM units (DN200 series — 9 on Windows 7 EOL)</li>
+                        <li>ATM hardware break-fix maintenance</li>
+                        <li>Remote diagnostics port on corporate LAN (VLAN 1)</li>
+                    </ul>
+                    <span class="tag tag-red">HIGH risk — 9 ATMs on Windows 7 EOL; extended support expired Q3 2023; no patch path without $34K/unit hardware replacement</span><br>
+                    <span class="tag tag-yellow">Contract: Active (break-fix only); no security assessment ever conducted</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>Apiture (Open Banking API)</h4>
+                    <div class="vendor-type">Fintech Integration Partner — Open Banking API</div>
+                    <ul>
+                        <li>Account aggregation API (Plaid alternative)</li>
+                        <li>Third-party app integrations for Q2 platform</li>
+                        <li>Access to customer account balance + transaction data</li>
+                    </ul>
+                    <span class="tag tag-red">HIGH risk — API accesses customer financial data; no security questionnaire completed; integration added 2022 with no formal vendor review; MFA not enforced for Apiture admin portal</span><br>
+                    <span class="tag tag-yellow">Contract: Active (month-to-month — no security provisions)</span>
+                </div>
+                <div class="vendor-card">
+                    <h4>NetSol Technologies (MSP)</h4>
+                    <div class="vendor-type">Managed IT Services — Help Desk &amp; Infrastructure Support</div>
+                    <ul>
+                        <li>Tier 1/2 help desk (business hours)</li>
+                        <li>Server patching (excludes Jack Henry systems)</li>
+                        <li>Branch Meraki appliance management</li>
+                    </ul>
+                    <span class="tag tag-red">HIGH risk — MSP has admin access to AD, SRV-04/SRV-06/SRV-07; last security assessment 2020; SOC 2 Type I only; MSP's own tools not reviewed</span><br>
+                    <span class="tag tag-red">Contract: Active; MSP subcontractors not tracked by LCB</span>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Gap — No TPRM Program:</strong> LCB has never completed a formal Third-Party Risk Management (TPRM) assessment for any of its 31 technology vendors. The Compliance Officer maintains a vendor contract spreadsheet, but no vendor has been assessed for cybersecurity controls, incident response capability, or subcontractor risk. The <strong>GLBA Safeguards Rule §314.4(f)</strong> requires covered financial institutions to select service providers based on their ability to maintain appropriate safeguards and oversee them through contract provisions and periodic monitoring. LCB's current approach — standard contracts with no security review — does not meet this requirement. The <strong>OCC's 2023 Third-Party Relationships guidance (OCC Bulletin 2023-17)</strong> further requires risk-based due diligence proportionate to the risk and criticality of the third-party relationship.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         9. POLICIES & GOVERNANCE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>📋 Policies, Governance &amp; Compliance</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <h3>Existing Policy Documents</h3>
+            <table class="data-table">
+                <thead><tr><th>Policy Name</th><th>Status</th><th>Last Reviewed</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Information Security Program (GLBA)</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>2021</td><td>Does not reflect 2023 GLBA Safeguards Rule updates; cloud services and remote work not addressed</td></tr>
+                <tr><td>Acceptable Use Policy</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>2020</td><td>Does not address mobile banking apps, personal cloud storage, or BYOD</td></tr>
+                <tr><td>Wire Transfer Policy</td><td><span class="tag tag-yellow">Exists — Weakly Enforced</span></td><td>2022</td><td>Dual-control required per policy; 3 violations identified in Q4 2024 wire log review; callback procedure not enforced</td></tr>
+                <tr><td>Incident Response Plan</td><td><span class="tag tag-yellow">Exists — Partial</span></td><td>January 2023</td><td>Covers general IT incidents; no ransomware-specific playbook; no defined escalation path for after-hours events; never tested via tabletop exercise</td></tr>
+                <tr><td>Business Continuity Plan</td><td><span class="tag tag-yellow">Exists — Partial</span></td><td>2022</td><td>Covers branch operations during IT outage; does not address core banking DR or ACH processing outage scenarios</td></tr>
+                <tr><td>Vendor / Third-Party Risk Policy</td><td><span class="tag tag-red">None</span></td><td>—</td><td>No formal TPRM policy; vendor contract spreadsheet maintained by Compliance Officer only</td></tr>
+                <tr><td>Data Classification Policy</td><td><span class="tag tag-red">None</span></td><td>—</td><td>No formal data classification; customer PII, NPI, and financial records treated uniformly with no tiering</td></tr>
+                <tr><td>Patch Management Policy</td><td><span class="tag tag-yellow">Exists — Weak</span></td><td>2021</td><td>Policy exists; ATM systems and vendor-managed servers explicitly exempted; no SLA for critical patches</td></tr>
+                <tr><td>Privileged Access Management Policy</td><td><span class="tag tag-red">None</span></td><td>—</td><td>Ad hoc shared admin credentials in use; no formal PAM policy or privileged account inventory</td></tr>
+                <tr><td>Password Policy</td><td><span class="tag tag-yellow">Exists — Minimal</span></td><td>2022</td><td>8-character minimum; no MFA requirement; password complexity rules only; no MFA mandate</td></tr>
+                <tr><td>Security Awareness Training Policy</td><td><span class="tag tag-yellow">Exists — Minimal</span></td><td>2022</td><td>Annual KnowBe4 training required; completion rate 78%; no phishing simulation program</td></tr>
+                <tr><td>Remote Access Policy</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>2020</td><td>Does not address persistent vendor VPN (Jack Henry); no time-limited access provisions for third parties</td></tr>
+                <tr><td>FFIEC CAT Assessment</td><td><span class="tag tag-yellow">Baseline — Self-Assessed</span></td><td>2023</td><td>Self-assessed at Baseline maturity level; not validated by OCC examiner; gaps in Cyber Risk Management and Oversight domain identified</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Regulatory Framework Summary</h3>
+            <table class="data-table">
+                <thead><tr><th>Framework / Regulation</th><th>Applicability</th><th>Current Compliance Status</th></tr></thead>
+                <tbody>
+                <tr><td>GLBA Safeguards Rule (16 CFR Part 314 — 2023)</td><td>Fully applicable — financial institution</td><td><span class="tag tag-red">At risk — 2023 rule updates (encryption, MFA, audit logging, TPRM) not fully implemented; annual Board report required</span></td></tr>
+                <tr><td>FFIEC IT Examination Handbook</td><td>Applicable — OCC examination standard</td><td><span class="tag tag-yellow">Self-assessed Baseline; gaps in Access Controls, Situational Awareness, and Third-Party Risk domains</span></td></tr>
+                <tr><td>OCC Heightened Standards (12 CFR Part 30, App D)</td><td>Applicable — OCC-chartered bank</td><td><span class="tag tag-yellow">Front-line risk management framework; IT risk appetite not formally defined or approved by Board</span></td></tr>
+                <tr><td>PCI DSS v4.0 (Level 4 Merchant)</td><td>Applicable — card processing</td><td><span class="tag tag-yellow">SAQ-D completed 2023; ATM EOL systems create cardholder data environment risk; QSA not engaged — self-assessment only</span></td></tr>
+                <tr><td>FinCEN BSA/AML (31 CFR Chapter X)</td><td>Fully applicable</td><td><span class="tag tag-green">BSA/AML program active; 2 BSA analysts; SAR/CTR filing current; no regulatory findings in last OCC exam</span></td></tr>
+                <tr><td>NACHA Operating Rules</td><td>Applicable — ACH originator/receiver</td><td><span class="tag tag-green">CheckFree/Fiserv manages platform compliance; dual-control enforced; no ACH violations reported</span></td></tr>
+                <tr><td>OCC Third-Party Relationships (Bulletin 2023-17)</td><td>Applicable — OCC guidance</td><td><span class="tag tag-red">TPRM program does not meet OCC 2023-17 expectations; no risk-tiered vendor due diligence process</span></td></tr>
+                <tr><td>CFPB Regulation E</td><td>Applicable — electronic fund transfers</td><td><span class="tag tag-yellow">Error resolution procedures documented; customer dispute SLA met in 2024</span></td></tr>
+                <tr><td>NY DFS 23 NYCRR 500</td><td>Not applicable — Ohio-domiciled, OCC charter</td><td>N/A — monitored for best practices only</td></tr>
+                <tr><td>C2M2 v2.1</td><td>Voluntary — assessment purpose</td><td><span class="tag tag-blue">No prior formal evaluation — this exercise is the first structured C2M2 assessment</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         10. C2M2 DOMAIN ASSESSMENT
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🎯 C2M2 Domain Assessment Preparation</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>The following summarizes pre-assessment findings for each of the 10 C2M2 v2.1 domains based on discovery interviews and documentation review. These ratings are <em>indicative</em> and serve as starting points for the assessment exercise. Participants should evaluate and challenge these preliminary findings during the exercise.</p>
+
+            <div class="domain-grid">
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>🗂️ ASSET — Asset, Change &amp; Configuration Mgmt</h4>
+                    <ul>
+                        <li>IT asset inventory maintained in spreadsheet (Excel) — 78% accurate by last audit</li>
+                        <li>No formal CMDB; server inventory maintained manually by IT Director</li>
+                        <li>ATM inventory in Diebold contract docs — no OS version, patch status, or network attributes</li>
+                        <li>Core banking servers tracked; SRV-10 (legacy iSeries) not in formal inventory</li>
+                        <li>No configuration baseline for network devices; Meraki auto-config only</li>
+                        <li>Software license inventory outdated — 14 applications not tracked</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil0">
+                    <span class="mil-badge mil-badge-0">Indicative: MIL 0</span>
+                    <h4>🛡️ THREAT — Threat &amp; Vulnerability Mgmt</h4>
+                    <ul>
+                        <li>FS-ISAC membership (2021) — alerts received but not acted upon systematically</li>
+                        <li>Tenable Nessus Essentials (unauthenticated) — last scan 90+ days ago</li>
+                        <li>No formal vulnerability prioritization process; ATMs never scanned</li>
+                        <li>Vendor security bulletins (Diebold ATM advisories) not tracked</li>
+                        <li>No threat intelligence platform or IOC sharing program</li>
+                        <li>9 ATMs with Windows 7 EOL: CVE count in the hundreds; no compensating controls documented</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>⚖️ RISK — Risk Management</h4>
+                    <ul>
+                        <li>Annual GLBA Information Security Risk Assessment performed by Compliance Officer</li>
+                        <li>Risk register in spreadsheet — 19 open items; limited remediation tracking</li>
+                        <li>Wire transfer fraud risk identified but not formally risk-accepted or mitigated</li>
+                        <li>Board has never received a formal cybersecurity risk briefing</li>
+                        <li>Cyber insurance $5M limit; coverage not reviewed against current risk profile since 2022</li>
+                        <li>No formal risk acceptance process; ATM EOL risk informally deferred by CEO</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>🔑 ACCESS — Identity &amp; Access Mgmt</h4>
+                    <ul>
+                        <li>Active Directory manages 210 domain accounts</li>
+                        <li>MFA enforced only for IT staff and executives (46 of 185 users)</li>
+                        <li>Core banking (Silverlake) accessed via username + password only — no MFA for 139 teller/wire operators</li>
+                        <li>Wire room terminals: no MFA, no session timeout enforcement, shared login reported at FAC-04</li>
+                        <li>Jack Henry support VPN: persistent privileged access — no time limitation, no activity monitoring</li>
+                        <li>7 terminated employee accounts not disabled within 24 hours per policy (Q4 2024 HR audit finding)</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil0">
+                    <span class="mil-badge mil-badge-0">Indicative: MIL 0</span>
+                    <h4>👁️ SITUATE — Situational Awareness</h4>
+                    <ul>
+                        <li>ManageEngine EventLog Analyzer covers AD + firewall only — no core banking, ATM, or ACH logs</li>
+                        <li>No 24/7 Security Operations Center or after-hours monitoring</li>
+                        <li>1,400+ unacknowledged alerts in EventLog Analyzer queue</li>
+                        <li>No network traffic analysis (NTA); no behavioral analytics</li>
+                        <li>FS-ISAC threat intel not correlated with internal log data</li>
+                        <li>No visibility into Jack Henry VPN activity or Q2 ebanking platform security events</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>🚨 RESPONSE — Event &amp; Incident Response</h4>
+                    <ul>
+                        <li>Incident Response Plan exists (Jan 2023) — covers general IT incidents</li>
+                        <li>No ransomware-specific playbook or wire fraud response procedure</li>
+                        <li>No IR retainer with external forensics or incident response firm</li>
+                        <li>No tabletop exercise ever conducted</li>
+                        <li>After-hours escalation path undefined — IT Director is sole on-call contact</li>
+                        <li>No documented RTO/RPO for core banking system (Silverlake)</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil0">
+                    <span class="mil-badge mil-badge-0">Indicative: MIL 0</span>
+                    <h4>🤝 THIRD-PARTIES — Third-Party Risk Mgmt</h4>
+                    <ul>
+                        <li>31 technology vendors — 0 cybersecurity assessments in past 24 months</li>
+                        <li>Jack Henry VPN: persistent privileged access, no monitoring, no time-bound sessions</li>
+                        <li>Diebold: EOL ATM hardware, no security review in 4+ years</li>
+                        <li>Apiture fintech API: no security questionnaire; month-to-month contract, no security provisions</li>
+                        <li>NetSol MSP: admin access to AD and 3 servers; last review 2020; SOC 2 Type I only</li>
+                        <li>No TPRM policy; no vendor risk tiering; no incident notification SLA in any contract</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>👷 WORKFORCE — Workforce Management</h4>
+                    <ul>
+                        <li>Annual security awareness training (KnowBe4) — 78% completion rate</li>
+                        <li>No phishing simulation program</li>
+                        <li>Wire room operators not trained on BEC / social engineering tactics</li>
+                        <li>Background checks conducted at hire; no periodic re-screening</li>
+                        <li>IT Security Analyst (Jamie Walters) has no formal cybersecurity certification</li>
+                        <li>No cybersecurity roles defined in HR job descriptions for non-IT staff</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>🏗️ ARCH — Cybersecurity Architecture</h4>
+                    <ul>
+                        <li>Perimeter firewall (FortiGate 200F) deployed — policy stale since Feb 2023</li>
+                        <li>ATMs on flat corporate VLAN 1 with workstations — no segmentation despite 2022 network refresh plan</li>
+                        <li>No microsegmentation; lateral movement path from compromised ATM to core banking VLAN via permissive ACL</li>
+                        <li>Legacy iSeries (SRV-10) connected to corporate LAN for file transfers — isolated rack but routable</li>
+                        <li>DMARC policy = "none" — email spoofing of lcbankohio.com domain fully possible</li>
+                        <li>No encryption-at-rest verification for SRV-06 file server (contains loan application PII, NPI)</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">Indicative: MIL 1</span>
+                    <h4>📋 PROGRAM — Cybersecurity Program Mgmt</h4>
+                    <ul>
+                        <li>No dedicated CISO; CIO/IT Director serves informally as Information Security Officer</li>
+                        <li>IT budget $1.8M (6.3% of revenue); cybersecurity sub-line $142K — below FS-ISAC peer benchmarks</li>
+                        <li>GLBA Information Security Program last updated 2021 — does not reflect 2023 rule updates</li>
+                        <li>Board has never received a cybersecurity briefing or approved a risk appetite statement</li>
+                        <li>No formal cybersecurity strategic plan or multi-year roadmap</li>
+                        <li>FFIEC CAT self-assessed at Baseline (2023); not validated externally by OCC or independent assessor</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         11. EXERCISE QUESTIONS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>✏️ Exercise Discussion Questions &amp; Scenario Injects</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Assessment Questions</h3>
+
+            <div class="exercise-q">
+                <strong>Q1 — Asset Management (ASSET domain):</strong>
+                <p>LCB's IT asset inventory is maintained in a spreadsheet that is 78% accurate and does not include OS versions or network attributes for ATMs. Using C2M2 ASSET domain practices, design a minimum-viable asset inventory for a community bank. What data elements are critical for financial sector cyber risk management? What is the business case for deploying an automated asset discovery tool in a 185-employee bank? How do ATMs and payment terminals create unique asset management challenges under PCI DSS cardholder data environment requirements?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q2 — Identity &amp; Access (ACCESS domain):</strong>
+                <p>Core banking access (Silverlake) uses username and password only for 139 teller and wire operators. The wire room has documented instances of shared credentials. How does C2M2 ACCESS domain guidance apply to a bank's teller access model? What MFA approaches are compatible with high-volume teller transaction workflows? How do you address the tension between operational efficiency and FFIEC examination expectations for strong authentication on systems that process customer financial transactions?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q3 — Wire Transfer Fraud (THIRD-PARTIES / RESPONSE domains):</strong>
+                <p>LCB processes $4.2M in daily wire transfers. Three high-value wires in Q4 2024 were processed by a single operator in violation of LCB's own dual-control policy. LCB has no callback verification process for first-time wire payees. Business Email Compromise (BEC) targeting community bank wire rooms is FinCEN's most frequently reported fraud type for financial institutions. Design a wire transfer security framework for LCB that addresses: dual-control enforcement, new payee verification, out-of-band callback procedures, and wire room staff training. Which C2M2 domains are most relevant to wire fraud prevention, and which specific practices apply?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q4 — ATM Security (ARCH / ASSET domains):</strong>
+                <p>9 of 14 LCB ATMs run Windows 7 Embedded (EOL since January 2020) on the same VLAN as employee workstations. Replacing all EOL units would cost $306,000 — budget has not been approved. Using C2M2 ARCH and ASSET domain practices, develop a compensating controls strategy for EOL ATM systems. What network isolation controls, enhanced monitoring requirements, and formal risk acceptance documentation would the OCC expect? At what point does a compensating controls approach become untenable from a regulatory standpoint, and what arguments should Kevin Merritt make to the Board to approve hardware replacement?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q5 — Third-Party Risk (THIRD-PARTIES domain):</strong>
+                <p>Jack Henry has a persistent always-on VPN with privileged access to the Silverlake core banking database. LCB has not reviewed Jack Henry's security posture in 3 years. The Apiture fintech API accesses customer account data under a month-to-month contract with no security provisions. Using C2M2 THIRD-PARTIES practices and OCC Bulletin 2023-17, build a vendor risk tiering model for LCB. Which 5 vendors represent the highest risk and why? What contractual security provisions should LCB require in all technology vendor agreements going forward?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q6 — Situational Awareness (SITUATE domain):</strong>
+                <p>LCB's SIEM (ManageEngine EventLog Analyzer) covers only AD and the perimeter firewall. Core banking audit logs, ATM transaction logs, and ACH processing logs are not ingested. The 1,400+ unreviewed alert backlog means active threats may have gone undetected for months. Construct a prioritized logging and monitoring strategy for LCB given its 6-person IT team. What is the minimum viable SIEM use case set for a community bank processing daily wire transfers? Should LCB pursue a co-managed SIEM or a financial sector-specific MSSP, and what should a community bank require in an FS-sector managed security services contract?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q7 — Program Management (PROGRAM domain):</strong>
+                <p>The LCB Board of Directors has never received a cybersecurity briefing and has not approved a risk appetite statement. Kevin Merritt (CIO) manages security responsibilities alongside all IT operations. The cybersecurity budget of $142K is below FS-ISAC peer benchmarks for institutions of LCB's asset size ($620M). Using C2M2 PROGRAM domain practices, what governance changes would establish a minimum viable financial institution cybersecurity program? Draft the key elements of a Board-level cybersecurity risk briefing appropriate for community bank directors focused primarily on lending, deposits, and regulatory safety-and-soundness — with no technical background.</p>
+            </div>
+
+            <hr style="margin: 1.5rem 0; border-color: #c5cae9;">
+
+            <h3>Scenario Injects (Optional Tabletop Extensions)</h3>
+
+            <div class="inject-card">
+                <div class="inject-title">🚨 Inject A — "Ghost Wire": Business Email Compromise Attack</div>
+                <p><strong>Scenario:</strong> On a Monday morning, Operations Manager David Reyes receives what appears to be an urgent email from Chief Lending Officer Patricia Greene (patricia.greene@lcbankohio.com — domain spoofed; LCB's DMARC policy is "none"). The email instructs the wire room to process an emergency $187,500 wire to a new payee (Riverside Holdings LLC, routing to a Lithuania correspondent bank) for "construction loan funding — time-sensitive, do not delay." A wire operator processes the wire using the standard workflow — no dual-control verification, no callback to the CLO. The wire clears Fedwire at 9:47 AM. At 10:15 AM, Patricia Greene calls David Reyes asking about a loan document — she never sent any wire instruction.</p>
+                <ul>
+                    <li>What immediate containment actions are possible once the fraudulent wire is identified? What is the Fedwire/SWIFT recall process and its typical success rate after the wire has cleared?</li>
+                    <li>Which specific policy violations and control gaps enabled this attack? Which C2M2 domains are directly implicated?</li>
+                    <li>LCB's DMARC policy is "none" — how does this enable email domain spoofing? What SPF/DKIM/DMARC configuration should LCB implement, and what is the implementation cost and timeline?</li>
+                    <li>What FinCEN Suspicious Activity Report (SAR) filing obligations exist for a confirmed BEC wire fraud event? What is the filing timeline?</li>
+                    <li>How should LCB redesign its wire transfer workflow — including technological and procedural controls — to prevent recurrence without unacceptably slowing legitimate wire operations?</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">💻 Inject B — ATM Jackpotting Attack Discovery</div>
+                <p><strong>Scenario:</strong> At 2:30 AM Saturday, an after-hours email alert from ManageEngine EventLog Analyzer fires to IT Director Kevin Merritt — flagging unusual outbound traffic from the VLAN 1 segment. Kevin is asleep and doesn't see the alert until 7:00 AM. By then, ATM transaction logs (reviewed Monday after the branch manager reports empty cassettes) show that ATMs FAC-02-ATM-01 and FAC-04-ATM-01 — both Windows 7 EOL units — dispensed their entire cash cassettes ($48,000 combined) between 2:15 and 2:45 AM. Physical inspection shows no signs of forced entry or card skimming. The ATMs' Windows 7 event logs show a remote RDP connection from an internal IP (10.1.18.42 — SRV-08, the RealTime ATM Manager server) exactly 11 minutes before the cash-out sequence began.</p>
+                <ul>
+                    <li>What does this attack chain suggest about how the attacker moved from initial network access to ATM jackpotting? Which specific network architecture gap enabled lateral movement from initial access to the ATM Manager console to the ATMs?</li>
+                    <li>LCB had no 24/7 monitoring. What is the minimum after-hours monitoring capability a community bank processing daily ATM cash should maintain? What would the after-hours SOC model cost?</li>
+                    <li>What evidence preservation steps must occur before systems are remediated? Who leads the forensic investigation — LCB IT staff, the MSP (NetSol), or an external firm?</li>
+                    <li>What OCC notification obligations apply following a significant operational incident involving customer fund loss? What is the reporting timeline under GLBA §314.6?</li>
+                    <li>Which three specific C2M2 domain gaps most directly enabled this incident? For each, identify the specific practice that was not in place.</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">🔗 Inject C — Core Banking Vendor Breach (Jack Henry Supply Chain)</div>
+                <p><strong>Scenario:</strong> On a Thursday afternoon, Jack Henry &amp; Associates issues a security notice to all Silverlake clients: a threat actor exploited a vulnerability in the Jack Henry remote support VPN infrastructure and gained unauthorized access to client environments through persistent support VPN sessions. Jack Henry cannot confirm which specific client environments were accessed or what data may have been exfiltrated. Jack Henry's own log retention covers only the last 21 days. LCB's Jack Henry support VPN has been always-on and unmonitored for 3 years. That VPN session has privileged access to the Silverlake core banking database — which contains account numbers, SSNs, balances, and transaction history for all 22,400 LCB customers.</p>
+                <ul>
+                    <li>What are LCB's immediate containment actions? How do you terminate the Jack Henry VPN without disrupting Silverlake core banking operations during active business hours — and what are the operational consequences if you cannot?</li>
+                    <li>Under <strong>GLBA §314.6 (2023 Safeguards Rule)</strong>, LCB must notify its primary federal regulator (OCC) within 30 days of becoming aware of a notifiable event. Does this incident trigger that requirement? Who at LCB prepares the OCC notification, and what must it contain?</li>
+                    <li>What customer notification obligations apply under GLBA and applicable state breach notification law (<strong>Ohio Rev. Code §1349.19</strong>)? What triggers the notification clock — the Jack Henry notice, or LCB's own investigation conclusion?</li>
+                    <li>How do you assess the scope of potential data exposure given that Jack Henry's logs only go back 21 days and LCB has no monitoring of VPN session activity?</li>
+                    <li>What contractual provisions should LCB have required in the Jack Henry agreement that would have limited this risk? Which specific C2M2 THIRD-PARTIES practices would have provided early warning or reduced exposure?</li>
+                </ul>
+            </div>
+
+            <hr style="margin: 1.5rem 0; border-color: #c5cae9;">
+
+            <h3>Remediation Planning Exercise</h3>
+            <p><strong>Constraints:</strong> LCB's Board has approved a one-time cybersecurity improvement budget of <strong>$175,000 (FY2025 supplemental)</strong>. Kevin Merritt must present a prioritized remediation roadmap at the next Board meeting. The roadmap must identify <strong>Quick Wins (0–90 days, low-cost)</strong>, <strong>Short-Term actions (90 days – 1 year)</strong>, and <strong>Strategic investments (1–3 years)</strong>. The 6-person IT team cannot absorb more than 15 hours/week of new project work above BAU. ATM hardware replacement ($306K for all 9 EOL units) is <em>not</em> included in this budget cycle.</p>
+            <ul>
+                <li>Which three security gaps represent the highest financial and regulatory risk to LCB and its customers, and should be addressed first regardless of cost?</li>
+                <li>Assign rough cost estimates and implementation effort levels to the top 10 remediation items. Identify which can be accomplished within the $175,000 budget.</li>
+                <li>What is the business case for engaging an MSSP (Managed Security Services Provider) specialized in community banking? What should LCB require in a community bank MSSP contract — and how does MSSP cost compare to hiring a dedicated CISO?</li>
+                <li>How would implementing DMARC enforcement (p=reject) affect LCB's BEC exposure, and what is the realistic implementation cost and timeline? Why is this a high-value Quick Win?</li>
+                <li>How do you communicate cybersecurity risk and the strategic need for a dedicated CISO to a community bank Board that is primarily focused on net interest margin, loan growth, and OCC examination ratings?</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>🏦 Lakewood Community Bank — C2M2 v2.1 Training Case Study | Fictional Scenario</p>
+        <p style="opacity: 0.65; font-size: 0.8rem;">All data is simulated for educational use. Not for operational or compliance purposes.</p>
+    </div>
+
+</div><!-- end .container -->
+
+<script>
+    // ── Section toggle ──
+    function toggleSection(header) {
+        const body = header.nextElementSibling;
+        const arrow = header.querySelector('.section-arrow');
+        const isOpen = body.classList.contains('open');
+        body.classList.toggle('open', !isOpen);
+        body.style.display = isOpen ? 'none' : 'block';
+        arrow.classList.toggle('open', !isOpen);
+        header.classList.toggle('open', !isOpen);
+    }
+
+    function expandAll() {
+        document.querySelectorAll('.section-body').forEach(b => {
+            b.style.display = 'block'; b.classList.add('open');
+        });
+        document.querySelectorAll('.section-arrow').forEach(a => a.classList.add('open'));
+        document.querySelectorAll('.section-header').forEach(h => h.classList.add('open'));
+    }
+
+    function collapseAll() {
+        document.querySelectorAll('.section-body').forEach(b => {
+            b.style.display = 'none'; b.classList.remove('open');
+        });
+        document.querySelectorAll('.section-arrow').forEach(a => a.classList.remove('open'));
+        document.querySelectorAll('.section-header').forEach(h => h.classList.remove('open'));
+    }
+
+    // ── Edit mode ──
+    let editMode = false;
+    function toggleEditMode() {
+        editMode = !editMode;
+        document.body.classList.toggle('edit-active', editMode);
+        const btn = document.getElementById('editBtn');
+        btn.textContent = editMode ? '🔒 Lock Edits' : '✏️ Edit Mode';
+        btn.classList.toggle('active', editMode);
+        document.querySelectorAll('td, th, p, h3, h4, li').forEach(el => {
+            el.contentEditable = editMode ? 'true' : 'false';
+        });
+        if (editMode) expandAll();
+    }
+
+    // ── Export HTML ──
+    function exportHTML() {
+        const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'case-study-finance-LCB.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    // ── Persist to localStorage ──
+    window.addEventListener('beforeunload', () => {
+        if (editMode) localStorage.setItem('lcb-case-study', document.body.innerHTML);
+    });
+    window.addEventListener('load', () => {
+        const saved = localStorage.getItem('lcb-case-study');
+        if (saved) document.body.innerHTML = saved;
+    });
+</script>
+</body>
+</html>
