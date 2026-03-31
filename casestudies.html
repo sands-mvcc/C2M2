@@ -249,8 +249,8 @@
         <h1>C2M2 Training <span>Case Studies</span></h1>
         <p class="subtitle">Sector-specific fictional organizations with realistic IT/OT environments, network diagrams, asset inventories, and security gaps — designed for hands-on C2M2 assessment practice.</p>
         <div class="header-stats">
-            <div class="hstat"><div class="snum">6</div><div class="slbl">Available Now</div></div>
-            <div class="hstat"><div class="snum">2</div><div class="slbl">In Development</div></div>
+            <div class="hstat"><div class="snum">7</div><div class="slbl">Available Now</div></div>
+            <div class="hstat"><div class="snum">1</div><div class="slbl">In Development</div></div>
             <div class="hstat"><div class="snum">8</div><div class="slbl">Sectors Planned</div></div>
             <div class="hstat"><div class="snum">10</div><div class="slbl">Domains Covered</div></div>
         </div>
@@ -301,8 +301,8 @@
             </div>
             <div class="progress-row">
                 <span class="progress-label">🏛️ Government</span>
-                <div class="progress-bar-bg"><div class="progress-bar-fill fill-planned"></div></div>
-                <span class="progress-status status-plan">Planned</span>
+                <div class="progress-bar-bg"><div class="progress-bar-fill fill-complete"></div></div>
+                <span class="progress-status status-done">✓ Complete</span>
             </div>
             <div class="progress-row">
                 <span class="progress-label">🔭 Research Institutions</span>
@@ -523,36 +523,45 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- Coming Soon Case Studies -->
-    <div class="section-label">In Development — 2 Sectors Remaining</div>
-    <div class="cases-grid">
-
-        <!-- Government -->
-        <div class="case-card-soon">
+        <!-- HCIT — Government -->
+        <div class="case-card">
             <div class="case-card-top-bar" style="background: linear-gradient(90deg, #1a3a4a, #2a6478, #17a2b8);"></div>
-            <div class="coming-soon-badge">Coming Soon</div>
             <div class="case-card-body">
                 <div class="case-card-header">
                     <div class="case-card-icon" style="background: #e8f4f8;">🏛️</div>
                     <div class="case-card-meta">
-                        <span class="case-sector-badge badge-govt">Government</span>
-                        <h3>County Government IT Department</h3>
-                        <div class="case-org">Fictional mid-size county government</div>
+                        <span class="case-sector-badge badge-govt" style="background:#17a2b8; color:white;">Government</span>
+                        <h3>Harmon County IT Department</h3>
+                        <div class="case-org">HCIT — Millhaven, Ohio (Fictional Mid-Size County Government)</div>
                     </div>
                 </div>
-                <p class="case-description">A county government operating public-facing digital services, law enforcement systems, 911 dispatch, and election infrastructure. Covers FISMA basics for state/local, CISA MS-ISAC membership, CUI handling obligations, ransomware impacts on public services, and the challenge of legacy IT with limited budgets.</p>
+                <p class="case-description">A 94,200-resident county government operating 911 emergency dispatch, law enforcement systems (CJIS), election infrastructure, courts, health services, and public finance — all with 9 IT staff and no CISO. Features two EOL domain controllers, an unpatched 911 CAD server, an election management system air-gap violation, shared domain admin credentials, and CJIS non-compliance. Covers MS-ISAC membership, IRS Pub 1075, HIPAA, FBI CJIS Security Policy, and election security — an ideal county government C2M2 scenario.</p>
+                <div class="case-facts">
+                    <div class="case-fact"><strong>Population Served</strong>94,200 Residents · 542 sq mi</div>
+                    <div class="case-fact"><strong>Employees</strong>822 FTE County-Wide</div>
+                    <div class="case-fact"><strong>Annual IT Budget</strong>$1.84 Million (2.1%)</div>
+                    <div class="case-fact"><strong>Key Systems</strong>Tyler Munis · Zetron 911 CAD · Dominion EMS</div>
+                    <div class="case-fact"><strong>C2M2 Score Range</strong>MIL 0–2 (mixed across domains)</div>
+                    <div class="case-fact"><strong>Regulation</strong>CJIS · HIPAA · IRS Pub 1075 · EAC/HAVA</div>
+                </div>
                 <div class="case-tags">
                     <span class="case-tag">911 / CAD</span>
-                    <span class="case-tag">Public Services</span>
-                    <span class="case-tag">CUI</span>
-                    <span class="case-tag">MS-ISAC</span>
-                    <span class="case-tag">Legacy IT</span>
+                    <span class="case-tag">CJIS Compliance</span>
+                    <span class="case-tag">Election Security</span>
+                    <span class="case-tag">IRS Pub 1075</span>
+                    <span class="case-tag">MS-ISAC Member</span>
+                    <span class="case-tag">EOL Infrastructure</span>
+                    <span class="case-tag">5 Scenario Injects</span>
                 </div>
-                <span class="soon-btn">🔒 In Development</span>
+                <a href="case-study-govt.html" class="case-open-btn">🏫 Open Case Study</a>
             </div>
         </div>
+
+    </div>
+
+    <!-- Coming Soon Case Studies -->
+    <div class="section-label">In Development — 1 Sector Remaining</div>
+    <div class="cases-grid">
 
         <!-- Research Institutions -->
         <div class="case-card-soon">
