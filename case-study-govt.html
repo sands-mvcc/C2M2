@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study: Harmon County IT Department | C2M2 Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a4a 0%, #2a6478 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1150px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 0.95rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+
+        /* ── Edit toolbar ── */
+        .edit-toolbar {
+            position: fixed; top: 1rem; right: 1rem; z-index: 999;
+            display: flex; gap: 0.5rem; flex-direction: column; align-items: flex-end;
+        }
+        .toolbar-btn {
+            background: rgba(26,58,74,0.92); color: white; border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.45rem 0.9rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer;
+            font-family: inherit; font-weight: 600; transition: all 0.2s; white-space: nowrap;
+            backdrop-filter: blur(4px);
+        }
+        .toolbar-btn:hover { background: #2a6478; border-color: rgba(255,255,255,0.4); }
+        .toolbar-btn.active { background: #17a2b8; border-color: #17a2b8; }
+
+        /* ── Page header ── */
+        .page-header {
+            background: rgba(255,255,255,0.97); border-radius: 16px; padding: 2.2rem 2rem;
+            margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .page-header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, #1a3a4a, #2a6478, #17a2b8, #26c6da, #ffc107);
+        }
+        .page-header .org-label {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: #e8f4f8; border: 1px solid #b0d4e3; color: #1a3a4a;
+            padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 0.82rem;
+            font-weight: 600; margin-bottom: 0.8rem;
+        }
+        .page-header h1 { font-size: 2.3rem; color: #1a3a4a; font-weight: 800; margin-bottom: 0.3rem; }
+        .page-header h1 span { color: #2a6478; }
+        .page-header .subtitle { font-size: 1.05rem; color: #666; font-weight: 300; margin-bottom: 1rem; }
+        .header-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .hbadge {
+            display: inline-block; padding: 0.28rem 0.8rem; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 700;
+        }
+        .hbadge-blue   { background: #d1ecf1; color: #0c5460; }
+        .hbadge-green  { background: #d4edda; color: #155724; }
+        .hbadge-yellow { background: #fff3cd; color: #856404; }
+        .hbadge-red    { background: #f8d7da; color: #721c24; }
+        .hbadge-govt   { background: #e8f4f8; color: #1a3a4a; }
+        .disclaimer {
+            margin-top: 1rem; padding: 0.6rem 1rem;
+            background: #fff8e1; border-left: 4px solid #ffc107;
+            border-radius: 6px; font-size: 0.8rem; color: #856404; text-align: left;
+        }
+
+        /* ── Stat bar ── */
+        .stat-bar {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.9rem; margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 12px; padding: 1.2rem 0.9rem; text-align: center;
+            color: white; backdrop-filter: blur(4px); transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card .snum { font-size: 2rem; font-weight: 800; line-height: 1; }
+        .stat-card .slbl { font-size: 0.75rem; opacity: 0.85; margin-top: 0.3rem; }
+
+        /* ── Collapsible section cards ── */
+        .section-card {
+            background: rgba(255,255,255,0.97); border-radius: 14px;
+            margin-bottom: 1.5rem; box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.2rem 1.6rem; cursor: pointer; user-select: none;
+            border-bottom: 2px solid transparent; transition: background 0.2s;
+        }
+        .section-header:hover { background: #f0f7fa; }
+        .section-header.open { border-bottom-color: #17a2b8; }
+        .section-header h2 {
+            font-size: 1.2rem; color: #1a3a4a; font-weight: 700;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .section-arrow { font-size: 0.8rem; color: #888; transition: transform 0.3s; }
+        .section-arrow.open { transform: rotate(180deg); }
+        .section-body { display: none; padding: 1.6rem; }
+        .section-body.open { display: block; }
+
+        /* ── General typography inside sections ── */
+        .section-body p { color: #555; line-height: 1.75; margin-bottom: 0.8rem; font-size: 0.93rem; }
+        .section-body h3 { font-size: 1.05rem; color: #1a3a4a; font-weight: 700; margin: 1.2rem 0 0.5rem; }
+        .section-body ul { padding-left: 1.4rem; color: #555; line-height: 1.85; font-size: 0.93rem; }
+        .section-body li { margin-bottom: 0.3rem; }
+
+        /* ── Info alert boxes ── */
+        .alert { border-radius: 8px; padding: 0.85rem 1.1rem; margin-bottom: 1rem; font-size: 0.88rem; line-height: 1.6; }
+        .alert-danger  { background: #fdf0f0; border-left: 4px solid #dc3545; color: #6b1c1c; }
+        .alert-warning { background: #fffbf0; border-left: 4px solid #ffc107; color: #7a5a00; }
+        .alert-info    { background: #f0f8ff; border-left: 4px solid #17a2b8; color: #0c4a56; }
+        .alert-success { background: #f0fff4; border-left: 4px solid #28a745; color: #1a4a2a; }
+        .alert-govt    { background: #e8f4f8; border-left: 4px solid #17a2b8; color: #0c4a56; }
+        .alert strong { font-weight: 700; }
+
+        /* ── Tables ── */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-bottom: 1rem; }
+        .data-table th { background: #1a3a4a; color: white; padding: 0.65rem 0.9rem; text-align: left; font-weight: 600; }
+        .data-table td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #d0e8f0; color: #444; vertical-align: top; }
+        .data-table tr:nth-child(even) td { background: #f0f7fa; }
+        .data-table tr:hover td { background: #dceef5; }
+
+        /* ── Tags / status badges ── */
+        .tag { display: inline-block; padding: 0.18rem 0.6rem; border-radius: 12px; font-size: 0.74rem; font-weight: 700; margin: 1px; }
+        .tag-red    { background: #f8d7da; color: #721c24; }
+        .tag-yellow { background: #fff3cd; color: #856404; }
+        .tag-green  { background: #d4edda; color: #155724; }
+        .tag-blue   { background: #d1ecf1; color: #0c5460; }
+        .tag-gray   { background: #e2e8f0; color: #4a5568; }
+        .tag-purple { background: #e9d8fd; color: #553c9a; }
+        .tag-orange { background: #fde8d8; color: #7b3a10; }
+        .tag-teal   { background: #e8f4f8; color: #1a3a4a; }
+
+        /* ── Key metrics grid ── */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .metric-box {
+            background: linear-gradient(135deg, #f0f7fa, #e0eef5);
+            border-radius: 10px; padding: 1.1rem; border-left: 4px solid #17a2b8; text-align: center;
+        }
+        .metric-box .mnum { font-size: 2rem; font-weight: 800; color: #1a3a4a; }
+        .metric-box .mlbl { font-size: 0.82rem; color: #666; margin-top: 0.2rem; }
+
+        /* ── Network diagram ── */
+        .net-diagram {
+            background: #0a1520; border-radius: 12px; padding: 1.5rem;
+            font-family: 'Courier New', Courier, monospace; font-size: 0.78rem;
+            line-height: 1.8; overflow-x: auto; color: #a8d8ea;
+            border: 1px solid #1e3a4a;
+        }
+        .net-diagram .nd-title  { color: #80cbc4; font-weight: bold; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .net-diagram .nd-green  { color: #66bb6a; }
+        .net-diagram .nd-yellow { color: #ffca28; }
+        .net-diagram .nd-red    { color: #ef5350; }
+        .net-diagram .nd-blue   { color: #42a5f5; }
+        .net-diagram .nd-white  { color: #e0e0e0; }
+        .net-diagram .nd-cyan   { color: #26c6da; }
+        .net-diagram .nd-orange { color: #ffa726; }
+        .net-diagram .nd-teal   { color: #80cbc4; }
+        .net-diagram .nd-comment{ color: #546e7a; font-style: italic; }
+
+        /* ── C2M2 domain cards ── */
+        .domain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; }
+        .domain-card {
+            border-radius: 12px; padding: 1.2rem; border: 1px solid #b0d4e3;
+            background: #f0f7fa; position: relative; overflow: hidden;
+        }
+        .domain-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        }
+        .dc-mil0::before { background: #dc3545; }
+        .dc-mil1::before { background: #ffc107; }
+        .dc-mil2::before { background: #17a2b8; }
+        .dc-mil3::before { background: #28a745; }
+        .domain-card h4 { font-size: 0.95rem; color: #1a3a4a; font-weight: 700; margin-bottom: 0.5rem; }
+        .domain-card p { font-size: 0.84rem; color: #666; line-height: 1.65; margin-bottom: 0.5rem; }
+        .domain-card ul { padding-left: 1.2rem; font-size: 0.82rem; color: #666; line-height: 1.7; }
+        .mil-badge {
+            display: inline-block; font-size: 0.72rem; font-weight: 700;
+            padding: 0.18rem 0.55rem; border-radius: 10px; margin-bottom: 0.5rem;
+        }
+        .mil-badge-0 { background: #f8d7da; color: #721c24; }
+        .mil-badge-1 { background: #fff3cd; color: #856404; }
+        .mil-badge-2 { background: #d1ecf1; color: #0c5460; }
+        .mil-badge-3 { background: #d4edda; color: #155724; }
+
+        /* ── Org chart ── */
+        .org-chart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+        .org-level { display: flex; justify-content: center; gap: 1rem; position: relative; margin-bottom: 0; flex-wrap: wrap; }
+        .org-box {
+            background: #1a3a4a; color: white; border-radius: 8px;
+            padding: 0.55rem 0.9rem; text-align: center; font-size: 0.8rem;
+            min-width: 130px; position: relative;
+        }
+        .org-box .oname { font-weight: 700; }
+        .org-box .otitle { opacity: 0.75; font-size: 0.72rem; margin-top: 0.15rem; }
+        .org-box.top  { background: #1a3a4a; }
+        .org-box.dir  { background: #2a6478; }
+        .org-box.staff{ background: #17a2b8; font-size: 0.75rem; min-width: 110px; }
+        .org-box.vacant { background: #888; font-size: 0.75rem; min-width: 110px; border: 2px dashed #dc3545; }
+        .org-connector { width: 2px; height: 20px; background: #17a2b8; margin: 0 auto; }
+        .org-h-line { height: 2px; background: #17a2b8; flex: 1; align-self: center; }
+
+        /* ── Exercise / inject cards ── */
+        .exercise-q { background: #f0f7fa; border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 0.8rem; }
+        .exercise-q strong { color: #1a3a4a; font-size: 0.93rem; }
+        .exercise-q p { margin-top: 0.3rem; color: #666; font-size: 0.88rem; line-height: 1.65; margin-bottom: 0; }
+        .inject-card {
+            border: 2px solid #dc3545; border-radius: 10px; padding: 1.2rem;
+            margin-bottom: 1rem; background: #fff8f8;
+        }
+        .inject-card .inject-title { color: #dc3545; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .inject-card p { font-size: 0.88rem; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+        .inject-card ul { font-size: 0.87rem; padding-left: 1.3rem; color: #555; line-height: 1.75; }
+
+        /* ── Vendor / info cards ── */
+        .vendor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .vendor-card {
+            border: 1px solid #b0d4e3; border-radius: 10px; padding: 1.1rem;
+            background: #f0f7fa;
+        }
+        .vendor-card h4 { font-size: 0.92rem; font-weight: 700; color: #1a3a4a; margin-bottom: 0.3rem; }
+        .vendor-card .vendor-type { font-size: 0.75rem; color: #2a6478; font-weight: 600; margin-bottom: 0.5rem; }
+        .vendor-card ul { padding-left: 1.2rem; font-size: 0.82rem; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+
+        /* ── Two/three column layout ── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+
+        /* ── Editable mode ── */
+        [contenteditable="true"] { outline: 2px dashed #17a2b8; border-radius: 4px; min-height: 1em; }
+        .edit-active [contenteditable] { background: rgba(23,162,184,0.04); }
+        .add-row-btn {
+            background: transparent; border: 2px dashed #17a2b8; color: #17a2b8;
+            padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+            font-size: 0.8rem; font-family: inherit; font-weight: 600; margin-top: 0.4rem;
+            transition: all 0.2s;
+        }
+        .add-row-btn:hover { background: #17a2b8; color: white; }
+        .del-btn {
+            background: #dc3545; color: white; border: none; border-radius: 4px;
+            padding: 0.15rem 0.45rem; cursor: pointer; font-size: 0.72rem;
+            font-family: inherit; opacity: 0;
+        }
+        .edit-active .del-btn { opacity: 1; }
+        td:hover .del-btn { opacity: 1; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.1);
+            border-radius: 14px; color: white; margin-top: 1.5rem;
+        }
+        .footer p { font-size: 0.88rem; opacity: 0.85; margin-bottom: 0.3rem; }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .page-header h1 { font-size: 1.7rem; }
+            .stat-bar { grid-template-columns: repeat(2, 1fr); }
+            .domain-grid { grid-template-columns: 1fr; }
+            .two-col { grid-template-columns: 1fr; }
+            .three-col { grid-template-columns: 1fr; }
+            .edit-toolbar { display: none; }
+        }
+
+        @media print {
+            body { background: white; }
+            .edit-toolbar, .back-link { display: none; }
+            .section-body { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="casestudies.html" class="back-link">← Back to Case Studies</a>
+
+    <!-- Edit Toolbar -->
+    <div class="edit-toolbar">
+        <button class="toolbar-btn" id="editBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="toolbar-btn" onclick="exportHTML()">💾 Export HTML</button>
+        <button class="toolbar-btn" onclick="window.print()">🖨️ Print</button>
+        <button class="toolbar-btn" onclick="expandAll()">📂 Expand All</button>
+        <button class="toolbar-btn" onclick="collapseAll()">📁 Collapse All</button>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="org-label">🏛️ Government Sector | C2M2 Training Case Study</div>
+        <h1>Harmon County <span>IT Department</span></h1>
+        <p class="subtitle">HCIT — Millhaven, Ohio · Fictional Mid-Size County Government · C2M2 v2.1 Training Case Study</p>
+        <div class="header-badges">
+            <span class="hbadge hbadge-govt">🏛️ Government / County</span>
+            <span class="hbadge hbadge-yellow">⚠️ MIL 0–2 Mixed</span>
+            <span class="hbadge hbadge-blue">MS-ISAC Member</span>
+            <span class="hbadge hbadge-red">No CISO</span>
+            <span class="hbadge hbadge-blue">CJIS · HIPAA · IRS Pub 1075</span>
+            <span class="hbadge hbadge-yellow">9 IT Staff · 822 Employees</span>
+        </div>
+        <div class="disclaimer">
+            ⚠️ <strong>Fictional Training Scenario.</strong> All organization names, personnel, IP addresses, system configurations, asset data, and operational details are entirely simulated for educational purposes. Harmon County, Millhaven, Ohio, and all named individuals are entirely fictional. Any resemblance to real jurisdictions, persons, or vendors is coincidental.
+        </div>
+    </div>
+
+    <!-- Stat Bar -->
+    <div class="stat-bar">
+        <div class="stat-card"><div class="snum">94,200</div><div class="slbl">Population Served</div></div>
+        <div class="stat-card"><div class="snum">$87.3M</div><div class="slbl">County Budget</div></div>
+        <div class="stat-card"><div class="snum">$1.84M</div><div class="slbl">Annual IT Budget</div></div>
+        <div class="stat-card"><div class="snum">822</div><div class="slbl">County Employees</div></div>
+        <div class="stat-card"><div class="snum">9</div><div class="slbl">IT Staff FTE</div></div>
+        <div class="stat-card"><div class="snum">0</div><div class="slbl">Dedicated CISO</div></div>
+        <div class="stat-card"><div class="snum">8</div><div class="slbl">County Facilities</div></div>
+        <div class="stat-card"><div class="snum">2019</div><div class="slbl">MS-ISAC Member Since</div></div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         1. COUNTY & ORGANIZATION PROFILE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header open" onclick="toggleSection(this)">
+            <h2>🏛️ County &amp; Organization Profile</h2>
+            <span class="section-arrow open">▼</span>
+        </div>
+        <div class="section-body open">
+
+            <div class="metrics-grid">
+                <div class="metric-box"><div class="mnum">94,200</div><div class="mlbl">Residents Served</div></div>
+                <div class="metric-box"><div class="mnum">542</div><div class="mlbl">Square Miles</div></div>
+                <div class="metric-box"><div class="mnum">$87.3M</div><div class="mlbl">Annual County Budget</div></div>
+                <div class="metric-box"><div class="mnum">$1.84M</div><div class="mlbl">Annual IT Budget</div></div>
+                <div class="metric-box"><div class="mnum">822</div><div class="mlbl">Total County Employees</div></div>
+                <div class="metric-box"><div class="mnum">9</div><div class="mlbl">IT Department FTE</div></div>
+            </div>
+
+            <h3>Background</h3>
+            <p><strong>Harmon County, Ohio</strong> (fictional) is a mid-size county in the state of Ohio with a county seat in Millhaven (population ~22,000). The county government provides a broad range of services to its 94,200 residents across 542 square miles, including law enforcement (Sheriff's Office), 911 emergency dispatch, courts, elections administration, public health, building permits, road and bridge maintenance, and financial services (Auditor, Treasurer, Recorder). The county operates under a three-member elected Board of County Commissioners with a professional County Administrator overseeing day-to-day operations.</p>
+            <p>The Harmon County Information Technology Department (HCIT) serves as the centralized IT function for all county departments, including the Sheriff's Office, Courts, Health Department, Board of Elections, and Public Works. IT Director <strong>Marcus Webb</strong> (hired 2018) reports directly to the County Administrator and leads a team of 9 FTE. Webb also serves as the county's de facto information security officer — there is no dedicated CISO, no security manager, and a cybersecurity analyst position has been unfilled for 14 months due to budget constraints approved by the Board of County Commissioners. The county joined the <strong>Multi-State Information Sharing and Analysis Center (MS-ISAC)</strong> in 2019 and deployed a CISA Albert network sensor in 2022.</p>
+            <p>County IT faces the challenges common to resource-constrained local governments: a very broad technology footprint spanning public safety, elections, health, finance, and general administration; regulatory obligations across multiple federal and state frameworks simultaneously (CJIS, HIPAA, IRS Publication 1075, HAVA/EAC); a flat IT budget that has not grown in proportion to the county's expanding digital services; aging infrastructure that was budgeted during a period of lower cybersecurity awareness; and a small staff that must manage both day-to-day operations and respond to incidents without dedicated security personnel. These conditions — extremely common across mid-size county governments — make HCIT an ideal C2M2 assessment scenario.</p>
+
+            <h3>Organization Fact Sheet</h3>
+            <table class="data-table">
+                <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+                <tbody>
+                <tr><td>Full Name</td><td>Harmon County Information Technology Department (HCIT)</td></tr>
+                <tr><td>Jurisdiction Type</td><td>County Government — Ohio General Law County</td></tr>
+                <tr><td>County Seat</td><td>Millhaven, Ohio (fictional) — population ~22,000</td></tr>
+                <tr><td>County Population</td><td>94,200 residents (2020 Census estimate)</td></tr>
+                <tr><td>County Area</td><td>542 square miles (land)</td></tr>
+                <tr><td>Governance</td><td>Board of County Commissioners (3 elected); County Administrator: Patricia Holloway</td></tr>
+                <tr><td>IT Director</td><td>Marcus Webb — hired 2018; reports to County Administrator; de facto Security Officer</td></tr>
+                <tr><td>IT Staff</td><td>9 FTE (1 director, 2 sys admins, 1 network admin, 1 app specialist, 1 GIS analyst, 2 help desk, 1 cybersecurity analyst — VACANT)</td></tr>
+                <tr><td>Annual County Budget (FY2025)</td><td>$87.3 million</td></tr>
+                <tr><td>Annual IT Budget (FY2025)</td><td>$1.84 million (2.1% of county budget)</td></tr>
+                <tr><td>Cybersecurity Sub-Budget</td><td>~$94,000 (tools, training, MS-ISAC; no dedicated security staffing budget)</td></tr>
+                <tr><td>Dedicated CISO</td><td><span class="tag tag-red">None — IT Director serves as de facto security lead</span></td></tr>
+                <tr><td>MS-ISAC Membership</td><td><span class="tag tag-green">Member since 2019 — Albert sensor active since 2022</span></td></tr>
+                <tr><td>CISA Regional Advisor</td><td><span class="tag tag-green">Contact established — annual check-in; no formal assessment completed</span></td></tr>
+                <tr><td>Cyber Insurance</td><td>$2M limit; Ohio County Risk Sharing Authority (CORSA) policy; last reviewed FY2023</td></tr>
+                <tr><td>IT Help Desk Ratio</td><td>1 technician per 228 county employees (industry benchmark: 1:70–100)</td></tr>
+                <tr><td>Primary Regulatory Frameworks</td><td>FBI CJIS Security Policy v5.9.2 · HIPAA Security Rule · IRS Publication 1075 · HAVA / EAC · Ohio RC §9.08</td></tr>
+                <tr><td>C2M2 Self-Assessment</td><td>Completed Q1 2026 by IT Director Webb with MS-ISAC state coordinator support</td></tr>
+                <tr><td>Overall C2M2 Level</td><td><span class="tag tag-yellow">MIL 0–2 (mixed); MIL 2 in Asset Mgmt only; MIL 0 in Situational Awareness &amp; Supply Chain</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-govt">
+                <strong>Context for Instructors:</strong> Harmon County represents the median cybersecurity posture for a mid-size Ohio county government based on aggregated MS-ISAC State, Local, Tribal, and Territorial (SLTT) assessment data. The combination of regulatory complexity (CJIS + HIPAA + IRS Pub 1075 + election security), limited staffing, legacy infrastructure, and no dedicated CISO is not exceptional — it is the norm for counties of this size. Students should recognize that the gaps identified here are systemic and reflect resource and governance realities, not individual negligence.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         2. FACILITIES & GEOGRAPHIC FOOTPRINT
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>📍 Facilities &amp; Geographic Footprint</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>Harmon County IT supports eight primary facilities across Millhaven and the surrounding county, plus four remote township offices connected via commercial internet. All primary facilities connect to the FAC-01 data center via AT&amp;T fiber circuits. The 911 Emergency Communications Center (FAC-03) is co-located with the Sheriff's Office (FAC-02) in a shared public safety complex, with a physically dedicated 911 network infrastructure. The Board of Elections (FAC-08) operates as a separate building with specific isolation requirements for election management systems per Ohio Secretary of State directive.</p>
+
+            <table class="data-table">
+                <thead><tr><th>Facility ID</th><th>Name</th><th>Location</th><th>Primary IT Systems</th><th>IT Risk Notes</th></tr></thead>
+                <tbody>
+                <tr>
+                    <td><strong>FAC-01</strong></td>
+                    <td>Courthouse Annex — Primary Data Center &amp; IT Offices</td>
+                    <td>Millhaven, OH (Downtown)</td>
+                    <td>All county servers (SRV-01 through SRV-10); Munis ERP; domain controllers; backup infrastructure</td>
+                    <td><span class="tag tag-yellow">Primary data center; server room access shared with facilities staff; no card reader — key lock only</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-02</strong></td>
+                    <td>Harmon County Sheriff's Office &amp; County Jail</td>
+                    <td>Millhaven Public Safety Complex</td>
+                    <td>Tyler New World RMS (law enforcement); Axon/Evidence.com (body cams); CJIS-regulated workstations; jail management module</td>
+                    <td><span class="tag tag-red">CJIS Security Policy applies — MDM not deployed; screensaver lockout policy missing; CJIS audit Q3 2026</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-03</strong></td>
+                    <td>911 Emergency Communications Center</td>
+                    <td>Millhaven Public Safety Complex (co-located with FAC-02)</td>
+                    <td>Zetron Viper 9-1-1 CAD system (SRV-06); 12 dispatch consoles; PSAP phone trunks; radio dispatch</td>
+                    <td><span class="tag tag-red">Life-safety system; SRV-06 EOL and never patched; no IDS on VLAN 30; Zetron SLA is next-business-day</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-04</strong></td>
+                    <td>Harmon County Courts / Municipal Court Complex</td>
+                    <td>Millhaven, OH (Courthouse Square)</td>
+                    <td>Tyler New World courts/justice module (SRV-05); 32 court workstations; public kiosk terminals</td>
+                    <td><span class="tag tag-yellow">SRV-05 patch lag ~6 months; Tyler support VPN persistent; public kiosks on separate VLAN — OK</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-05</strong></td>
+                    <td>Harmon County Health Department</td>
+                    <td>Millhaven, OH (Health Services Campus)</td>
+                    <td>Electronic Health Record (EHR) system; 24 HIPAA-scope workstations; state immunization registry connection</td>
+                    <td><span class="tag tag-yellow">HIPAA Security Rule applies; risk analysis last updated 2022; BAA inventory incomplete; VLAN 50 isolated</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-06</strong></td>
+                    <td>Auditor / Treasurer / Recorder Offices</td>
+                    <td>Millhaven, OH (Courthouse Main Building)</td>
+                    <td>COGNOS BI (SRV-08, SQL 2014 EOL); 18 auditor workstations; IRS federal tax information; property tax portal</td>
+                    <td><span class="tag tag-red">IRS Pub 1075 — federal tax information (FTI) on EOL SQL Server 2014; access logs not reviewed quarterly</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-07</strong></td>
+                    <td>Public Works / Highway Department</td>
+                    <td>Route 40 East, Harmon County (outside Millhaven)</td>
+                    <td>18 workstations; 8 Android tablets (field staff); road/bridge monitoring sensors; Accela (permits)</td>
+                    <td><span class="tag tag-yellow">Most remote primary facility; Android tablets lack MDM; road sensors on VLAN 60 (flat, no microsegmentation)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-08</strong></td>
+                    <td>County Annex / Board of Elections</td>
+                    <td>Millhaven, OH (separate building)</td>
+                    <td>Dominion Democracy Suite 5.17 EMS workstation; 6 administrative workstations; voter registration system</td>
+                    <td><span class="tag tag-red">EMS workstation found connected to VLAN 10 (Admin network) Feb 2026 — Ohio SoS air-gap directive violated</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h3>Remote Township Sites</h3>
+            <p>Four Harmon County township offices (Jackson Township, Perry Township, Liberty Township, and Washington Township) connect to county resources via <strong>Comcast Business SDSL circuits</strong> (25 Mbps down / 5 Mbps up). These sites have no on-site IT support, no local server infrastructure, and rely entirely on VPN connectivity to FAC-01 for access to Munis ERP and county file shares. IT support is provided remotely or by dispatch from FAC-01 (30–45 minute drive to the most remote site).</p>
+
+            <div class="alert alert-warning">
+                <strong>Remote Site Risk:</strong> The four township offices rely on <strong>Pulse Secure SSL VPN over Comcast SDSL</strong> with <strong>no MFA enforced</strong>. Township clerks access Munis payroll and financial systems using single-factor password authentication. These sites have no local security controls, no endpoint detection software, and their workstations (Windows 10, mixed patch levels) are outside the county's Veeam backup scope. A compromised township credential is a direct pathway into the Munis ERP financial system on VLAN 10.
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════
+         3. ORGANIZATIONAL STRUCTURE & IT GOVERNANCE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>👥 Organizational Structure &amp; IT Governance</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Reporting Hierarchy</h3>
+            <div class="org-chart">
+                <div class="org-level">
+                    <div class="org-box top"><div class="oname">Board of County Commissioners</div><div class="otitle">3 Elected Members</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box dir"><div class="oname">Patricia Holloway</div><div class="otitle">County Administrator</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box dir"><div class="oname">Marcus Webb</div><div class="otitle">IT Director / De Facto Security Officer</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box staff"><div class="oname">Systems Admin (2 FTE)</div><div class="otitle">Server &amp; virtualization</div></div>
+                    <div class="org-box staff"><div class="oname">Network Admin (1 FTE)</div><div class="otitle">LAN/WAN/firewall</div></div>
+                    <div class="org-box staff"><div class="oname">App Specialist (1 FTE)</div><div class="otitle">Tyler Munis &amp; New World</div></div>
+                    <div class="org-box staff"><div class="oname">GIS Analyst (1 FTE)</div><div class="otitle">Esri ArcGIS Enterprise</div></div>
+                    <div class="org-box staff"><div class="oname">Help Desk (2 FTE)</div><div class="otitle">Tier 1 support (822 users)</div></div>
+                    <div class="org-box vacant"><div class="oname">Cybersecurity Analyst</div><div class="otitle">⚠️ VACANT — 14 months</div></div>
+                </div>
+            </div>
+
+            <br>
+            <div class="alert alert-warning">
+                <strong>No CISO — No Dedicated Security Officer:</strong> The IT Director serves as de facto information security lead in addition to all other IT responsibilities including infrastructure, vendor management, budget, and help desk oversight. The cybersecurity analyst position has been vacant for <strong>14 months</strong> — a budget decision by the Board of County Commissioners citing fiscal constraints. There is no formal IT security steering committee, no executive cybersecurity risk review cycle, and no separation of duties between IT operations and security oversight. All security decisions — tool purchases, incident response, policy enforcement — route through a single individual who is simultaneously managing day-to-day IT operations for 822 county employees.
+            </div>
+
+            <h3>IT Staffing Detail</h3>
+            <table class="data-table">
+                <thead><tr><th>Role</th><th>FTE</th><th>Name / Status</th><th>Key Certifications</th><th>Primary Responsibilities &amp; Notes</th></tr></thead>
+                <tbody>
+                <tr><td>IT Director</td><td>1</td><td>Marcus Webb (hired 2018)</td><td>CompTIA Network+; no security cert</td><td>All IT operations + de facto CISO; budget owner; primary vendor contact; incident commander</td></tr>
+                <tr><td>Systems Administrator</td><td>2</td><td>Kevin Okafor, Rachel Dietz</td><td>Microsoft MTA (Okafor); no current cert (Dietz)</td><td>Windows Server, Active Directory, Veeam backup, Tyler application server management</td></tr>
+                <tr><td>Network Administrator</td><td>1</td><td>Daniel Cruz</td><td>CompTIA Network+; Cisco CCNA (lapsed)</td><td>Cisco LAN/WAN, Fortinet firewall, Pulse Secure VPN, Ubiquiti wireless</td></tr>
+                <tr><td>Application Specialist</td><td>1</td><td>Sandra Nguyen</td><td>Tyler Technologies certified (Munis)</td><td>Tyler Munis ERP and Tyler New World system administration, user training, Tyler support liaison</td></tr>
+                <tr><td>GIS Analyst</td><td>1</td><td>Thomas Brewer</td><td>Esri ArcGIS Desktop Associate</td><td>Esri ArcGIS Enterprise administration, parcel mapping, county GIS data governance</td></tr>
+                <tr><td>Help Desk Technician</td><td>2</td><td>Aaliyah Johnson, Patrick Simmons</td><td>CompTIA A+ (Johnson)</td><td>Tier 1 support for all 822 county employees; imaging workstations; printer support</td></tr>
+                <tr><td>Cybersecurity Analyst</td><td><span class="tag tag-red">0 — VACANT</span></td><td><span class="tag tag-red">Position unfilled since January 2025</span></td><td>—</td><td>Intended scope: SIEM monitoring, vulnerability management, policy compliance, security awareness. All duties absorbed by IT Director ad hoc.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>IT Governance Structure</h3>
+            <div class="two-col">
+                <div>
+                    <h3 style="margin-top:0;">Governance Challenges</h3>
+                    <ul>
+                        <li>No formal IT steering committee — technology decisions are made reactively by the IT Director with occasional Board approval for capital expenditures over $25,000</li>
+                        <li>No documented IT strategic plan since FY2022 — current work is driven by operational tickets and vendor renewals</li>
+                        <li>Security projects compete directly with operational priorities (help desk, system maintenance) for the same 9-person team</li>
+                        <li>County legal counsel has not issued guidance on cybersecurity liability, regulatory obligations, or incident notification timelines</li>
+                        <li>No formal change management process — system changes logged informally in a shared spreadsheet</li>
+                        <li>Annual security awareness training (KnowBe4 free tier) is assigned but completion rate not tracked or enforced</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="metrics-grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="metric-box"><div class="mnum">$2,240</div><div class="mlbl">IT Budget Per Employee</div></div>
+                        <div class="metric-box"><div class="mnum">1:228</div><div class="mlbl">Help Desk Ratio</div></div>
+                        <div class="metric-box"><div class="mnum">6.2 yrs</div><div class="mlbl">Avg IT Staff Tenure</div></div>
+                        <div class="metric-box"><div class="mnum">1 of 9</div><div class="mlbl">Security Positions Open</div></div>
+                    </div>
+                    <div class="alert alert-info" style="margin-top:1rem;">
+                        <strong>MS-ISAC Resources Available:</strong> As an MS-ISAC member, Harmon County is eligible for no-cost services including the Albert network sensor (deployed), Malicious Domain Blocking and Reporting (MDBR), free incident response support, and the CIS Controls self-assessment tool — several of which are not yet fully utilized.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         4. IT ASSET INVENTORY
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>💻 Information Technology Assets</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Servers &amp; Core Infrastructure</h3>
+            <table class="data-table">
+                <thead><tr><th>Asset ID</th><th>Description</th><th>OS / Platform</th><th>Location</th><th>Status / Risk Notes</th></tr></thead>
+                <tbody>
+                <tr><td>SRV-01</td><td>Primary Domain Controller / Active Directory (FSMO roles)</td><td>Windows Server 2012 R2 (EOL Oct 2023)</td><td>FAC-01 Data Center</td><td><span class="tag tag-red">CRITICAL — EOL; authentication, Group Policy, CJIS access mgmt depend on EOL infrastructure; budget migration denied FY2024</span></td></tr>
+                <tr><td>SRV-02</td><td>Secondary Domain Controller / AD replication</td><td>Windows Server 2012 R2 (EOL Oct 2023)</td><td>FAC-01 Data Center</td><td><span class="tag tag-red">CRITICAL — EOL; no security patches since Oct 2023; known CVEs unmitigated</span></td></tr>
+                <tr><td>SRV-03</td><td>Domain Controller / DNS / DHCP (replacement — partial)</td><td>Windows Server 2022</td><td>FAC-01 Data Center</td><td><span class="tag tag-green">Current — provisioned 2024; FSMO roles not yet migrated from SRV-01/02; transition incomplete</span></td></tr>
+                <tr><td>SRV-04</td><td>Tyler Technologies Munis ERP (Finance, HR, Payroll, Procurement)</td><td>Windows Server 2019</td><td>FAC-01 Data Center</td><td><span class="tag tag-yellow">Minor patch lag (~6 weeks); Tyler support requires change window coordination; persistent VPN for Tyler remote support unmonitored</span></td></tr>
+                <tr><td>SRV-05</td><td>Tyler Technologies New World (Courts, Justice, Jail Management, RMS)</td><td>Windows Server 2016</td><td>FAC-01 Data Center</td><td><span class="tag tag-yellow">Patch lag ~6 months — Tyler sign-off required for each patch; last OS update: August 2025; Server 2016 mainstream support ended Oct 2022</span></td></tr>
+                <tr><td>SRV-06</td><td>Zetron Viper 9-1-1 CAD Server (Life-Safety)</td><td>Windows Server 2012 R2 (EOL) — physically at FAC-03</td><td>FAC-03 (911 Comm Center)</td><td><span class="tag tag-red">CRITICAL — EOL; zero OS patches in 36+ months; Zetron written approval submitted Jan 2023, no response; no IDS on VLAN 30; life-safety dependency</span></td></tr>
+                <tr><td>SRV-07</td><td>File Server / County Records / Shared Drives</td><td>Windows Server 2016</td><td>FAC-01 Data Center</td><td><span class="tag tag-yellow">No DLP controls; unclassified CUI (law enforcement records, health documents) commingled with general files; no access review in 24 months</span></td></tr>
+                <tr><td>SRV-08</td><td>SQL Database Server — COGNOS BI backend (IRS Pub 1075 scope)</td><td>SQL Server 2014 (EOL Jul 2019)</td><td>FAC-01 Data Center</td><td><span class="tag tag-red">CRITICAL — EOL since 2019; hosts federal tax information (FTI); multiple known CVEs; IRS Pub 1075 access log review noncompliant</span></td></tr>
+                <tr><td>SRV-09</td><td>Backup Server (Veeam Backup &amp; Replication 11)</td><td>Windows Server 2019</td><td>FAC-01 Data Center</td><td><span class="tag tag-yellow">No offsite copy; tapes rotated to locked closet in same building; restore integrity never tested; Veeam 11 (EOL — upgrade to v12 unfunded)</span></td></tr>
+                <tr><td>SRV-10</td><td>Esri ArcGIS Enterprise (GIS / Parcel Mapping)</td><td>Windows Server 2019</td><td>FAC-01 Data Center</td><td><span class="tag tag-yellow">Current patching; public-facing parcel portal — no WAF; internal parcel database exposed via unauthenticated API endpoint (minor data risk)</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Workstations &amp; End-User Devices</h3>
+            <table class="data-table">
+                <thead><tr><th>Department / Use</th><th>Count</th><th>OS</th><th>Regulatory Scope</th><th>Risk Notes</th></tr></thead>
+                <tbody>
+                <tr><td>County Administrative Staff (Finance, HR, General)</td><td>280</td><td>Windows 10 Pro / Windows 11 Pro (mixed)</td><td>Munis ERP access; general PII</td><td><span class="tag tag-yellow">Patch compliance ~78% via WSUS; 61 workstations running Win10 21H2 (unsupported build); no EDR deployed</span></td></tr>
+                <tr><td>Sheriff / Law Enforcement</td><td>45 laptops</td><td>Windows 10 Pro</td><td><span class="tag tag-red">CJIS Security Policy v5.9.2</span></td><td><span class="tag tag-red">Screensaver timeout policy not enforced (CJIS §5.6.2.2); MDM not deployed for 12 mobile devices; CJIS audit Q3 2026</span></td></tr>
+                <tr><td>911 Dispatch Consoles</td><td>12</td><td>Windows 10 Pro (dedicated)</td><td>Life-safety — 911 operations</td><td><span class="tag tag-red">Dedicated VLAN 30; aging hardware (avg 7 years old); no redundant dispatch workstations; manual CAD fallback procedure undocumented</span></td></tr>
+                <tr><td>Courts / Justice</td><td>32</td><td>Windows 10/11 Pro (mixed)</td><td>Tyler New World; court records</td><td><span class="tag tag-yellow">2 courtroom kiosk terminals on public VLAN — isolated OK; staff workstations patching current; no MFA for Tyler New World access</span></td></tr>
+                <tr><td>Health Department</td><td>24</td><td>Windows 10 Pro</td><td><span class="tag tag-yellow">HIPAA Security Rule</span></td><td><span class="tag tag-yellow">HIPAA risk analysis dated 2022; no BAA inventory; EHR vendor (state-hosted) has SOC 2 Type II; workstation-level encryption not verified</span></td></tr>
+                <tr><td>Auditor / Treasurer Offices</td><td>18</td><td>Windows 10 Pro</td><td><span class="tag tag-red">IRS Publication 1075 — Federal Tax Information</span></td><td><span class="tag tag-red">FTI accessed via COGNOS on EOL SQL Server 2014; access logs not reviewed quarterly; shared login used by 3 of 18 staff for COGNOS reporting</span></td></tr>
+                <tr><td>Public Works (field staff)</td><td>18 workstations + 8 Android tablets</td><td>Windows 10 / Android 10–12</td><td>General county systems; Accela permits</td><td><span class="tag tag-yellow">Android tablets: no MDM, no device encryption enforced, 3 personal apps installed; workstations patching current via WSUS</span></td></tr>
+                <tr><td>Board of Elections</td><td>6 workstations + 1 EMS workstation</td><td>Windows 10 Pro</td><td>HAVA / EAC; Ohio SoS election directives</td><td><span class="tag tag-red">EMS workstation (Dominion Democracy Suite) found connected to VLAN 10 Feb 2026 — Ohio SoS air-gap directive violated; admin workstations patching current</span></td></tr>
+                <tr><td>IT Staff</td><td>9 (admin workstations / laptops)</td><td>Windows 11 Pro</td><td>Domain admin access; all systems</td><td><span class="tag tag-yellow">IT staff have domain admin privileges; shared account "countyit" used for server work — no individual accountability for admin actions</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Business Applications &amp; SaaS</h3>
+            <table class="data-table">
+                <thead><tr><th>Application</th><th>Vendor</th><th>Function</th><th>Hosting</th><th>Risk / Access Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Tyler Munis ERP</td><td>Tyler Technologies</td><td>Finance, payroll, HR, procurement — 822 employees</td><td>On-prem (SRV-04)</td><td><span class="tag tag-yellow">No MFA enforced for any users; Tyler support VPN persistent (always-on); payroll dependency: $2.1M/month</span></td></tr>
+                <tr><td>Tyler New World</td><td>Tyler Technologies</td><td>Courts, justice, jail records, police RMS</td><td>On-prem (SRV-05)</td><td><span class="tag tag-yellow">Patch lag 6 months; Tyler support VPN persistent; CJIS data in RMS module — not inventoried for CJIS compliance scope</span></td></tr>
+                <tr><td>Zetron Viper 9-1-1 CAD</td><td>Zetron (Motorola Solutions)</td><td>Emergency dispatch, call tracking, unit status</td><td>On-prem (SRV-06)</td><td><span class="tag tag-red">Life-safety; EOL OS; Zetron SLA is next-business-day; vendor patch approval process never completed in 3 years</span></td></tr>
+                <tr><td>Dominion Democracy Suite 5.17</td><td>Dominion Voting Systems</td><td>Election management, ballot programming, results tabulation</td><td>Standalone workstation (FAC-08)</td><td><span class="tag tag-red">Air-gap required per Ohio SoS; found on county network Feb 2026; last security update from Dominion: Oct 2024</span></td></tr>
+                <tr><td>Microsoft 365 GCC</td><td>Microsoft</td><td>Email (Outlook), Teams, SharePoint — all 822 employees</td><td>Cloud (GCC)</td><td><span class="tag tag-yellow">Microsoft Defender for Office 365 Plan 1 licensed but not fully configured; MFA enforced only for IT staff (9 of 822); conditional access policies not configured</span></td></tr>
+                <tr><td>COGNOS BI</td><td>IBM / legacy</td><td>Financial reporting; federal tax data processing (IRS Pub 1075 scope)</td><td>On-prem (SRV-08, SQL 2014)</td><td><span class="tag tag-red">EOL SQL Server 2014; access logs not reviewed quarterly (IRS Pub 1075 §4.6 requirement); 3 shared COGNOS logins in use</span></td></tr>
+                <tr><td>Esri ArcGIS Enterprise</td><td>Esri</td><td>GIS, parcel mapping, infrastructure planning</td><td>On-prem (SRV-10) + public portal</td><td><span class="tag tag-yellow">Public parcel portal has no WAF; unauthenticated API endpoint exposes internal parcel records — low sensitivity but unintended exposure</span></td></tr>
+                <tr><td>Accela</td><td>Accela Inc.</td><td>Building permits, inspections, code enforcement</td><td>SaaS (cloud-hosted)</td><td><span class="tag tag-green">SOC 2 Type II; MFA enforced by Accela; BAA not applicable; annual security review conducted by Accela</span></td></tr>
+                <tr><td>Axon / Evidence.com</td><td>Axon Enterprise</td><td>Body camera video, digital evidence chain-of-custody (Sheriff)</td><td>SaaS (cloud)</td><td><span class="tag tag-green">Axon-managed security; CJIS-compliant platform; encrypted at rest and in transit; SOC 2 Type II</span></td></tr>
+                <tr><td>OpenGov</td><td>OpenGov Inc.</td><td>Public budget transparency portal (citizen-facing)</td><td>SaaS (cloud)</td><td><span class="tag tag-green">Read-only public data; no county PII; SOC 2 Type II; no significant security risk</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — Shared Administrator Account:</strong> All server administration across all 10 servers and all 8 facilities is conducted under the shared domain administrator account <strong>"countyit"</strong> — an account with full Domain Administrator privileges across the entire county Active Directory environment. The password for this account is written on a whiteboard in the FAC-01 server room and is known to all 9 IT staff members. The password is changed quarterly but there is <strong>no individual accountability</strong> for administrative actions taken under this account. Event logs record the account name "countyit" — not the individual — for all administrative activity including Active Directory changes, server access, and Group Policy modifications. In the event of an insider incident, malicious admin action, or forensic investigation, it would be impossible to determine which individual performed specific administrative actions. A single compromised "countyit" session — via phishing, stolen credential, or unauthorized physical access to the FAC-01 server room — would provide full domain control across all county systems, including CJIS-regulated law enforcement data, IRS federal tax information, election management systems, and 911 CAD management access.
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════
+         5. CRITICAL GOVERNMENT SYSTEMS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🚨 Critical Government Systems &amp; Public Safety Infrastructure</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>Government IT is distinct from commercial IT in that system failures directly impact legally mandated public services, public safety, and constitutional processes. For Harmon County, five system categories carry critical or life-safety designations: 911 Emergency Dispatch, Election Management, Courts and Justice, Law Enforcement RMS, and Finance/Payroll (ERP). Unlike commercial environments where outages translate to revenue loss, outages in these systems can delay court proceedings, disrupt emergency response, interrupt legally required payroll disbursements, and compromise election integrity — each with distinct legal, regulatory, and public safety consequences.</p>
+
+            <table class="data-table">
+                <thead><tr><th>System</th><th>Platform</th><th>Function</th><th>Connectivity</th><th>Criticality</th><th>Security Notes</th></tr></thead>
+                <tbody>
+                <tr>
+                    <td><strong>Zetron Viper 9-1-1 CAD</strong></td>
+                    <td>On-prem SRV-06 (Win Server 2012 R2 EOL, FAC-03)</td>
+                    <td>Emergency call intake, dispatch, incident tracking for all Harmon County 911 calls (~38,000/year)</td>
+                    <td>Dedicated PSAP phone trunks; VLAN 30 (isolated from corp LAN); Zetron remote support VPN</td>
+                    <td><span class="tag tag-red">⚠️ Life-Safety</span></td>
+                    <td><span class="tag tag-red">EOL OS, zero patches in 36+ months, Zetron SLA = next-business-day, no IDS on VLAN 30, no redundant CAD server, manual fallback procedure undocumented</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Tyler Munis ERP</strong></td>
+                    <td>On-prem SRV-04 (Win Server 2019, FAC-01)</td>
+                    <td>County payroll ($2.1M/month for 822 employees), finance, HR, purchasing, accounts payable/receivable</td>
+                    <td>VLAN 10 (Admin); Tyler persistent support VPN; Pulse Secure VPN (remote access)</td>
+                    <td><span class="tag tag-red">High — Operational</span></td>
+                    <td><span class="tag tag-yellow">No MFA for any user; Tyler support VPN persistent and unmonitored; ransomware on VLAN 10 could encrypt Munis data and halt county operations</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Tyler New World (Courts &amp; RMS)</strong></td>
+                    <td>On-prem SRV-05 (Win Server 2016, FAC-01)</td>
+                    <td>Court docketing, case management, jail records, inmate booking, law enforcement records management (RMS)</td>
+                    <td>VLAN 20 (CJIS/Sheriff) + VLAN 40 (Courts); Tyler support VPN; statewide LEADS connection</td>
+                    <td><span class="tag tag-red">High — Justice / CJIS</span></td>
+                    <td><span class="tag tag-yellow">6-month OS patch lag; Tyler support VPN persistent; CJIS data in RMS module — CJIS compliance audit pending; statewide LEADS connection requires CJIS certification</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Dominion Democracy Suite 5.17 (EMS)</strong></td>
+                    <td>Dedicated workstation (Win 10 Pro, FAC-08)</td>
+                    <td>Election ballot programming, logic &amp; accuracy testing, results tabulation for all Harmon County elections</td>
+                    <td>Should be completely air-gapped per Ohio SoS directive; <span class="tag tag-red">found on VLAN 10 Feb 2026</span></td>
+                    <td><span class="tag tag-red">High — Election Integrity</span></td>
+                    <td><span class="tag tag-red">Ohio SoS air-gap directive violated; workstation connected to county Admin VLAN for voter registration data download "convenience"; Ohio SoS notification not yet made; last security patch from Dominion: Oct 2024</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Esri ArcGIS Enterprise</strong></td>
+                    <td>On-prem SRV-10 (Win Server 2019, FAC-01)</td>
+                    <td>County GIS, parcel mapping, infrastructure planning, public property search portal</td>
+                    <td>VLAN 10 (internal) + public-facing internet portal (no WAF)</td>
+                    <td><span class="tag tag-yellow">Medium — Public Service</span></td>
+                    <td><span class="tag tag-yellow">Public parcel portal internet-exposed without WAF; unauthenticated REST API endpoint returns internal parcel owner records — low sensitivity but unintended; no monitoring on public-facing portal</span></td>
+                </tr>
+                <tr>
+                    <td><strong>COGNOS BI (IRS Pub 1075)</strong></td>
+                    <td>On-prem SRV-08 (SQL Server 2014 EOL, FAC-01)</td>
+                    <td>County financial reporting; processes and stores federal tax information (FTI) for property tax administration</td>
+                    <td>VLAN 10 (Admin); county auditor staff access; IRS data feed</td>
+                    <td><span class="tag tag-red">High — IRS Pub 1075</span></td>
+                    <td><span class="tag tag-red">EOL SQL Server 2014 (known CVEs); IRS access log review noncompliant; 3 shared COGNOS logins in use; IRS CP2000 equivalent risk if FTI is exfiltrated</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Accela (Permits)</strong></td>
+                    <td>SaaS — Accela cloud-hosted</td>
+                    <td>Building permits, inspections, code enforcement — public-facing and staff-facing</td>
+                    <td>Internet HTTPS; Accela-managed infrastructure</td>
+                    <td><span class="tag tag-yellow">Medium — Public Service</span></td>
+                    <td><span class="tag tag-green">SOC 2 Type II; MFA enforced by Accela for staff; public portal scoped appropriately; annual security review current</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Axon / Evidence.com</strong></td>
+                    <td>SaaS — Axon cloud-hosted</td>
+                    <td>Sheriff body camera video, digital evidence, chain-of-custody documentation</td>
+                    <td>Internet HTTPS (encrypted); Axon-managed</td>
+                    <td><span class="tag tag-yellow">Medium — CJIS / Evidence</span></td>
+                    <td><span class="tag tag-green">Axon-managed security; CJIS-compliant platform; encrypted at rest and in transit; SOC 2 Type II; no significant IT-managed risk</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — 911 CAD Server (SRV-06) End-of-Life &amp; Unpatched:</strong> The Zetron Viper 9-1-1 CAD server (SRV-06) at FAC-03 is a life-safety system running <strong>Windows Server 2012 R2 (EOL October 2023)</strong> with <strong>zero operating system patches applied in over 36 months</strong>. IT Director Webb submitted a written patch authorization request to Zetron in January 2023 — standard procedure for vendor-managed systems — but has received no response. The server has no endpoint detection or response (EDR) software, no intrusion detection on VLAN 30, and its Zetron support SLA is "next business day" — meaning a Saturday night failure would leave Harmon County operating manual 911 dispatch from paper logs until at minimum Monday morning. There is no documented manual dispatch fallback procedure, and dispatch staff have not practiced manual operations in over three years. A ransomware infection, hardware failure, or cyberattack on this single unpatched server would directly degrade 911 emergency response for 94,200 residents.
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — Election Management System Air-Gap Violation:</strong> During pre-election Logic &amp; Accuracy testing preparation in February 2026, a county IT technician connected the Dominion Democracy Suite 5.17 EMS workstation at FAC-08 to the county administrative network (VLAN 10) to download an updated voter registration extract via a mapped network drive — a procedure done "every election cycle for convenience." This directly violates the <strong>Ohio Secretary of State's directive requiring complete network isolation of election management systems during the pre-election period</strong>. The Ohio SoS auditor present for the L&amp;A test observed the active network connection and flagged it. Testing has been suspended pending resolution. The county has not yet notified the Ohio Secretary of State's office of the extent of the violation, and the county Board of Elections Director is unaware of the full regulatory implications. The two-hour decision window to either isolate the workstation (and reimage it per SoS protocol) or suspend testing entirely expires before the county attorney can be reached.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         6. NETWORK ARCHITECTURE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🌐 Network Architecture &amp; Communications</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Network Infrastructure Overview</h3>
+            <p>Harmon County's network infrastructure is centralized at FAC-01 (Courthouse Annex data center) and extends to seven county facilities via AT&amp;T fiber and to four remote township offices via Comcast SDSL. The core switching infrastructure consists of <strong>Cisco Catalyst 9200 series</strong> managed switches. Perimeter security is provided by a <strong>Fortinet FortiGate 200E</strong> next-generation firewall with UTM features licensed (IPS, web filtering, application control) — though IPS signatures have not been updated in 14 weeks. Remote access is handled by <strong>Pulse Secure SSL VPN</strong> with <strong>no MFA enforcement</strong> — a known gap affecting all remote users including IT staff and township employees. Wireless is deployed via <strong>Ubiquiti UniFi APs</strong> in a mixed deployment; several APs at the Courthouse public lobby and Public Works were installed without proper SSID isolation configuration and are not managed via the central UniFi controller.</p>
+
+            <h3>VLAN Segmentation</h3>
+            <table class="data-table">
+                <thead><tr><th>VLAN</th><th>Name</th><th>Subnet</th><th>Primary Systems / Users</th><th>Segmentation Notes</th></tr></thead>
+                <tbody>
+                <tr><td><strong>VLAN 10</strong></td><td>Admin / General</td><td>10.10.0.0/20</td><td>Finance, HR, general staff (280 workstations); Tyler Munis (SRV-04); COGNOS (SRV-08); file server (SRV-07)</td><td><span class="tag tag-yellow">Largest segment; Munis ERP and IRS Pub 1075 COGNOS data co-mingled with general staff; Election EMS workstation found here (Feb 2026)</span></td></tr>
+                <tr><td><strong>VLAN 20</strong></td><td>Law Enforcement / CJIS</td><td>10.20.0.0/24</td><td>Sheriff's Office workstations (45 laptops); Tyler New World RMS; jail management systems; LEADS terminal</td><td><span class="tag tag-red">ACL MISCONFIGURATION — traffic from VLAN 10 (Admin) can reach VLAN 20 (CJIS); violates CJIS Security Policy network isolation requirements; identified Jan 2026, not yet remediated</span></td></tr>
+                <tr><td><strong>VLAN 30</strong></td><td>911 Emergency Comms</td><td>10.30.0.0/24</td><td>Zetron CAD server (SRV-06); 12 dispatch consoles; PSAP telephone trunks; radio dispatch infrastructure</td><td><span class="tag tag-yellow">Physically separate at FAC-03; Zetron support VPN terminates on this VLAN; no IDS coverage; no monitoring of network traffic on this segment</span></td></tr>
+                <tr><td><strong>VLAN 40</strong></td><td>Courts / Justice</td><td>10.40.0.0/24</td><td>Court workstations (32); Tyler New World court module; public kiosk terminals (2, isolated sub-VLAN)</td><td><span class="tag tag-yellow">SRV-05 bridged between VLAN 20 and VLAN 40 for RMS/courts integration — bridge not documented in network diagrams; patch lag on SRV-05</span></td></tr>
+                <tr><td><strong>VLAN 50</strong></td><td>Health Department</td><td>10.50.0.0/24</td><td>Health Dept workstations (24); state immunization registry connection; EHR vendor connection</td><td><span class="tag tag-yellow">HIPAA-scope segment; adequately isolated; state EHR connection exits via dedicated path — not through county firewall; firewall rule review needed</span></td></tr>
+                <tr><td><strong>VLAN 60</strong></td><td>Public Works</td><td>10.60.0.0/24</td><td>Public Works workstations (18); field Android tablets (8, when docked); road/bridge monitoring sensors (12 sensors)</td><td><span class="tag tag-yellow">Flat — road sensors and staff workstations share segment; no microsegmentation; sensor firmware not updated since 2022; tablets connect via Wi-Fi without NAC</span></td></tr>
+                <tr><td><strong>VLAN 70</strong></td><td>Guest / Public Wi-Fi</td><td>192.168.70.0/22</td><td>Courthouse public lobby Wi-Fi; courtroom attorney access; public kiosk tablets</td><td><span class="tag tag-green">Isolated — no route to any county VLAN; Fortinet content filtering active; acceptable security posture for this segment</span></td></tr>
+                <tr><td><strong>VLAN 80</strong></td><td>IT Management</td><td>10.80.0.0/24</td><td>Server management interfaces; Veeam backup (SRV-09); IT admin workstations; iDRAC/BMC management</td><td><span class="tag tag-red">Shared account "countyit" (Domain Admin) used for all management tasks on this segment; no individual admin accountability; password on whiteboard in FAC-01 server room</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Network Diagram</h3>
+            <div class="net-diagram">
+<span class="nd-title">HARMON COUNTY NETWORK TOPOLOGY — HCIT / FAC-01 PRIMARY DATA CENTER</span>
+<span class="nd-comment">═══════════════════════════════════════════════════════════════════════════</span>
+
+<span class="nd-white">INTERNET</span>
+    │
+    ▼
+<span class="nd-yellow">[ AT&amp;T Fiber — 1 Gbps ]</span>       <span class="nd-comment">← Primary WAN uplink</span>
+    │
+    ▼
+<span class="nd-cyan">[ Fortinet FortiGate 200E ]</span>     <span class="nd-comment">← NGFW / UTM (IPS sigs: 14 weeks stale)</span>
+    │        │
+    │        └──── <span class="nd-yellow">[ Pulse Secure SSL VPN ]</span>  <span class="nd-red">← NO MFA — CRITICAL GAP</span>
+    │                   │
+    │              Remote users, IT staff,
+    │              township offices (Comcast SDSL)
+    │
+    ▼
+<span class="nd-teal">[ Cisco Catalyst 9200 Core Switch — FAC-01 ]</span>
+    │
+    ├── <span class="nd-yellow">VLAN 10</span>  10.10.0.0/20  <span class="nd-white">Admin / General</span>       <span class="nd-comment">(280 workstations; Munis; COGNOS)</span>
+    │       │
+    │       └── <span class="nd-red">⚠ ACL MISCONFIGURATION → reaches VLAN 20 (CJIS)</span>
+    │
+    ├── <span class="nd-red">VLAN 20</span>  10.20.0.0/24  <span class="nd-white">Law Enforcement / CJIS</span> <span class="nd-comment">(Sheriff; RMS; LEADS)</span>
+    │
+    ├── <span class="nd-yellow">VLAN 30</span>  10.30.0.0/24  <span class="nd-white">911 Emergency Comms</span>    <span class="nd-comment">(FAC-03 via fiber; Zetron CAD)</span>
+    │                                                   <span class="nd-red">⚠ No IDS; EOL SRV-06</span>
+    │
+    ├── <span class="nd-yellow">VLAN 40</span>  10.40.0.0/24  <span class="nd-white">Courts / Justice</span>       <span class="nd-comment">(SRV-05 bridged VLAN 20↔40)</span>
+    │
+    ├── <span class="nd-yellow">VLAN 50</span>  10.50.0.0/24  <span class="nd-white">Health Department</span>      <span class="nd-comment">(HIPAA scope)</span>
+    │
+    ├── <span class="nd-yellow">VLAN 60</span>  10.60.0.0/24  <span class="nd-white">Public Works</span>           <span class="nd-comment">(flat; sensors + workstations)</span>
+    │
+    ├── <span class="nd-green">VLAN 70</span>  192.168.70.0/22 <span class="nd-white">Guest / Public Wi-Fi</span>  <span class="nd-comment">(isolated — OK)</span>
+    │
+    └── <span class="nd-red">VLAN 80</span>  10.80.0.0/24  <span class="nd-white">IT Management</span>         <span class="nd-comment">⚠ Shared "countyit" Domain Admin</span>
+
+<span class="nd-comment">── REMOTE FACILITIES ─────────────────────────────────────────────</span>
+<span class="nd-white">FAC-02/03</span> (Sheriff/911)  ←── AT&amp;T Fiber  ──→  FAC-01 Core Switch
+<span class="nd-white">FAC-04</span>    (Courts)        ←── AT&amp;T Fiber  ──→  FAC-01 Core Switch
+<span class="nd-white">FAC-05</span>    (Health)        ←── AT&amp;T Fiber  ──→  FAC-01 Core Switch
+<span class="nd-white">FAC-06</span>    (Auditor)       ←── AT&amp;T Fiber  ──→  FAC-01 Core Switch (same building)
+<span class="nd-white">FAC-07</span>    (Public Works)  ←── AT&amp;T Fiber  ──→  FAC-01 Core Switch
+<span class="nd-white">FAC-08</span>    (Elections)     ←── AT&amp;T Fiber  ──→  FAC-01 Core Switch
+<span class="nd-yellow">Townships (4)</span>             ←── Comcast SDSL ──→ Pulse Secure VPN → FAC-01
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — VLAN 10 to VLAN 20 ACL Misconfiguration:</strong> A misconfigured Access Control List on the Cisco Catalyst 9200 core switch allows unrestricted traffic originating from <strong>VLAN 10 (Admin / General — 280 county workstations)</strong> to reach <strong>VLAN 20 (Law Enforcement / CJIS)</strong>. This means that a ransomware infection, malware-compromised workstation, or attacker with a foothold on any general county computer — including computers used by finance clerks, HR staff, or administrative assistants — can pivot directly to CJIS-regulated law enforcement systems including the Tyler New World RMS, jail management system, and statewide LEADS terminal. This is a direct violation of <strong>FBI CJIS Security Policy v5.9.2 network isolation requirements</strong> for systems processing Criminal Justice Information (CJI). The misconfiguration was identified during an MS-ISAC advisory review in January 2026. Network Admin Daniel Cruz has drafted a remediation plan but implementation has been deferred twice due to concern about disrupting Tyler New World's VLAN 20–40 bridge during business hours. The ACL fix has not been applied as of the date of this assessment.
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>Remote Access — No MFA on Pulse Secure VPN:</strong> The county's Pulse Secure SSL VPN provides remote access to all VLAN 10 resources — including Tyler Munis ERP (payroll, finance, HR) — for all 9 IT staff and approximately 40 remote county employees including township clerks. <strong>No multi-factor authentication is enforced.</strong> The FBI CJIS Security Policy v5.9.2 Section 5.6.2.2 mandates advanced authentication (equivalent to MFA) for any remote access to Criminal Justice Information. Three Sheriff's Office detectives use the county VPN for remote RMS access — meaning the VPN is already out of CJIS compliance. Pulse Secure supports RADIUS-based MFA and is compatible with Duo Security (free tier available for up to 10 users through MS-ISAC). This remediation has been on the IT roadmap for 18 months but has not been prioritized due to competing operational demands.
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════
+         7. SECURITY POSTURE & C2M2 ASSESSMENT
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🛡️ Security Posture &amp; C2M2 Domain Assessment</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>Harmon County conducted a C2M2 v2.1 self-evaluation in Q1 2026, facilitated by IT Director Marcus Webb with support from the MS-ISAC Ohio state coordinator. The assessment evaluated all ten C2M2 domains against documented practices, interviews with IT staff, and review of available policy documentation. Results reflect a posture typical of a resource-constrained county IT department managing a broad technology footprint without dedicated security staff: generally MIL 1 across most operational domains, with MIL 2 achieved only in Asset Management (where the Tyler Munis asset module provides structured tracking), and critically MIL 0 in both Situational Awareness and Supply Chain &amp; Dependencies — two domains where absence of capability creates outsized risk.</p>
+
+            <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="metric-box"><div class="mnum" style="color:#dc3545;">2</div><div class="mlbl">Domains at MIL 0 (Critical Gap)</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#856404;">7</div><div class="mlbl">Domains at MIL 1 (Partial)</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#17a2b8;">1</div><div class="mlbl">Domain at MIL 2 (Managed)</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#888;">0</div><div class="mlbl">Domains at MIL 3 (Optimized)</div></div>
+            </div>
+
+            <h3>C2M2 Domain Maturity Assessment</h3>
+            <table class="data-table">
+                <thead><tr><th>Domain (Abbrev.)</th><th>Full Domain Name</th><th>MIL Achieved</th><th>Key Finding</th><th>Priority</th></tr></thead>
+                <tbody>
+                <tr>
+                    <td><strong>ASSET</strong></td>
+                    <td>Asset, Change &amp; Configuration Management</td>
+                    <td><span class="tag tag-blue">MIL 2</span></td>
+                    <td>Server and application inventory maintained via Tyler Munis asset module; change log spreadsheet exists but is informal; configuration baselines not formally documented for servers or network devices</td>
+                    <td><span class="tag tag-green">Maintain</span></td>
+                </tr>
+                <tr>
+                    <td><strong>THREAT</strong></td>
+                    <td>Threat &amp; Vulnerability Management</td>
+                    <td><span class="tag tag-yellow">MIL 1</span></td>
+                    <td>Nessus Essentials (free) scans conducted quarterly; results reviewed by IT Director but not formally tracked or remediated on a defined schedule; EOL servers not scanned (vendor restriction); no threat intelligence integration</td>
+                    <td><span class="tag tag-orange">High</span></td>
+                </tr>
+                <tr>
+                    <td><strong>RISK</strong></td>
+                    <td>Risk Management</td>
+                    <td><span class="tag tag-yellow">MIL 1</span></td>
+                    <td>Informal risk register maintained by IT Director in a spreadsheet; no defined risk appetite or tolerance statements; no executive risk review cycle; Board of County Commissioners has not received a formal cybersecurity risk briefing since 2022</td>
+                    <td><span class="tag tag-orange">High</span></td>
+                </tr>
+                <tr>
+                    <td><strong>ACCESS</strong></td>
+                    <td>Identity &amp; Access Management</td>
+                    <td><span class="tag tag-yellow">MIL 1</span></td>
+                    <td>Active Directory manages user accounts; onboarding/offboarding process exists but access review has not been conducted in 24 months; 14 former employees' accounts are still active; shared "countyit" domain admin account; no MFA on VPN or Microsoft 365 for general staff</td>
+                    <td><span class="tag tag-red">Critical</span></td>
+                </tr>
+                <tr>
+                    <td><strong>SITUATION</strong></td>
+                    <td>Situational Awareness</td>
+                    <td><span class="tag tag-red">MIL 0</span></td>
+                    <td>No SIEM deployed; MS-ISAC Albert sensor generates alerts that are not actively monitored by any staff member (alert emails go to a shared mailbox checked irregularly); Microsoft 365 Defender alerts not reviewed; no log aggregation; the county would not know it was breached until operational failure</td>
+                    <td><span class="tag tag-red">Critical</span></td>
+                </tr>
+                <tr>
+                    <td><strong>RESPONSE</strong></td>
+                    <td>Event &amp; Incident Response, Continuity of Operations</td>
+                    <td><span class="tag tag-yellow">MIL 1</span></td>
+                    <td>Incident response plan written in 2021; never exercised or tabletop tested; no 24/7 monitoring or on-call rotation for IT; IR plan does not map to Ohio RC §9.08 72-hour reporting requirement; disaster recovery plan last updated 2021 (backup site = locked closet at FAC-01)</td>
+                    <td><span class="tag tag-red">Critical</span></td>
+                </tr>
+                <tr>
+                    <td><strong>DEPENDENCIES</strong></td>
+                    <td>Supply Chain &amp; External Dependencies</td>
+                    <td><span class="tag tag-red">MIL 0</span></td>
+                    <td>No vendor risk assessments ever conducted; Tyler Technologies, Zetron, and Dominion all have persistent VPN or direct access to county systems with no monitoring or time-limited sessions; no vendor SOC 2 reports reviewed; no third-party dependency inventory; the county cannot identify all entities with active access to its systems</td>
+                    <td><span class="tag tag-red">Critical</span></td>
+                </tr>
+                <tr>
+                    <td><strong>WORKFORCE</strong></td>
+                    <td>Workforce Management</td>
+                    <td><span class="tag tag-yellow">MIL 1</span></td>
+                    <td>Annual security awareness training via KnowBe4 free tier; completion rate not tracked or enforced; no role-based training for high-risk roles (finance, wire/payroll, law enforcement); no background check policy for IT admin access to CJIS systems beyond state standard</td>
+                    <td><span class="tag tag-yellow">Medium</span></td>
+                </tr>
+                <tr>
+                    <td><strong>ARCHITECTURE</strong></td>
+                    <td>Cybersecurity Architecture</td>
+                    <td><span class="tag tag-yellow">MIL 1</span></td>
+                    <td>Fortinet NGFW in place; VLAN segmentation implemented (with critical ACL misconfiguration in VLAN 10→20); no zero-trust principles; no endpoint detection/response (EDR) deployed; no email security gateway beyond M365 Defender (partially configured); no WAF on ArcGIS public portal</td>
+                    <td><span class="tag tag-orange">High</span></td>
+                </tr>
+                <tr>
+                    <td><strong>PROGRAM</strong></td>
+                    <td>Program Management</td>
+                    <td><span class="tag tag-yellow">MIL 1</span></td>
+                    <td>No formal cybersecurity program; IT Director manages security ad hoc alongside all other IT duties; cybersecurity analyst position vacant 14 months; no cybersecurity budget line item separate from general IT; no formal metrics reported to Board of County Commissioners</td>
+                    <td><span class="tag tag-orange">High</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h3>C2M2 Domain Detail Cards</h3>
+            <div class="domain-grid">
+                <div class="domain-card dc-mil0">
+                    <span class="mil-badge mil-badge-0">MIL 0 — Not Performed</span>
+                    <h4>Situational Awareness (SITUATION)</h4>
+                    <p>The county has no ability to detect an active intrusion. The MS-ISAC Albert sensor generates network alerts that arrive in a shared email inbox checked irregularly. Microsoft 365 Defender for Office 365 is licensed but alert policies have not been configured. There is no log aggregation, no SIEM, and no defined process for reviewing security events.</p>
+                    <ul>
+                        <li>Albert sensor alerts not actively monitored</li>
+                        <li>No SIEM — logs exist on individual servers only</li>
+                        <li>M365 Defender alerts unconfigured</li>
+                        <li>Breach discovery would occur only via operational failure</li>
+                    </ul>
+                </div>
+                <div class="domain-card dc-mil0">
+                    <span class="mil-badge mil-badge-0">MIL 0 — Not Performed</span>
+                    <h4>Supply Chain &amp; Dependencies (DEPENDENCIES)</h4>
+                    <p>No vendor risk assessments have ever been conducted. Tyler Technologies, Zetron, and Dominion Voting Systems all have persistent remote access to county systems. No SOC 2 reports have been reviewed for any vendor. The county cannot enumerate all entities with current access.</p>
+                    <ul>
+                        <li>Tyler support VPN: persistent, unmonitored, unlogged</li>
+                        <li>Zetron support VPN: VLAN 30 access, no session timeout</li>
+                        <li>No vendor security questionnaire process</li>
+                        <li>No third-party dependency register</li>
+                    </ul>
+                </div>
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Identity &amp; Access Management (ACCESS)</h4>
+                    <p>Active Directory provides user account management. However, no access review has been conducted in 24 months, 14 former employee accounts are active, the shared "countyit" domain admin account eliminates individual accountability, and MFA is enforced for only 9 of 822 M365 accounts.</p>
+                    <ul>
+                        <li>14 former employee accounts still active in AD</li>
+                        <li>Shared Domain Admin account "countyit"</li>
+                        <li>No MFA for VPN or M365 (except IT staff)</li>
+                        <li>No privileged access management (PAM) tooling</li>
+                    </ul>
+                </div>
+                <div class="domain-card dc-mil2">
+                    <span class="mil-badge mil-badge-2">MIL 2 — Managed</span>
+                    <h4>Asset, Change &amp; Configuration Mgmt (ASSET)</h4>
+                    <p>The Tyler Munis asset module provides structured hardware and software inventory tracking. Change management uses an informal shared spreadsheet. Configuration baselines are not formally documented, but asset visibility is significantly better than most county peers.</p>
+                    <ul>
+                        <li>Hardware inventory current via Munis asset module</li>
+                        <li>Software inventory maintained (partially)</li>
+                        <li>Informal change log spreadsheet exists</li>
+                        <li>No formal configuration baseline documentation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>MIL 0 in Situational Awareness — Highest Operational Risk:</strong> A C2M2 MIL 0 rating in Situational Awareness means Harmon County has <strong>effectively zero capability to detect an active cyberattack in progress</strong>. The MS-ISAC Albert sensor deployed in 2022 generates alerts — but those alerts email to a shared mailbox that is checked sporadically. Microsoft 365 Defender, which is licensed and capable, has not been configured to generate actionable alerts. Server and network event logs exist in isolation on individual systems but are never aggregated or reviewed. In practical terms: if an attacker gained access to VLAN 10 today through a phishing attack on a county employee, moved laterally to the CJIS segment via the ACL misconfiguration, and began exfiltrating law enforcement records — <strong>Harmon County IT would have no automated mechanism to detect this activity</strong>. Discovery would most likely occur only when a county employee noticed degraded system performance, a ransomware note appeared, or a downstream system (like the FBI CJIS network) flagged anomalous query patterns.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         8. REGULATORY & COMPLIANCE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>⚖️ Regulatory &amp; Compliance Obligations</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <div class="alert alert-govt">
+                <strong>Multi-Framework Compliance Complexity:</strong> County government occupies a uniquely complex regulatory position: a single 9-person IT team must simultaneously maintain compliance with the FBI CJIS Security Policy (law enforcement), HIPAA Security Rule (health department), IRS Publication 1075 (auditor/treasurer tax data), HAVA/EAC and Ohio Secretary of State directives (elections), and Ohio Revised Code cybersecurity incident reporting — each with different requirements, different oversight bodies, and different audit cycles. No commercial sector peer faces this breadth of simultaneous regulatory obligations at this staffing level.
+            </div>
+
+            <table class="data-table">
+                <thead><tr><th>Regulatory Framework</th><th>Applies To</th><th>Key Requirements</th><th>Compliance Status</th></tr></thead>
+                <tbody>
+                <tr>
+                    <td><strong>FBI CJIS Security Policy v5.9.2</strong></td>
+                    <td>Sheriff's Office, Courts, IT (RMS and Tyler New World system access)</td>
+                    <td>Advanced authentication for remote access; MDM for mobile devices; screensaver lockout; background checks; audit logging; encryption in transit; personnel security training</td>
+                    <td><span class="tag tag-red">Non-Compliant: VPN lacks MFA (§5.6.2.2); MDM not deployed for 12 mobile devices; screensaver policy missing on Sheriff workstations; CJIS audit letter received — Q3 2026 audit scheduled</span></td>
+                </tr>
+                <tr>
+                    <td><strong>HIPAA Security Rule (45 CFR §164)</strong></td>
+                    <td>County Health Department; any IT system handling Protected Health Information (PHI)</td>
+                    <td>Annual risk analysis; access controls; audit logging; workforce training; Business Associate Agreements (BAAs) with vendors handling PHI; encryption; incident response</td>
+                    <td><span class="tag tag-yellow">Partial: Risk analysis dated 2022 (should be annual or upon material change); BAA inventory incomplete — state EHR vendor BAA not on file; workstation-level encryption not verified for Health Dept workstations</span></td>
+                </tr>
+                <tr>
+                    <td><strong>IRS Publication 1075 (Tax Information Security)</strong></td>
+                    <td>County Auditor / Treasurer — all systems processing Federal Tax Information (FTI)</td>
+                    <td>Quarterly access log review (§4.6); encryption of FTI at rest and in transit; background checks for FTI-authorized personnel; incident reporting to IRS within 24 hours; EOL system prohibition for FTI processing</td>
+                    <td><span class="tag tag-red">Non-Compliant: COGNOS running on EOL SQL Server 2014 (IRS explicitly prohibits processing FTI on EOL platforms); quarterly access log review not conducted; 3 shared COGNOS logins violate individual accountability requirement</span></td>
+                </tr>
+                <tr>
+                    <td><strong>HAVA / EAC Election Security Guidelines</strong></td>
+                    <td>Board of Elections — all election management systems and processes</td>
+                    <td>EMS network isolation; chain-of-custody for ballots and election media; physical security for voting equipment; pre-election logic &amp; accuracy testing; post-election audit capability</td>
+                    <td><span class="tag tag-red">Non-Compliant: Dominion EMS workstation found connected to county Admin VLAN during pre-election period (Feb 2026) — direct violation of Ohio SoS air-gap directive; Ohio SoS notification not yet completed</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Ohio Revised Code §9.08 (Cyber Incident Reporting)</strong></td>
+                    <td>All Harmon County IT operations</td>
+                    <td>Report cybersecurity incidents to the Ohio Department of Administrative Services (DAS) Office of Information Security within 72 hours of discovery; maintain incident documentation</td>
+                    <td><span class="tag tag-yellow">Awareness: Requirement known to IT Director; however, no formal IR procedure maps to ORC §9.08 reporting steps; the county attorney has not issued guidance on what constitutes a reportable incident</span></td>
+                </tr>
+                <tr>
+                    <td><strong>MS-ISAC / CISA Membership</strong></td>
+                    <td>All county IT operations</td>
+                    <td>Albert network sensor deployment; participation in SLTT threat intelligence sharing; access to free incident response resources; MDBR (Malicious Domain Blocking and Reporting)</td>
+                    <td><span class="tag tag-green">Member since 2019; Albert sensor active since 2022; MDBR enrolled; CISA regional advisor contact established; MS-ISAC advisory distribution list subscribed — advisories reviewed by IT Director</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Ohio Secretary of State Election Directives</strong></td>
+                    <td>Board of Elections; IT (for election system support)</td>
+                    <td>Complete network air-gap for EMS workstation during pre-election and election periods; documented chain of custody; L&amp;A testing procedures; post-election audit retention</td>
+                    <td><span class="tag tag-red">Non-Compliant: EMS air-gap directive violated Feb 2026 (workstation on VLAN 10); Ohio SoS auditor present during violation; notification and remediation process initiated but incomplete at time of assessment</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Ohio Public Records Law (ORC §149.43)</strong></td>
+                    <td>All county departments; IT for records management</td>
+                    <td>Public records must be accessible and retained per schedule; cybersecurity incidents that destroy public records may create legal liability; record retention policies must account for electronic records</td>
+                    <td><span class="tag tag-yellow">Partial: Records retention schedule exists; electronic records on SRV-07 not organized per schedule; a ransomware attack encrypting SRV-07 would create immediate public records law exposure</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         9. SCENARIO INJECTS & EXERCISES
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🎯 Scenario Injects &amp; Assessment Exercises</h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>The following five scenario injects are designed for classroom and workshop use. Each presents a realistic incident grounded in documented county government cybersecurity incident patterns. Injects can be used individually (45–90 minutes each) or as a sequenced scenario arc (half-day exercise). Each inject identifies C2M2 domain gaps, regulatory notification obligations, operational consequences, and decision points realistic for a county IT director without a dedicated security team. Instructors may layer injects to demonstrate cascading effects.</p>
+
+            <div class="inject-card">
+                <div class="inject-title">🔴 Inject A — Ransomware Hits Tyler Munis ERP (Payroll Lockout)</div>
+                <p><strong>Scenario:</strong> On a Friday at 2:45 PM, a finance department employee at FAC-01 clicks a phishing link in an email mimicking a Tyler Technologies invoice notification. Within 20 minutes, ransomware has spread across VLAN 10 via SMB, encrypting the Tyler Munis ERP application server (SRV-04), file server (SRV-07), and 47 administrative workstations. A ransom note appears demanding $180,000 in Bitcoin within 72 hours. The 911 CAD system (VLAN 30) is unaffected — VLAN segmentation held for public safety. However, county payroll totaling <strong>$2.1 million</strong> is due to be processed and disbursed by direct deposit on Monday morning. The Veeam backup server (SRV-09) is accessible but no restore has ever been tested. IT Director Webb is the only person authorized to make the ransom decision and is simultaneously fielding calls from the County Administrator, all department heads, and the Board of County Commissioners chair.</p>
+                <ul>
+                    <li>What are the first 60 minutes of containment actions? Who do you notify, in what order, and what do you <em>not</em> do (e.g., reboot systems, run antivirus) that could destroy forensic evidence or worsen the spread?</li>
+                    <li>The county has never tested its Veeam backups. Walk through the decision tree for attempting a restore versus paying the ransom — what information do you need before making that decision, and who has authority to authorize a ransom payment on behalf of a county government?</li>
+                    <li>Ohio Revised Code §9.08 requires notification to Ohio DAS within 72 hours. Does this incident trigger that requirement? Draft the notification. Does the CORSA cyber insurance policy ($2M limit) require notification to the insurer before paying a ransom or engaging an IR firm?</li>
+                    <li>County employees will not receive payroll on Monday without Munis. What are the emergency payroll options — and which county official has authority to authorize emergency manual payroll disbursement under Ohio law?</li>
+                    <li>Which three specific C2M2 domain gaps most directly enabled this incident? For each, identify the specific practice that was not in place and estimate the cost of implementing it versus the cost of this incident.</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">🔴 Inject B — 911 CAD System Failure During Peak Call Volume</div>
+                <p><strong>Scenario:</strong> At 11:15 PM on a Saturday night — peak call volume period for 911 — the Zetron Viper CAD system (SRV-06) at FAC-03 crashes and does not respond to restart attempts. Dispatchers report that all CAD screens have gone dark. Incoming 911 calls are still being answered by the 12 dispatch consoles (the PSAP phone infrastructure is separate from the CAD server), but dispatchers have no computer-assisted dispatch capability and must revert to paper logs, radio, and verbal unit tracking. The 911 Communications Director pages IT Director Webb at 11:22 PM. Webb is on personal time 45 minutes from FAC-03. Zetron's support line confirms their SLA is "next business day" — the earliest a Zetron technician can be on-site is Monday at 8 AM. SRV-06 (Windows Server 2012 R2) has no recent backups (it is outside the Veeam scope), no hot spare, and has never been patched. The cause of the crash is unknown — it could be hardware failure, software corruption, or a cyberattack.</p>
+                <ul>
+                    <li>What is the immediate notification chain? Who must be notified within the first 30 minutes — Sheriff, County Administrator, neighboring county 911 center, Ohio EMA, CISA? What is the legal obligation to notify the Ohio 911 Coordinator's office under Ohio RC §4931.49?</li>
+                    <li>Manual dispatch has not been practiced in over three years. How do you assess and manage the operational risk during the degraded dispatch period? What mutual aid agreements with neighboring counties should be activated, and who has authority to activate them?</li>
+                    <li>How do you determine whether this is hardware failure or a cyberattack — and does it matter for your immediate response actions? What forensic evidence preservation steps apply even if you suspect hardware failure?</li>
+                    <li>After restoration, what is the minimum acceptable patch and resilience posture for the 911 CAD system — and how do you make the business case to the Board of County Commissioners for emergency capital funding to replace an EOL life-safety server that has "never failed before"?</li>
+                    <li>Which C2M2 domains — specifically — failed in this scenario? What would a MIL 2 posture in each have looked like, and what would it have cost to achieve?</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">🔴 Inject C — Election System Found on County Network</div>
+                <p><strong>Scenario:</strong> At 9:10 AM on a Tuesday during pre-election Logic &amp; Accuracy testing preparation, the Ohio Secretary of State field auditor present at FAC-08 observes that the Dominion Democracy Suite 5.17 EMS workstation has an active network cable connected to the county wall jack. A ping test from the auditor's laptop confirms the workstation is live on the county Admin VLAN (10.10.14.22). The auditor immediately stops all L&amp;A testing and issues a verbal stop-work order. Under Ohio SoS directive, the EMS workstation must be completely air-gapped — no network connection, no Wi-Fi — during the entire pre-election period. Reimaging of the workstation may be required per SoS protocol if the isolation requirement was violated. The county Board of Elections Director, David Cho, is on-site. The primary election is 19 days away. Ballot programming on the EMS workstation is 70% complete. IT Director Webb is at FAC-01, 12 minutes away. The SoS auditor has given the county a two-hour window to respond before she suspends the L&amp;A testing certification process entirely.</p>
+                <ul>
+                    <li>What are the immediate decisions that must be made in the next two hours? Who makes them — the IT Director, Board of Elections Director, County Administrator, County Attorney, or the SoS auditor? What happens to the election timeline if L&amp;A testing is suspended?</li>
+                    <li>The Ohio SoS protocol may require reimaging the EMS workstation if it was connected to the network during the pre-election period. What information do you need to know before deciding whether to reimage — and what are the consequences of reimaging (loss of 70% complete ballot programming) versus not reimaging (SoS may decertify the equipment)?</li>
+                    <li>Mandatory notification: who must be notified — Ohio SoS, CISA, county legal counsel, the Board of County Commissioners? What is the timeline for each notification, and what do you say in the notification?</li>
+                    <li>The EMS workstation was connected to VLAN 10 — the same VLAN as Tyler Munis, the file server, and 280 general workstations. What is the scope of potential compromise in both directions (from network to EMS, and from EMS to network)? How do you assess this in the two-hour window?</li>
+                    <li>After the immediate crisis: what policy, technical, and training controls would have prevented this? Which C2M2 domains cover election system supply chain management and configuration control?</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">🔴 Inject D — CJIS Audit Letter Arrives</div>
+                <p><strong>Scenario:</strong> On a Monday morning, Sheriff Linda Torres delivers a certified letter to IT Director Marcus Webb. The letter is from the FBI CJIS Division Ohio Compact Officer notifying Harmon County of a scheduled CJIS Security Policy audit in 90 days — a "Triennial Compliance Audit" covering all county systems that access, process, or transmit Criminal Justice Information (CJI) via the statewide LEADS network. The audit will evaluate compliance with CJIS Security Policy v5.9.2, specifically Policy Area 1 (Information Exchange Agreements), Policy Area 4 (Auditing and Accountability), Policy Area 5 (Access Control), Policy Area 6 (Identification and Authentication), and Policy Area 8 (Configuration Management). The Sheriff asks Webb to confirm that the county is compliant. Webb knows immediately it is not. The most significant gaps: no MFA on VPN for remote CJIS access (direct §5.6.2.2 violation), no MDM for 12 Sheriff mobile devices, missing screensaver timeout policy on Sheriff workstations, and the VLAN 10→VLAN 20 ACL misconfiguration that allows admin network traffic to reach the CJIS segment.</p>
+                <ul>
+                    <li>What do you tell the Sheriff right now — and what do you not say without county legal counsel present? What is the legal exposure for the Sheriff personally if the county is found to be in CJIS non-compliance during the audit?</li>
+                    <li>In 90 days, what can realistically be remediated? Prioritize the four identified gaps by: (a) time to remediate, (b) cost to remediate, and (c) audit consequence if not remediated. Which gap, if unmitigated, is most likely to result in a LEADS suspension?</li>
+                    <li>The VLAN ACL misconfiguration (VLAN 10→VLAN 20) is a structural network change requiring a maintenance window. How do you plan and execute this change without disrupting Tyler New World RMS operations for the Sheriff and Courts — and how do you document the remediation for the auditors?</li>
+                    <li>CJIS Policy Area 6 (§5.6.2.2) requires "advanced authentication" equivalent to MFA for any remote access to CJI. Pulse Secure supports RADIUS-based MFA integration with Duo Security. What is the implementation plan, timeline, and cost to achieve CJIS-compliant MFA for the county VPN in 90 days? What is the business case to the Board of County Commissioners?</li>
+                    <li>If the audit finds non-compliance, what are the consequences — immediate LEADS suspension, corrective action plan, or both? How does LEADS suspension affect the Sheriff's operations for the 2–4 weeks it typically takes to remediate and restore access?</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">🔴 Inject E — Suspicious Access to County Tax Data (IRS Pub 1075)</div>
+                <p><strong>Scenario:</strong> On a Thursday at 3:20 AM, a Microsoft 365 Defender alert (one of only a handful configured) fires to the IT Director's personal email. The alert flags a successful interactive sign-in to a county Microsoft 365 account from an IP address geolocating to Kyiv, Ukraine. The compromised account is the shared "countyit" service account — the Domain Administrator account used for all server management. A follow-up check of the county network logs (manually reviewed on the Fortinet FortiGate) shows that the "countyit" account authenticated to SRV-08 (the COGNOS BI server hosting federal tax information) at 3:24 AM and ran two SQL queries against the COGNOS database before the session dropped. The COGNOS database contains Federal Tax Information (FTI) for approximately 41,000 Harmon County property tax accounts — names, addresses, partial SSN data, and prior-year income brackets used for property tax calculations. IRS Publication 1075 §10.0 requires notification to the IRS Office of Safeguards within 24 hours of discovering a potential FTI breach.</p>
+                <ul>
+                    <li>What are the immediate containment actions — specifically, how do you disable or rotate the "countyit" shared account without locking out all active IT staff and potentially breaking server-to-server communications that depend on that account?</li>
+                    <li>IRS Publication 1075 §10.0 requires notification to the IRS Office of Safeguards within <strong>24 hours</strong> of a potential FTI disclosure. Draft the incident notification. Who at the county is authorized to submit an IRS Pub 1075 notification — the IT Director, County Administrator, County Auditor, or County Attorney?</li>
+                    <li>The COGNOS SQL logs show two queries were executed. What do you need to know about those queries to determine whether FTI was actually exfiltrated — and how do you obtain that information from an EOL SQL Server 2014 instance that has no formal audit trail configuration?</li>
+                    <li>The compromised account is the shared "countyit" Domain Administrator. This means the attacker — if they maintained access — had full control of all 10 county servers, all 8 facilities, and all county systems at 3:24 AM. How do you scope the full extent of the potential breach, and what does "assume compromise of everything" mean operationally for county government?</li>
+                    <li>After resolution: the IRS Pub 1075 requirement to notify 41,000 affected residents may apply depending on investigation outcome. What are the costs — financial, legal, and reputational — of a county government sending breach notification letters to 41,000 property tax account holders? Which C2M2 domain gaps (minimum three) directly caused this incident?</li>
+                </ul>
+            </div>
+
+            <hr style="margin: 1.5rem 0; border-color: #b0d4e3;">
+
+            <h3>Remediation Planning Exercise</h3>
+            <div class="exercise-q">
+                <strong>Constraints:</strong> The Harmon County Board of County Commissioners has approved a one-time supplemental IT security budget of <strong>$220,000 (FY2026)</strong> following a briefing by the IT Director on the CJIS audit notification and the election system finding. The IT Director must present a prioritized cybersecurity remediation roadmap at the next Board meeting in three weeks. The 9-person IT team can absorb no more than <strong>12 hours per week of project work</strong> above BAU operations. Domain Controller replacement (SRV-01/02 → Server 2022 migration) is covered by a separate capital budget request pending Board approval — do not include in this exercise. The cybersecurity analyst position remains unfilled for budget reasons and is not part of this supplemental.
+                <p style="margin-top:0.5rem;">Discussion questions for the remediation exercise:</p>
+                <ul>
+                    <li>Which three security gaps represent the highest combined probability-of-occurrence × impact risk to Harmon County right now — and which of those can be remediated within 90 days and within the $220,000 budget?</li>
+                    <li>Categorize your top 10 remediation items as: <em>Quick Wins (0–90 days, &lt;$15K)</em>, <em>Short-Term (90 days – 1 year, &lt;$100K)</em>, and <em>Strategic (1–3 years, &gt;$100K or requiring Board capital approval)</em>. Assign rough cost estimates and IT staff-hours for each.</li>
+                    <li>The MS-ISAC offers free or low-cost resources specifically for SLTT governments: MDBR, free Duo MFA integration support, CIS Controls assessment, no-cost IR assistance, and the Nationwide Cybersecurity Review (NCSR). Which of these should be the IT Director's first calls — and in what order should they be activated?</li>
+                    <li>Make the business case to the Board for hiring a dedicated CISO (estimated $95,000–$115,000/year for a county CISO in Ohio) versus engaging an MSSP with SLTT government experience (estimated $60,000–$90,000/year for co-managed security services). What does each option address — and what does each leave unresolved?</li>
+                    <li>How do you communicate cascading cybersecurity risk — across CJIS, IRS Pub 1075, election security, and 911 reliability — to elected county commissioners whose primary concerns are property taxes, road maintenance, and constituent services? What language, metrics, and framing make cybersecurity risk legible to non-technical elected officials?</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>🏛️ Harmon County IT Department — C2M2 v2.1 Training Case Study | Fictional Scenario</p>
+        <p style="opacity: 0.65; font-size: 0.8rem;">All data is simulated for educational use. Not for operational or compliance purposes. All organization names, personnel, systems, and data are entirely fictional.</p>
+    </div>
+
+</div><!-- end .container -->
+
+<script>
+    // ── Section toggle ──
+    function toggleSection(header) {
+        const body = header.nextElementSibling;
+        const arrow = header.querySelector('.section-arrow');
+        const isOpen = body.classList.contains('open');
+        body.classList.toggle('open', !isOpen);
+        body.style.display = isOpen ? 'none' : 'block';
+        arrow.classList.toggle('open', !isOpen);
+        header.classList.toggle('open', !isOpen);
+    }
+
+    function expandAll() {
+        document.querySelectorAll('.section-body').forEach(b => {
+            b.style.display = 'block'; b.classList.add('open');
+        });
+        document.querySelectorAll('.section-arrow').forEach(a => a.classList.add('open'));
+        document.querySelectorAll('.section-header').forEach(h => h.classList.add('open'));
+    }
+
+    function collapseAll() {
+        document.querySelectorAll('.section-body').forEach(b => {
+            b.style.display = 'none'; b.classList.remove('open');
+        });
+        document.querySelectorAll('.section-arrow').forEach(a => a.classList.remove('open'));
+        document.querySelectorAll('.section-header').forEach(h => h.classList.remove('open'));
+    }
+
+    // ── Edit mode ──
+    let editMode = false;
+    function toggleEditMode() {
+        editMode = !editMode;
+        document.body.classList.toggle('edit-active', editMode);
+        const btn = document.getElementById('editBtn');
+        btn.textContent = editMode ? '🔒 Lock Edits' : '✏️ Edit Mode';
+        btn.classList.toggle('active', editMode);
+        if (editMode) {
+            enableEditing();
+            loadFromStorage();
+        } else {
+            disableEditing();
+            saveToStorage();
+        }
+    }
+
+    function enableEditing() {
+        document.querySelectorAll(
+            '.section-body p, .section-body li, .section-body td, .section-body h3, ' +
+            '.inject-card p, .inject-card li, .metric-box .mnum, .metric-box .mlbl, ' +
+            '.stat-card .snum, .stat-card .slbl, .page-header h1, .page-header .subtitle, ' +
+            '.domain-card p, .domain-card li, .exercise-q p, .exercise-q li'
+        ).forEach(el => {
+            el.setAttribute('contenteditable', 'true');
+        });
+        // Add row buttons to tables
+        document.querySelectorAll('.data-table tbody').forEach(tbody => {
+            const btn = document.createElement('button');
+            btn.className = 'add-row-btn';
+            btn.textContent = '+ Add Row';
+            btn.onclick = () => addTableRow(tbody);
+            tbody.parentElement.after(btn);
+        });
+        // Add list item buttons
+        document.querySelectorAll('.inject-card ul, .exercise-q ul, .domain-card ul').forEach(ul => {
+            const btn = document.createElement('button');
+            btn.className = 'add-row-btn';
+            btn.textContent = '+ Add Item';
+            btn.style.marginTop = '0.3rem';
+            btn.onclick = () => addListItem(ul);
+            ul.after(btn);
+        });
+    }
+
+    function disableEditing() {
+        document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+        document.querySelectorAll('.add-row-btn').forEach(btn => btn.remove());
+        document.querySelectorAll('.del-btn').forEach(btn => btn.remove());
+    }
+
+    function addTableRow(tbody) {
+        const cols = tbody.querySelector('tr') ? tbody.querySelector('tr').cells.length : 4;
+        const tr = document.createElement('tr');
+        for (let i = 0; i < cols; i++) {
+            const td = document.createElement('td');
+            td.setAttribute('contenteditable', 'true');
+            td.textContent = 'New entry';
+            tr.appendChild(td);
+        }
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-btn'; delBtn.textContent = '✕';
+        delBtn.onclick = () => tr.remove();
+        tr.lastChild.appendChild(delBtn);
+        tbody.appendChild(tr);
+    }
+
+    function addListItem(ul) {
+        const li = document.createElement('li');
+        li.setAttribute('contenteditable', 'true');
+        li.textContent = 'New item';
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-btn'; delBtn.textContent = '✕';
+        delBtn.onclick = () => li.remove();
+        li.appendChild(delBtn);
+        ul.appendChild(li);
+    }
+
+    // ── Persistence ──
+    const STORAGE_KEY = 'hcit-case-study-edits';
+
+    function saveToStorage() {
+        try {
+            localStorage.setItem(STORAGE_KEY, document.querySelector('.container').innerHTML);
+        } catch(e) { console.warn('Save failed:', e); }
+    }
+
+    function loadFromStorage() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) document.querySelector('.container').innerHTML = saved;
+        } catch(e) { console.warn('Load failed:', e); }
+    }
+
+    function resetChanges() {
+        if (confirm('Reset all edits and reload the original case study?')) {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+    }
+
+    // ── Export ──
+    function exportHTML() {
+        const html = '<!DOCTYPE html>\n<html lang="en">\n' + document.documentElement.innerHTML + '\n</html>';
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'case-study-govt-harmon-county.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    // ── On load: auto-open Section 1 ──
+    document.addEventListener('DOMContentLoaded', () => {
+        const firstHeader = document.querySelector('.section-header.open');
+        if (firstHeader) {
+            const body = firstHeader.nextElementSibling;
+            if (body) body.style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>
