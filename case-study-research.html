@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study: Allegheny Research University | C2M2 Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #3e1060 0%, #6a1b9a 100%);
+            min-height: 100vh; color: #333;
+        }
+        .container { max-width: 1150px; margin: 0 auto; padding: 2rem; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 1.5rem; font-size: 0.95rem; opacity: 0.9; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+
+        /* ── Edit toolbar ── */
+        .edit-toolbar { position: fixed; top: 1rem; right: 1rem; z-index: 999; display: flex; gap: 0.5rem; flex-direction: column; align-items: flex-end; }
+        .toolbar-btn {
+            background: rgba(74,20,140,0.92); color: white; border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.45rem 0.9rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer;
+            font-family: inherit; font-weight: 600; transition: all 0.2s; white-space: nowrap; backdrop-filter: blur(4px);
+        }
+        .toolbar-btn:hover { background: #6a1b9a; border-color: rgba(255,255,255,0.4); }
+        .toolbar-btn.active { background: #ab47bc; border-color: #ab47bc; }
+
+        /* ── Page header ── */
+        .page-header {
+            background: rgba(255,255,255,0.97); border-radius: 16px; padding: 2.2rem 2rem;
+            margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .page-header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, #4a148c, #6a1b9a, #9c27b0, #ab47bc, #ce93d8);
+        }
+        .page-header .org-label {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: #f3e5f5; border: 1px solid #ce93d8; color: #4a148c;
+            padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.8rem;
+        }
+        .page-header h1 { font-size: 2.3rem; color: #4a148c; font-weight: 800; margin-bottom: 0.3rem; }
+        .page-header h1 span { color: #7b1fa2; }
+        .page-header .subtitle { font-size: 1.05rem; color: #666; font-weight: 300; margin-bottom: 1rem; }
+        .header-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .hbadge { display: inline-block; padding: 0.28rem 0.8rem; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+        .hbadge-blue   { background: #d1ecf1; color: #0c5460; }
+        .hbadge-green  { background: #d4edda; color: #155724; }
+        .hbadge-yellow { background: #fff3cd; color: #856404; }
+        .hbadge-red    { background: #f8d7da; color: #721c24; }
+        .hbadge-purple { background: #f3e5f5; color: #4a148c; }
+        .disclaimer {
+            margin-top: 1rem; padding: 0.6rem 1rem;
+            background: #fff8e1; border-left: 4px solid #ffc107;
+            border-radius: 6px; font-size: 0.8rem; color: #856404; text-align: left;
+        }
+
+        /* ── Stat bar ── */
+        .stat-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.9rem; margin-bottom: 2rem; }
+        .stat-card {
+            background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 12px; padding: 1.2rem 0.9rem; text-align: center;
+            color: white; backdrop-filter: blur(4px); transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card .snum { font-size: 2rem; font-weight: 800; line-height: 1; }
+        .stat-card .slbl { font-size: 0.75rem; opacity: 0.85; margin-top: 0.3rem; }
+
+        /* ── Collapsible section cards ── */
+        .section-card { background: rgba(255,255,255,0.97); border-radius: 14px; margin-bottom: 1.5rem; box-shadow: 0 6px 20px rgba(0,0,0,0.12); overflow: hidden; }
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.2rem 1.6rem; cursor: pointer; user-select: none;
+            border-bottom: 2px solid transparent; transition: background 0.2s;
+        }
+        .section-header:hover { background: #f9f3fd; }
+        .section-header.open { border-bottom-color: #7b1fa2; }
+        .section-header h2 { font-size: 1.2rem; color: #4a148c; font-weight: 700; display: flex; align-items: center; gap: 0.6rem; }
+        .section-badge { background: #f3e5f5; color: #6a1b9a; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .section-arrow { font-size: 0.8rem; color: #888; transition: transform 0.3s; }
+        .section-arrow.open { transform: rotate(180deg); }
+        .section-body { display: none; padding: 1.6rem; }
+        .section-body.open { display: block; }
+
+        /* ── Typography ── */
+        .section-body p { color: #555; line-height: 1.75; margin-bottom: 0.8rem; font-size: 0.93rem; }
+        .section-body h3 { font-size: 1.05rem; color: #4a148c; font-weight: 700; margin: 1.2rem 0 0.5rem; }
+        .section-body ul { padding-left: 1.4rem; color: #555; line-height: 1.85; font-size: 0.93rem; }
+        .section-body li { margin-bottom: 0.3rem; }
+
+        /* ── Alert boxes ── */
+        .alert { border-radius: 8px; padding: 0.85rem 1.1rem; margin-bottom: 1rem; font-size: 0.88rem; line-height: 1.6; }
+        .alert-danger  { background: #fdf0f0; border-left: 4px solid #dc3545; color: #6b1c1c; }
+        .alert-warning { background: #fffbf0; border-left: 4px solid #ffc107; color: #7a5a00; }
+        .alert-info    { background: #f3e5f5; border-left: 4px solid #7b1fa2; color: #4a148c; }
+        .alert-success { background: #f0fff4; border-left: 4px solid #28a745; color: #1a4a2a; }
+        .alert strong { font-weight: 700; }
+
+        /* ── Tables ── */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-bottom: 1rem; }
+        .data-table th { background: #4a148c; color: white; padding: 0.65rem 0.9rem; text-align: left; font-weight: 600; }
+        .data-table td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #e8d5f5; color: #444; vertical-align: top; }
+        .data-table tr:nth-child(even) td { background: #faf3ff; }
+        .data-table tr:hover td { background: #f3e5f5; }
+
+        /* ── Tags ── */
+        .tag { display: inline-block; padding: 0.18rem 0.6rem; border-radius: 12px; font-size: 0.74rem; font-weight: 700; margin: 1px; }
+        .tag-red    { background: #f8d7da; color: #721c24; }
+        .tag-yellow { background: #fff3cd; color: #856404; }
+        .tag-green  { background: #d4edda; color: #155724; }
+        .tag-blue   { background: #d1ecf1; color: #0c5460; }
+        .tag-gray   { background: #e2e8f0; color: #4a5568; }
+        .tag-purple { background: #f3e5f5; color: #4a148c; }
+        .tag-orange { background: #fde8d8; color: #7b3a10; }
+
+        /* ── Metrics grid ── */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .metric-box { background: linear-gradient(135deg, #f9f3fd, #f0e5f8); border-radius: 10px; padding: 1.1rem; border-left: 4px solid #7b1fa2; text-align: center; }
+        .metric-box .mnum { font-size: 2rem; font-weight: 800; color: #4a148c; }
+        .metric-box .mlbl { font-size: 0.82rem; color: #666; margin-top: 0.2rem; }
+
+        /* ── Network diagram ── */
+        .net-diagram {
+            background: #120020; border-radius: 12px; padding: 1.5rem;
+            font-family: 'Courier New', Courier, monospace; font-size: 0.78rem;
+            line-height: 1.8; overflow-x: auto; color: #ce93d8; border: 1px solid #4a148c;
+        }
+        .net-diagram .nd-title   { color: #ba68c8; font-weight: bold; font-size: 0.9rem; }
+        .net-diagram .nd-green   { color: #66bb6a; }
+        .net-diagram .nd-yellow  { color: #ffca28; }
+        .net-diagram .nd-red     { color: #ef5350; }
+        .net-diagram .nd-blue    { color: #42a5f5; }
+        .net-diagram .nd-white   { color: #e0e0e0; }
+        .net-diagram .nd-cyan    { color: #26c6da; }
+        .net-diagram .nd-purple  { color: #ce93d8; }
+        .net-diagram .nd-comment { color: #6a4c7a; font-style: italic; }
+
+        /* ── C2M2 domain cards ── */
+        .domain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; }
+        .domain-card { border-radius: 12px; padding: 1.2rem; border: 1px solid #ce93d8; background: #faf3ff; position: relative; overflow: hidden; }
+        .domain-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+        .dc-mil0::before { background: #dc3545; }
+        .dc-mil1::before { background: #ffc107; }
+        .dc-mil2::before { background: #7b1fa2; }
+        .dc-mil3::before { background: #28a745; }
+        .domain-card h4 { font-size: 0.95rem; color: #4a148c; font-weight: 700; margin-bottom: 0.5rem; }
+        .domain-card p  { font-size: 0.84rem; color: #666; line-height: 1.65; margin-bottom: 0.5rem; }
+        .domain-card ul { padding-left: 1.2rem; font-size: 0.82rem; color: #666; line-height: 1.7; }
+        .mil-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 10px; margin-bottom: 0.5rem; }
+        .mil-badge-0 { background: #f8d7da; color: #721c24; }
+        .mil-badge-1 { background: #fff3cd; color: #856404; }
+        .mil-badge-2 { background: #f3e5f5; color: #4a148c; }
+        .mil-badge-3 { background: #d4edda; color: #155724; }
+
+        /* ── Org chart ── */
+        .org-chart { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: 1.5rem; }
+        .org-level { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .org-box { background: #4a148c; color: white; border-radius: 8px; padding: 0.55rem 0.9rem; text-align: center; font-size: 0.8rem; min-width: 130px; }
+        .org-box .oname { font-weight: 700; }
+        .org-box .otitle { opacity: 0.75; font-size: 0.72rem; margin-top: 0.15rem; }
+        .org-box.top    { background: #4a148c; }
+        .org-box.exec   { background: #6a1b9a; }
+        .org-box.dir    { background: #7b1fa2; }
+        .org-box.staff  { background: #9c27b0; font-size: 0.75rem; min-width: 110px; }
+        .org-box.vacant { background: #888; font-size: 0.75rem; min-width: 110px; border: 2px dashed #dc3545; }
+        .org-connector  { width: 2px; height: 20px; background: #9c27b0; margin: 0 auto; }
+        .org-dept-note  { border: 2px dashed #9c27b0; background: #faf3ff; color: #4a148c; border-radius: 8px; padding: 0.7rem 1.4rem; text-align: center; margin: 1.5rem auto; font-size: 0.85rem; max-width: 420px; }
+        .org-dept-note strong { display: block; font-size: 0.92rem; margin-bottom: 0.2rem; }
+
+        /* ── Exercise / inject cards ── */
+        .exercise-q { background: #faf3ff; border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 0.8rem; }
+        .exercise-q strong { color: #4a148c; font-size: 0.93rem; }
+        .exercise-q p { margin-top: 0.3rem; color: #666; font-size: 0.88rem; line-height: 1.65; margin-bottom: 0; }
+        .inject-card { border: 2px solid #dc3545; border-radius: 10px; padding: 1.2rem; margin-bottom: 1rem; background: #fff8f8; }
+        .inject-card .inject-title { color: #dc3545; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .inject-card p  { font-size: 0.88rem; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+        .inject-card ul { font-size: 0.87rem; padding-left: 1.3rem; color: #555; line-height: 1.75; }
+
+        /* ── Vendor cards ── */
+        .vendor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .vendor-card { border: 1px solid #ce93d8; border-radius: 10px; padding: 1.1rem; background: #faf3ff; }
+        .vendor-card h4 { font-size: 0.92rem; font-weight: 700; color: #4a148c; margin-bottom: 0.3rem; }
+        .vendor-card .vendor-type { font-size: 0.75rem; color: #7b1fa2; font-weight: 600; margin-bottom: 0.5rem; }
+        .vendor-card ul { padding-left: 1.2rem; font-size: 0.82rem; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+
+        /* ── Two-col layout ── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem; }
+
+        /* ── Edit mode ── */
+        [contenteditable="true"] { outline: 2px dashed #7b1fa2; border-radius: 4px; min-height: 1em; }
+        .edit-active [contenteditable] { background: rgba(123,31,162,0.04); }
+        .add-row-btn { background: transparent; border: 2px dashed #7b1fa2; color: #7b1fa2; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: inherit; font-weight: 600; margin-top: 0.4rem; transition: all 0.2s; }
+        .add-row-btn:hover { background: #7b1fa2; color: white; }
+        .del-btn { background: #dc3545; color: white; border: none; border-radius: 4px; padding: 0.15rem 0.45rem; cursor: pointer; font-size: 0.72rem; margin-left: 0.4rem; vertical-align: middle; }
+
+        /* ── Footer ── */
+        .footer { text-align: center; color: rgba(255,255,255,0.65); font-size: 0.82rem; padding: 2rem 0 1rem; line-height: 1.8; }
+        .footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+        .footer a:hover { color: white; text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="casestudies.html" class="back-link">← Back to Case Studies</a>
+
+    <div class="edit-toolbar">
+        <button class="toolbar-btn" onclick="expandAll()">⊞ Expand All</button>
+        <button class="toolbar-btn" onclick="collapseAll()">⊟ Collapse All</button>
+        <button class="toolbar-btn" id="editBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        <button class="toolbar-btn" onclick="exportHTML()">⬇ Export HTML</button>
+        <button class="toolbar-btn" onclick="resetChanges()" style="background:rgba(220,53,69,0.85);">↺ Reset</button>
+    </div>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div class="org-label">🔭 Research Institution Case Study</div>
+        <h1>Allegheny <span>Research University</span></h1>
+        <p class="subtitle">ARU — Westbrook, Pennsylvania · Fictional R1 Research University · C2M2 v2.1 Training Case Study</p>
+        <div class="header-badges">
+            <span class="hbadge hbadge-purple">R1 Doctoral University</span>
+            <span class="hbadge hbadge-red">CMMC Level 2 Target — Q4 2026</span>
+            <span class="hbadge hbadge-yellow">47 NIST 800-171 Gaps</span>
+            <span class="hbadge hbadge-blue">DOE + DOD/DARPA + NIH + NSF</span>
+            <span class="hbadge hbadge-red">ITAR / CUI Exposure</span>
+            <span class="hbadge hbadge-green">REN-ISAC Member</span>
+        </div>
+        <div class="disclaimer">
+            <strong>⚠️ Educational Use Only:</strong> Allegheny Research University (ARU) and all individuals, systems, and events described in this case study are entirely fictional. Any resemblance to actual universities, persons, or incidents is coincidental. This case study is designed for C2M2 cybersecurity training and assessment practice only.
+        </div>
+    </div>
+
+    <!-- STAT BAR -->
+    <div class="stat-bar">
+        <div class="stat-card"><div class="snum">18,400</div><div class="slbl">Students (Fall 2025)</div></div>
+        <div class="stat-card"><div class="snum">$185M</div><div class="slbl">Research Expenditure</div></div>
+        <div class="stat-card"><div class="snum">3,633</div><div class="slbl">FTE Employees</div></div>
+        <div class="stat-card"><div class="snum">~200</div><div class="slbl">CUI-Scope Researchers</div></div>
+        <div class="stat-card"><div class="snum">47</div><div class="slbl">NIST 800-171 Gaps</div></div>
+        <div class="stat-card"><div class="snum">480 TB</div><div class="slbl">Research Data at Risk</div></div>
+        <div class="stat-card"><div class="snum">8,128</div><div class="slbl">Total Endpoints</div></div>
+        <div class="stat-card"><div class="snum">61%</div><div class="slbl">CUI Enclave Migration</div></div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         1. ORGANIZATION PROFILE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header open" onclick="toggleSection(this)">
+            <h2>🏛️ Organization Profile <span class="section-badge">OVERVIEW</span></h2>
+            <span class="section-arrow open">▼</span>
+        </div>
+        <div class="section-body open">
+            <div class="metrics-grid" style="grid-template-columns: repeat(4,1fr);">
+                <div class="metric-box"><div class="mnum">$185M</div><div class="mlbl">Annual Research Expenditure</div></div>
+                <div class="metric-box"><div class="mnum">47/110</div><div class="mlbl">Unimplemented NIST 800-171 Controls</div></div>
+                <div class="metric-box"><div class="mnum">~200</div><div class="mlbl">CUI-Scope Researchers (CMMC)</div></div>
+                <div class="metric-box"><div class="mnum">$9.57M</div><div class="mlbl">IT Budget (1.4% of Operating Budget)</div></div>
+            </div>
+
+            <p>Allegheny Research University (ARU) is a public R1 doctoral research university in Westbrook, Pennsylvania, founded in 1887. ARU enrolls 18,400 students across seven colleges and maintains four federally funded research centers with active contracts from the Department of Energy (DOE), Department of Defense/DARPA, National Institutes of Health (NIH), and National Science Foundation (NSF). Annual research expenditure reached $185 million in FY2025, driven in large part by two high-sensitivity programs: DOE fusion energy research (Physics Department, Dr. Christine Morrow) and DOD/DARPA autonomous systems research through the Institute for Autonomous Systems (IAS). Both programs handle Controlled Unclassified Information (CUI), and IAS research is additionally subject to International Traffic in Arms Regulations (ITAR).</p>
+
+            <p>ARU appointed its first-ever Chief Information Security Officer (CISO), James Whitfield, 18 months ago — following a 2024 NIST SP 800-171 gap assessment that revealed 47 unimplemented security controls across the institution. The gap assessment was triggered by a CMMC Level 2 certification requirement from ARU's DOD/DARPA contract office. A Third-Party Assessment Organization (C3PAO), Granite Shield LLC, has been engaged and a CMMC Level 2 assessment is targeted for Q4 2026. The C3PAO's pre-assessment estimated an SPRS score of −87, primarily driven by failures in Access Control (AC), System and Communications Protection (SC), and Audit and Accountability (AU).</p>
+
+            <p>ARU's most significant structural cybersecurity challenge is its decentralized IT governance model: 24 departmental IT staff across seven colleges and four research centers operate entirely independently of the Office of Information Technology (OIT). These staff manage approximately 380 research endpoints, eight recently discovered unregistered servers, and numerous lab-specific applications — none subject to OIT security baselines, CrowdStrike EDR deployment, or Splunk SIEM coverage. Resolving this governance gap is the CISO's stated top priority for FY2026 and is the root cause of the majority of NIST 800-171 non-conformities.</p>
+
+            <table class="data-table">
+                <tbody>
+                <tr><td><strong>Legal Name</strong></td><td>Allegheny Research University</td></tr>
+                <tr><td><strong>Abbreviation</strong></td><td>ARU</td></tr>
+                <tr><td><strong>Type</strong></td><td>Public R1 Doctoral Research University (Carnegie R1: Very High Research Activity)</td></tr>
+                <tr><td><strong>Established</strong></td><td>1887 (chartered by the Commonwealth of Pennsylvania)</td></tr>
+                <tr><td><strong>Headquarters</strong></td><td>1 University Plaza, Westbrook, Pennsylvania 15909</td></tr>
+                <tr><td><strong>Enrollment (Fall 2025)</strong></td><td>18,400 students (13,200 undergraduate; 5,200 graduate/doctoral)</td></tr>
+                <tr><td><strong>FTE Employees</strong></td><td>3,633 (faculty: 1,140; staff: 2,493)</td></tr>
+                <tr><td><strong>Annual Operating Budget (FY2025)</strong></td><td>$685 million</td></tr>
+                <tr><td><strong>Annual Research Expenditure</strong></td><td>$185 million (FY2025) — 34% from DOD/DOE/DHS-funded contracts</td></tr>
+                <tr><td><strong>Endowment</strong></td><td>$2.1 billion (FY2025)</td></tr>
+                <tr><td><strong>Colleges / Schools</strong></td><td>7 colleges (Arts &amp; Sciences, Engineering, Medicine, Business, Education, Public Policy, Graduate Studies)</td></tr>
+                <tr><td><strong>Research Centers</strong></td><td>Institute for Autonomous Systems (IAS) · Translational Medicine Research Center (TMRC) · Center for Energy Research (CER) · Materials Innovation Center (MIC)</td></tr>
+                <tr><td><strong>Active Federal Contracts (CUI-Generating)</strong></td><td>4 active: DOE fusion energy ($42M) · DOD/DARPA autonomous systems ($18M) · NIH translational medicine ($31M) · NSF materials science ($8M)</td></tr>
+                <tr><td><strong>CUI-Scope Researchers</strong></td><td>~200 across 4 contracts (186 confirmed + ~14 estimated additional)</td></tr>
+                <tr><td><strong>Primary Regulatory Frameworks</strong></td><td>FERPA · HIPAA (limited — human subjects) · NIST SP 800-171 r2 · CMMC Level 2 (target) · ITAR (22 CFR 120–130) · EAR (15 CFR 730–774) · 2 CFR Part 200</td></tr>
+                <tr><td><strong>ISAC Membership</strong></td><td><span class="tag tag-green">REN-ISAC (active); Internet2 peer network member</span></td></tr>
+                <tr><td><strong>OIT Staff</strong></td><td>~30 FTE under CIO Dr. Sandra Petrov; 24 additional departmental IT staff NOT under OIT</td></tr>
+                <tr><td><strong>Cybersecurity Staff (under CISO)</strong></td><td>1 Security Analyst · 1 GRC Specialist · 1 SOC Analyst · 1 Security Engineer (<span class="tag tag-red">VACANT — 9 months</span>)</td></tr>
+                <tr><td><strong>Annual IT Budget (FY2025)</strong></td><td>$9.57M (1.4% of operating budget; $2,635/employee — R1 peer avg: $3,800–$4,200)</td></tr>
+                <tr><td><strong>Cybersecurity Sub-Budget</strong></td><td>~$1.2M (tools: $780K · training: $85K · compliance/audit: $335K)</td></tr>
+                <tr><td><strong>First CISO</strong></td><td>James Whitfield (appointed Sept 2024 — ARU's first-ever CISO; 18 months in role)</td></tr>
+                <tr><td><strong>NIST 800-171 Gap Assessment</strong></td><td>47 unimplemented practices (of 110 total); completed March 2025 by Granite Shield LLC</td></tr>
+                <tr><td><strong>CMMC Assessment Target</strong></td><td>Q4 2026 (CMMC Level 2); C3PAO: Granite Shield LLC; estimated SPRS: −87</td></tr>
+                <tr><td><strong>Cyber Insurance</strong></td><td>$5M limit; Travelers Cyber Risk (PA higher education consortium); deductible: $250K</td></tr>
+                <tr><td><strong>Overall C2M2 Level</strong></td><td><span class="tag tag-yellow">MIL 0–2 (mixed); most domains MIL 1; Risk Mgmt at MIL 2; Workforce Mgmt at MIL 0</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-info">
+                <strong>Context for Instructors:</strong> ARU represents a composite of cybersecurity challenges common to mid-size R1 public research universities receiving DoD and DOE contracts. The combination of decentralized IT governance, faculty culture emphasizing academic freedom over security controls, ITAR/CMMC compliance obligations, legacy HPC infrastructure, and a newly established CISO role is typical of universities now facing federal contractor security requirements for the first time. Students should recognize that ARU's gaps are structural — rooted in institutional culture and governance design — not purely technical.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         2. FACILITIES & GEOGRAPHIC FOOTPRINT
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>📍 Facilities &amp; Geographic Footprint <span class="section-badge">FACILITIES</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>ARU's primary IT infrastructure is anchored at Whitmore Hall (FAC-01), a 4,800-square-foot data center on the main Westbrook campus. A secondary disaster recovery site at the Drayton Technology Center (FAC-02) provides partial redundancy for core administrative systems. High-performance computing and research data storage are hosted at the Kellogg Computing Facility (FAC-04), which requires separate connectivity including SSH port 22 internet-facing access for external research collaborators. The Institute for Autonomous Systems (FAC-06) operates as a secured research laboratory with DARPA requirements mandating enhanced physical and logical access controls — implementation is incomplete. ARU also maintains four satellite offices in Pittsburgh, Philadelphia, Washington DC, and Brussels.</p>
+
+            <table class="data-table">
+                <thead><tr><th>Facility ID</th><th>Name</th><th>Location / Campus</th><th>Primary IT Systems</th><th>Physical Security Risk</th></tr></thead>
+                <tbody>
+                <tr>
+                    <td><strong>FAC-01</strong></td>
+                    <td>Whitmore Hall Data Center &amp; OIT Offices</td>
+                    <td>Main campus — Westbrook, PA</td>
+                    <td>Primary servers (SRV-01, SRV-03, SRV-04, SRV-07, SRV-08, SRV-10); Splunk SIEM; Cisco core switching; domain controllers</td>
+                    <td><span class="tag tag-yellow">Keycard + camera; server room shared key access with Facilities Dept; badge audit log reviewed semi-annually only</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-02</strong></td>
+                    <td>Drayton Technology Center (DR)</td>
+                    <td>South campus — Westbrook, PA</td>
+                    <td>DR servers; web server (SRV-09); secondary domain controller; south campus network ops</td>
+                    <td><span class="tag tag-yellow">Keycard only; no camera coverage; badge audit log not reviewed in 18 months; after-hours access unmonitored</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-03</strong></td>
+                    <td>Armstrong Research Complex</td>
+                    <td>Main campus — Research quadrant</td>
+                    <td>24 departmental IT staff; ~380 research endpoints; 8 shadow IT servers (discovered Nov 2025); lab-specific applications — no OIT systems</td>
+                    <td><span class="tag tag-red">No OIT physical security standards; departmental badge systems not integrated with OIT; shadow servers found in unlocked lab closet</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-04</strong></td>
+                    <td>Kellogg Computing Facility (HPC &amp; NAS)</td>
+                    <td>Research Park — 2 miles from main campus</td>
+                    <td>HPC head node (SRV-05, RHEL 8); NetApp FAS2820 NAS (SRV-06, 480 TB); DOE and DOD/DARPA research computing workloads</td>
+                    <td><span class="tag tag-red">Keycard access; no camera inside server room; badge system misconfigured since Oct 2025 — not logging all access events; CISA flagged non-compliant with DOE M 205.1-2</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-05</strong></td>
+                    <td>Harrington Administrative Center</td>
+                    <td>Main campus — Administrative core</td>
+                    <td>Presidential &amp; Provost offices; Registrar; Financial Aid; 220 admin workstations</td>
+                    <td><span class="tag tag-green">Best physical security; keycard + camera; restricted executive suite access; no significant gap</span></td>
+                </tr>
+                <tr>
+                    <td><strong>FAC-06</strong></td>
+                    <td>Institute for Autonomous Systems (IAS) Laboratory</td>
+                    <td>Research Park — adjacent to FAC-04</td>
+                    <td>IAS workstations + NAS (DARPA/ITAR scope); UAV simulation systems; ITAR-controlled design files; Dr. Liu's lab</td>
+                    <td><span class="tag tag-red">ITAR requires visitor controls + access logs; visitor log paper-based and incomplete; foreign national access (Dr. Liu — Chinese national) not reviewed per ITAR deemed export rules; systems on VLAN 20 (not CUI enclave)</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h3>Remote Research &amp; Administrative Offices</h3>
+            <p>Four satellite offices connect via <strong>Cisco AnyConnect SSL VPN with Duo MFA</strong> (staff-enforced; researcher/faculty adoption: <strong>61%</strong> — HPC researchers specifically exempted at VP Research request).</p>
+            <table class="data-table">
+                <thead><tr><th>Office</th><th>Location</th><th>Function</th><th>Risk Note</th></tr></thead>
+                <tbody>
+                <tr><td>Pittsburgh Research Office</td><td>Pittsburgh, PA (University Research Park)</td><td>Joint research programs; 14 staff; 18 workstations</td><td><span class="tag tag-yellow">Remote OIT support only; VPN-dependent; patching lag common</span></td></tr>
+                <tr><td>Philadelphia Research Office</td><td>Philadelphia, PA (University City Science Center)</td><td>NIH translational medicine satellite; 8 researchers; IRB data</td><td><span class="tag tag-red">IRB/PHI-scope work at non-OIT-monitored site; VPN use inconsistent</span></td></tr>
+                <tr><td>Washington DC Policy Office</td><td>Washington, DC (K Street NW)</td><td>Federal relations; 6 staff; federal contract liaison</td><td><span class="tag tag-yellow">Low tech footprint; primarily SaaS; VPN enforced</span></td></tr>
+                <tr><td>Brussels EU Research Office</td><td>Brussels, Belgium</td><td>EU Horizon grant coordination; 3 staff; visiting researchers</td><td><span class="tag tag-red">International; GDPR concerns; no dedicated IT support; foreign nationals with ARU credentials</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warning">
+                <strong>Research Park Physical Security Gap:</strong> FAC-04 (Kellogg Computing Facility) and FAC-06 (IAS Laboratory) are managed by a third-party building management company, not ARU Facilities. The badge access system at FAC-04 has been misconfigured since October 2025 and is not reliably logging all entry events. A CISA Physical Security review in January 2026 flagged FAC-04 as non-compliant with DOE M 205.1-2 physical security requirements for systems handling DOE CUI.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         3. ORGANIZATIONAL STRUCTURE & IT GOVERNANCE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>👥 Organizational Structure &amp; IT Governance <span class="section-badge">GOVERNANCE</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Reporting Hierarchy</h3>
+            <div class="org-chart">
+                <div class="org-level">
+                    <div class="org-box top"><div class="oname">Board of Trustees</div><div class="otitle">Governing Body</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box top"><div class="oname">Dr. Harold Osei</div><div class="otitle">President</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box exec"><div class="oname">Dr. Maria Santos</div><div class="otitle">Provost / EVP Academic Affairs</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box dir"><div class="oname">Dr. Sandra Petrov</div><div class="otitle">Chief Information Officer</div></div>
+                    <div class="org-box dir"><div class="oname">Eleanor Vasquez</div><div class="otitle">Chief Financial Officer</div></div>
+                    <div class="org-box dir"><div class="oname">Dr. Thomas Kirk</div><div class="otitle">VP Research</div></div>
+                    <div class="org-box dir"><div class="oname">Michael Chen</div><div class="otitle">VP Student Affairs</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box staff"><div class="oname">James Whitfield</div><div class="otitle">CISO (1st in role — 18 mos.)</div></div>
+                    <div class="org-box staff"><div class="oname">IT Operations</div><div class="otitle">3 Directors (Infra / Apps / Support)</div></div>
+                    <div class="org-box staff"><div class="oname">HPC / Research Computing Mgr</div><div class="otitle">Research computing oversight</div></div>
+                </div>
+                <div class="org-connector"></div>
+                <div class="org-level">
+                    <div class="org-box staff"><div class="oname">Security Analyst</div><div class="otitle">1 FTE</div></div>
+                    <div class="org-box staff"><div class="oname">GRC Specialist</div><div class="otitle">1 FTE</div></div>
+                    <div class="org-box staff"><div class="oname">SOC Analyst</div><div class="otitle">1 FTE</div></div>
+                    <div class="org-box vacant"><div class="oname">Security Engineer</div><div class="otitle">⚠️ VACANT</div></div>
+                </div>
+            </div>
+
+            <div class="org-dept-note">
+                <strong>24 Departmental IT Staff — NOT under OIT</strong>
+                7 Colleges + 4 Research Centers · Independent of OIT Policy, Security Baselines &amp; Procurement<br>
+                <span style="font-size:0.78rem;color:#7b1fa2;">Manage ~380 research endpoints, 8 unregistered servers, &amp; lab-specific applications</span>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>Decentralized IT Governance:</strong> 24 departmental IT staff across 7 colleges and research centers operate independently of OIT policy, procurement, and security oversight. These staff manage approximately <strong>380 research endpoints</strong>, <strong>8 (recently discovered) unregistered servers</strong>, and multiple lab-specific applications. They are not required to implement OIT security baselines, do not have CrowdStrike deployed, and are not included in Splunk SIEM coverage. This decentralized model is common in R1 universities but creates the single largest visibility and control gap in ARU's security posture.
+            </div>
+
+            <h3>IT Staffing Detail</h3>
+            <table class="data-table">
+                <thead><tr><th>Role</th><th>FTE</th><th>Reports To</th><th>Key Responsibilities</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Chief Information Officer (CIO)</td><td>1</td><td>Provost / EVP</td><td>IT strategy, OIT budget, executive IT policy, vendor relationships, capital planning</td><td>Dr. Sandra Petrov; 7-year tenure; Ph.D. Computer Science; first CIO to hire a CISO</td></tr>
+                <tr><td>CISO</td><td>1</td><td>CIO</td><td>Security strategy, CMMC compliance, NIST 800-171 remediation, C3PAO liaison, incident response leadership</td><td>James Whitfield; ARU's first CISO (18 months); CISSP; former DoD contractor; limited authority over departmental systems</td></tr>
+                <tr><td>Security Analyst</td><td>1</td><td>CISO</td><td>Vulnerability scanning, alert triage, phishing investigation, policy compliance monitoring</td><td>OIT-managed systems only; Splunk + Tenable.io access; no after-hours coverage</td></tr>
+                <tr><td>GRC Specialist</td><td>1</td><td>CISO</td><td>NIST 800-171 assessment, CMMC documentation, policy drafting, risk register, POA&amp;M management</td><td>Full-time CMMC remediation focus; manages evidence collection for Granite Shield C3PAO</td></tr>
+                <tr><td>SOC Analyst</td><td>1</td><td>CISO</td><td>Splunk SIEM monitoring, CrowdStrike alert response, incident documentation, IOC hunting</td><td>Monitors OIT systems only; no visibility into HPC (VLAN 60), NAS, or departmental systems</td></tr>
+                <tr><td>Security Engineer</td><td><span class="tag tag-red">0 — VACANT</span></td><td>CISO</td><td>Intended: firewall tuning, VLAN segmentation, CUI enclave architecture, PAM tooling</td><td><span class="tag tag-red">Open 9 months; 3 candidates declined; market salary gap ~$22K vs. ARU compensation band</span></td></tr>
+                <tr><td>IT Operations Directors</td><td>3</td><td>CIO</td><td>Infrastructure (servers/network), Applications (ERP/SaaS), End-User Support (help desk/endpoints)</td><td>3 separate directors for Infra, Apps, and Support verticals; OIT-managed systems only</td></tr>
+                <tr><td>HPC / Research Computing Manager</td><td>1</td><td>CIO</td><td>HPC cluster operations, job scheduler, storage, research computing user support</td><td>CISO has no formal authority over HPC security without VP Research Dr. Kirk sign-off</td></tr>
+                <tr><td>Departmental IT (24 FTE)</td><td>24</td><td><em>NOT under OIT</em> — report to College Deans / Research Center Directors</td><td>Lab IT support, research endpoint management, lab applications, local network</td><td><span class="tag tag-red">Not subject to OIT security policy; no CrowdStrike; not in Splunk; manage 380+ endpoints and 8 shadow servers</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="metrics-grid" style="grid-template-columns: repeat(4,1fr);">
+                <div class="metric-box"><div class="mnum">$2,635</div><div class="mlbl">IT Budget per Employee</div></div>
+                <div class="metric-box"><div class="mnum">1:1,211</div><div class="mlbl">Help Desk Ratio (staff to non-IT employees)</div></div>
+                <div class="metric-box"><div class="mnum">18 mos.</div><div class="mlbl">First CISO Tenure</div></div>
+                <div class="metric-box"><div class="mnum">24 FTE</div><div class="mlbl">Outside OIT Security Policy</div></div>
+            </div>
+
+            <h3>Governance Challenges</h3>
+            <ul>
+                <li><strong>No formal IT steering committee with security representation</strong> until 6 months ago — a new Information Security Governance Committee (ISGC) was established October 2025 but has met only three times and has not issued binding security directives to departmental IT.</li>
+                <li><strong>Faculty Senate resolution (Nov 2025):</strong> The Faculty Senate passed a resolution expressing concern that CMMC and NIST 800-171 controls — including endpoint monitoring, email filtering, and USB restrictions — "impede academic freedom and legitimate scholarly activity." Department chairs cite this resolution as justification for delaying OIT-mandated security baselines in their colleges, creating a political constraint the Provost has not resolved.</li>
+                <li><strong>HPC governance split:</strong> Research computing is historically governed by VP Research Dr. Thomas Kirk, not OIT. The CISO has no formal authority to mandate security controls on the HPC or attached NAS without VP Research sign-off. The 11-week pending MFA mandate for HPC users is the most visible consequence of this governance gap.</li>
+                <li><strong>CMMC is forcing the first meaningful alignment</strong> between OIT and departmental IT in ARU history. The DARPA contract office's CMMC Level 2 requirement is currently the CISO's only leverage for driving departmental IT compliance — leverage that is actively resisted by faculty who argue the requirement applies only to "their" specific contract, not the broader institution.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         4. IT ASSET INVENTORY
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>💻 Information Technology Assets <span class="section-badge">ASSETS</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Servers &amp; Core Infrastructure</h3>
+            <table class="data-table">
+                <thead><tr><th>Asset ID</th><th>Description</th><th>OS / Platform</th><th>Location</th><th>Status / Risk Notes</th></tr></thead>
+                <tbody>
+                <tr><td>SRV-01</td><td>Primary Domain Controller / Active Directory (FSMO roles, DNS primary, Duo RADIUS)</td><td>Windows Server 2022</td><td>FAC-01 Whitmore Hall</td><td><span class="tag tag-green">Current — patching compliant; MFA via Duo RADIUS for VPN auth; replicated to SRV-02</span></td></tr>
+                <tr><td>SRV-02</td><td>Secondary Domain Controller / AD Replication / DNS secondary</td><td>Windows Server 2022</td><td>FAC-02 Drayton Tech Center</td><td><span class="tag tag-green">DR site — patching compliant; failover tested Q3 2025</span></td></tr>
+                <tr><td>SRV-03</td><td>File Server — OIT-managed shared drives; policy documents; administrative files</td><td>Windows Server 2016 (mainstream support ended Oct 2022)</td><td>FAC-01 Whitmore Hall</td><td><span class="tag tag-yellow">Patch lag ~8 weeks; Server 2016 mainstream end; no DLP; CUI vs. non-CUI files not separated; upgrade budgeted FY2027</span></td></tr>
+                <tr><td>SRV-04</td><td>Application Server — middleware and integration services (Workday ↔ Banner; Kuali APIs)</td><td>Windows Server 2016</td><td>FAC-01 Whitmore Hall</td><td><span class="tag tag-yellow">Patch lag ~6 weeks; Server 2016 mainstream end; single point of failure for integration services</span></td></tr>
+                <tr><td>SRV-05</td><td>HPC Head Node — Lenovo ThinkSystem SR860 V2; manages DOE and DOD/DARPA compute jobs; SLURM scheduler</td><td>RHEL 8 (current)</td><td>FAC-04 Kellogg Computing Facility</td><td><span class="tag tag-red">CRITICAL — TCP/22 SSH open to 0.0.0.0/0 (internet); password auth only; NO MFA; DOE+DOD CUI; CISA Nov 2025 advisory (nation-state SSH targeting on university HPC)</span></td></tr>
+                <tr><td>SRV-06</td><td>Research NAS — NetApp FAS2820, 480 TB; primary storage for all research data including CUI and public research</td><td>ONTAP 9.12 (current)</td><td>FAC-04 Kellogg Computing Facility</td><td><span class="tag tag-red">CRITICAL — CUI and public data commingled across shared volumes; no access control by data classification; NIST 800-171 AC-3 / SC-4 violation; 4 federal contract data sets on one NAS</span></td></tr>
+                <tr><td>SRV-07</td><td>Splunk SIEM Server — Splunk Enterprise 9.2; security event monitoring and log aggregation</td><td>RHEL 8 (current)</td><td>FAC-01 Whitmore Hall</td><td><span class="tag tag-yellow">OIT systems only; HPC (VLAN 60), NAS (SRV-06), and departmental systems NOT ingested; forwarder not deployed on research endpoints; partial coverage is primary CMMC AU-domain failure</span></td></tr>
+                <tr><td>SRV-08</td><td>Banner Integration Middleware — connects Ellucian Banner SIS (cloud) to Workday; grade submission and financial aid disbursement</td><td>Windows Server 2019</td><td>FAC-01 Whitmore Hall</td><td><span class="tag tag-red">HIGH — single point of failure for $4.2M/semester financial aid disbursement; patch coordination with Banner cloud requires 12+ week lead time; ransomware on VLAN 10 could disrupt disbursements</span></td></tr>
+                <tr><td>SRV-09</td><td>Public-Facing Web Server — ARU public website, event portal, research publication database</td><td>Ubuntu 22.04 LTS</td><td>FAC-02 Drayton Tech Center</td><td><span class="tag tag-yellow">Patch lag ~10 weeks; 2 unpatched CVEs (Tenable scan Nov 2025; CVSS 7.2 and 6.8); no WAF deployed; web app security testing last performed 2023</span></td></tr>
+                <tr><td>SRV-10</td><td>Backup &amp; Recovery Server — Veeam Backup &amp; Replication v12; OIT-managed server fleet</td><td>Windows Server 2022</td><td>FAC-01 Whitmore Hall</td><td><span class="tag tag-green">Current; offsite copy to Azure Blob; restore test Q2 2025 successful; HPC/NAS and departmental systems NOT in backup scope</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Endpoints &amp; Research Devices</h3>
+            <table class="data-table">
+                <thead><tr><th>Type</th><th>Count</th><th>OS</th><th>Managed By</th><th>Security Controls</th><th>Risk</th></tr></thead>
+                <tbody>
+                <tr><td>Faculty Laptops (OIT-managed)</td><td>804</td><td>Windows 11 / macOS 14</td><td>OIT</td><td>CrowdStrike Falcon + Duo + WSUS/JAMF</td><td><span class="tag tag-green">Patching compliant; MFA enforced; EDR deployed</span></td></tr>
+                <tr><td>Faculty Laptops (dept-managed)</td><td>536</td><td>Windows 11 / macOS / Linux (mixed)</td><td>Dept IT</td><td>None (no CrowdStrike / EDR)</td><td><span class="tag tag-red">No AV/EDR; not in Splunk; some disable Windows Defender for research tools; include CUI-handling researchers</span></td></tr>
+                <tr><td>Staff Workstations</td><td>2,200</td><td>Windows 11</td><td>OIT</td><td>CrowdStrike Falcon + Duo + WSUS</td><td><span class="tag tag-green">OIT-managed; patching compliant; EDR deployed; FERPA-scope systems included</span></td></tr>
+                <tr><td>Research Lab Computers</td><td>~380</td><td>Mixed (incl. Windows 7/XP on instruments)</td><td>Dept IT</td><td>No AV / EDR</td><td><span class="tag tag-red">Legacy OS on lab instruments (XP/7 required by instrument vendor); no patch path; VLAN 20 (unmonitored); some internet-connected for software licensing</span></td></tr>
+                <tr><td>Graduate Student BYOD</td><td>~4,200</td><td>Mixed (Windows / macOS / Linux / ChromeOS)</td><td>Self (no MDM)</td><td>802.1X network auth only</td><td><span class="tag tag-yellow">No MDM; 802.1X provides access control only; VLAN 40; risk of malware if VLAN 40 isolation fails</span></td></tr>
+                <tr><td>Shadow IT Servers (discovered)</td><td>8</td><td>Unknown (Linux assumed)</td><td>Dept IT</td><td>Unknown — OIT has no visibility</td><td><span class="tag tag-red">Discovered Nov 2025 in FAC-03 lab closets; OS, purpose, patch status, and data content unknown; OIT attempting inventory</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Business Applications &amp; SaaS</h3>
+            <table class="data-table">
+                <thead><tr><th>Application</th><th>Vendor</th><th>Function</th><th>Hosting</th><th>Risk / Security Notes</th></tr></thead>
+                <tbody>
+                <tr><td><strong>Workday</strong></td><td>Workday Inc.</td><td>HR, Finance, Payroll, Procurement — 3,633 employees</td><td>SaaS</td><td><span class="tag tag-green">SOC 2 Type II; MFA enforced (Duo SSO); no significant gap</span></td></tr>
+                <tr><td><strong>Ellucian Banner 9</strong></td><td>Ellucian</td><td>Student Information System — 18,400 students; enrollment, grades, financial aid</td><td>Cloud (Ellucian-hosted)</td><td><span class="tag tag-yellow">FERPA scope; Ellucian SOC 2 Type II; vulnerability = SRV-08 on-prem integration middleware; cloud Banner itself secure</span></td></tr>
+                <tr><td><strong>Canvas LMS</strong></td><td>Instructure</td><td>Learning management — 18,400 student users</td><td>SaaS</td><td><span class="tag tag-green">SOC 2 Type II; Duo SSO integrated; no significant gap</span></td></tr>
+                <tr><td><strong>Microsoft 365 E3</strong></td><td>Microsoft</td><td>Email, Teams, SharePoint — all staff and faculty (commercial tenant)</td><td>Cloud (commercial M365)</td><td><span class="tag tag-red">NOT GCC — CUI must NOT be stored here per NIST 800-171; researchers actively using commercial Teams/OneDrive for CUI; 73 of ~200 CUI researchers have NOT migrated to GCC High</span></td></tr>
+                <tr><td><strong>Microsoft 365 GCC High</strong></td><td>Microsoft</td><td>CUI-compliant email and collaboration for DOE/DOD/DARPA researchers</td><td>Cloud (GCC High — FedRAMP High)</td><td><span class="tag tag-yellow">6 months old; only 127 of ~200 required users migrated; enclave boundary incomplete; CUI arriving via commercial tenant daily</span></td></tr>
+                <tr><td><strong>Kuali Research</strong></td><td>Kuali Inc.</td><td>Grants management, proposal routing, federal contract compliance, sub-award management</td><td>SaaS</td><td><span class="tag tag-yellow">Contains federal contract terms and budget data; SOC 2 Type II; MFA not enforced for 34 PIs (password only); SAML-capable — gap is ARU config, not vendor</span></td></tr>
+                <tr><td><strong>ARU HPC Cluster</strong></td><td>Lenovo ThinkSystem (on-prem)</td><td>Research computing — DOE and DOD/DARPA simulations; ~200 active research users</td><td>On-prem (FAC-04)</td><td><span class="tag tag-red">SSH to internet (TCP/22 open); password auth only; NO MFA; DOE+DOD CUI; CISA Nov 2025 advisory; 2 PIs not enrolled in Duo after 6 months of escalation</span></td></tr>
+                <tr><td><strong>AWS GovCloud</strong></td><td>Amazon</td><td>DOE and DOD research data archival — completed federally funded research</td><td>Cloud (AWS GovCloud — FedRAMP High)</td><td><span class="tag tag-green">FedRAMP High; AES-256 at rest; IAM access controls; MFA enforced; no significant gap</span></td></tr>
+                <tr><td><strong>Splunk SIEM</strong></td><td>Splunk / Cisco</td><td>Security event monitoring, log aggregation, SOC analyst dashboard</td><td>On-prem (FAC-01 SRV-07)</td><td><span class="tag tag-yellow">OIT systems only; HPC, NAS, departmental systems NOT ingested; primary CMMC AU-domain failure</span></td></tr>
+                <tr><td><strong>CrowdStrike Falcon</strong></td><td>CrowdStrike</td><td>EDR — endpoint detection and response, threat hunting, vulnerability management</td><td>Cloud-managed</td><td><span class="tag tag-yellow">OIT-managed endpoints only; excludes 536 dept-managed faculty laptops, ~380 research lab computers, all BYOD; ~40% of total endpoint fleet excluded</span></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — HPC Cluster Internet Exposure:</strong> The ARU HPC head node (SRV-05) has TCP port 22 (SSH) open to the public internet with password authentication only — no MFA required. The HPC hosts active DOE fusion energy research data and DOD/DARPA autonomous systems simulation data, both of which contain CUI. Two faculty principal investigators using the HPC for controlled research have not enrolled in Duo Security despite six months of reminder emails and escalations to their department chairs. CISO Whitfield has requested VP Research Dr. Kirk mandate HPC MFA enrollment — the request has been under review for <strong>11 weeks with no decision</strong>. A successful credential compromise of one HPC account would provide an authenticated attacker direct access to 480 TB of commingled research data on the attached NetApp NAS (SRV-06), including CUI from four active federal contracts.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         5. CRITICAL RESEARCH & ACADEMIC SYSTEMS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🔬 Critical Research &amp; Academic Systems <span class="section-badge">CRITICAL</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <p>Unlike commercial IT environments where system failures translate to revenue loss, failures in research university systems can: halt federally funded research (breach of contract), expose controlled technical data to unauthorized parties (ITAR/EAR violation with potential criminal liability), compromise student financial aid disbursements (FERPA + federal financial aid regulatory failure), and — in the case of biomedical research — endanger research subjects. ARU has eight system categories with critical or high designations.</p>
+
+            <table class="data-table">
+                <thead><tr><th>System</th><th>Platform</th><th>Function</th><th>Connectivity</th><th>Criticality</th><th>Security Notes</th></tr></thead>
+                <tbody>
+                <tr>
+                    <td><strong>ARU HPC Cluster</strong></td>
+                    <td>On-prem SRV-05 (RHEL 8, FAC-04)</td>
+                    <td>Research computing — DOE fusion energy; DOD/DARPA autonomous systems simulations</td>
+                    <td>VLAN 60 + Internet (SSH TCP/22 open to 0.0.0.0/0)</td>
+                    <td><span class="tag tag-red">Critical — Research / CUI</span></td>
+                    <td><span class="tag tag-red">SSH internet-facing; password auth only; NO MFA; DOE+DOD CUI; 2 non-compliant PIs; no IDS on VLAN 60; CISA Nov 2025 advisory</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Research NAS (SRV-06)</strong></td>
+                    <td>NetApp FAS2820, 480 TB (FAC-04)</td>
+                    <td>Research data storage — all centers; CUI and public data commingled</td>
+                    <td>VLAN 60 (attached to HPC); VLAN 20 (faculty access)</td>
+                    <td><span class="tag tag-red">Critical — CUI</span></td>
+                    <td><span class="tag tag-red">CUI and public data commingled; access controls not based on data classification; NIST 800-171 AC-3 / SC-4 violation; 4 federal contract data sets on one NAS</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Banner Integration Middleware</strong></td>
+                    <td>On-prem SRV-08 (Win Server 2019, FAC-01)</td>
+                    <td>Connects Ellucian Banner SIS ↔ Workday; grade submissions; financial aid disbursement</td>
+                    <td>VLAN 10 (admin); Banner cloud connection (HTTPS)</td>
+                    <td><span class="tag tag-red">Critical — Academic / Financial Aid</span></td>
+                    <td><span class="tag tag-yellow">Single point of failure; $4.2M/semester financial aid dependency; SaaS systems unaffected if SRV-08 down but disbursement workflows break; patch lag 12+ weeks</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Microsoft 365 GCC High (CUI Enclave)</strong></td>
+                    <td>SaaS (Microsoft — FedRAMP High)</td>
+                    <td>CUI-compliant email and collaboration for DOE/DOD/DARPA researchers</td>
+                    <td>VLAN 30 (authorized); researchers accessing from VLAN 20 (commercial M365)</td>
+                    <td><span class="tag tag-red">High — CMMC / CUI</span></td>
+                    <td><span class="tag tag-red">Enclave boundary porous; 73 of ~200 required users NOT migrated; CUI arriving via commercial tenant daily; C3PAO cited failures in 11 of 47 unimplemented NIST 800-171 practices</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Ellucian Banner SIS</strong></td>
+                    <td>Cloud (Ellucian-hosted)</td>
+                    <td>Student records, enrollment, financial aid, grades — 18,400 students</td>
+                    <td>Cloud (HTTPS); SRV-08 on-prem integration</td>
+                    <td><span class="tag tag-yellow">High — FERPA</span></td>
+                    <td><span class="tag tag-yellow">FERPA scope; Ellucian SOC 2 Type II (cloud system secure); vulnerability = SRV-08 integration middleware</span></td>
+                </tr>
+                <tr>
+                    <td><strong>IAS Lab Systems</strong></td>
+                    <td>Workstations + NAS on VLAN 20 (dept-managed, FAC-06)</td>
+                    <td>ITAR-controlled UAV and autonomous systems research — DARPA contract; design files, simulation data</td>
+                    <td>VLAN 20 (general faculty — NOT CUI enclave VLAN 30)</td>
+                    <td><span class="tag tag-red">High — ITAR / CUI</span></td>
+                    <td><span class="tag tag-red">ITAR data on commercial VLAN 20; deemed export violation (Dr. Wei Liu — Chinese national with VLAN 20 access to ITAR data); should be on VLAN 30; DARPA CO notified informally; DDTC self-report not initiated</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TMRC Systems</strong></td>
+                    <td>Workstations + IRB server on VLAN 20 (dept-managed)</td>
+                    <td>NIH-funded human subjects research; PHI; IRB protocols; biomedical data</td>
+                    <td>VLAN 20 (general faculty — not HIPAA-segmented)</td>
+                    <td><span class="tag tag-yellow">High — HIPAA</span></td>
+                    <td><span class="tag tag-yellow">IRB system on general faculty network; BAA not executed with one NIH data repository; PHI-scope systems not inventoried under HIPAA; risk analysis last conducted 2022</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Kuali Research (Grants Mgmt)</strong></td>
+                    <td>SaaS (cloud)</td>
+                    <td>Proposal development, grant tracking, sub-award management</td>
+                    <td>Cloud (HTTPS); Duo SSO (partially enforced)</td>
+                    <td><span class="tag tag-yellow">Medium — Federal Contract Data</span></td>
+                    <td><span class="tag tag-yellow">Federal contract terms and budget data; SOC 2 Type II; MFA not enforced for 34 PIs; Kuali SAML-capable — gap is ARU config</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — HPC Internet Exposure (Reference: Inject A):</strong> The ARU HPC head node (SRV-05) at FAC-04 accepts inbound SSH connections from any IP address on TCP/22, a configuration established in 2019 for external research collaborator access. The Palo Alto NGFW does not inspect SSH traffic on this port (SSH inspection disabled at VP Research request — "blocks legitimate research tools"). There is no IDS/IPS on VLAN 60. The HPC hosts DOE fusion energy data and DOD/DARPA autonomous systems data, both containing CUI. A CISA advisory received November 2025 specifically warned of nation-state actors targeting SSH interfaces on university HPC clusters hosting DOE and DOD research. Two PI HPC accounts remain without MFA after 11 weeks of unresolved CISO-to-VP-Research escalation. A credential compromise provides immediate authenticated access to 480 TB of commingled federal research data on SRV-06.
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — IAS ITAR Violation &amp; CUI Enclave Failure (Reference: Injects B &amp; C):</strong> The Institute for Autonomous Systems (FAC-06) conducts DARPA-funded research on UAV guidance and autonomous vehicle control systems — research subject to ITAR (22 CFR Parts 120–130) as defense articles. IAS lab systems are connected to VLAN 20 (general faculty research network), not the CMMC/CUI enclave on VLAN 30. Dr. Wei Liu, a Chinese national holding an H-1B visa and IAS faculty appointment, has VLAN 20 network access and has accessed IAS systems containing ITAR-controlled technical data. This constitutes a <strong>deemed export violation</strong> under ITAR §120.17 — a violation requiring self-report to the State Department's Directorate of Defense Trade Controls (DDTC). ARU's DARPA Contracting Officer has been notified informally; the formal ITAR self-report process has not been initiated. The incident also illustrates the broader CUI enclave boundary failure: 73 researchers who should be on VLAN 30 / GCC High continue operating on VLAN 20 / commercial M365.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         6. NETWORK ARCHITECTURE & COMMUNICATIONS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🌐 Network Architecture &amp; Communications <span class="section-badge">NETWORK</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Network Infrastructure Overview</h3>
+            <p>ARU's network infrastructure is anchored at FAC-01 (Whitmore Hall data center) with secondary DR at FAC-02 (Drayton Technology Center). Core switching: <strong>Cisco Catalyst 9500 series</strong> (dual-chassis VSS). Perimeter: <strong>Palo Alto PA-5220 NGFW</strong> with Panorama management (IPS signatures current). Internet connectivity: <strong>10 Gbps commodity internet</strong> (Comcast Business) + <strong>Internet2 research network peering</strong> (100 Gbps) for high-speed research data transfer. Remote access: <strong>Cisco AnyConnect SSL VPN</strong> with Duo MFA (enforced for staff; researcher/faculty adoption <strong>61%</strong>; HPC researchers exempted at VP Research request). Wireless: Cisco Catalyst 9100 APs; 802.1X for staff and OIT-managed faculty; PSK for student residential; eduroam for visiting international researchers.</p>
+
+            <h3>VLAN Segmentation</h3>
+            <table class="data-table">
+                <thead><tr><th>VLAN</th><th>Name</th><th>Subnet</th><th>Primary Systems</th><th>Risk</th></tr></thead>
+                <tbody>
+                <tr><td><strong>VLAN 10</strong></td><td>Admin / Corporate</td><td>10.10.0.0/20</td><td>Staff workstations (2,200); OIT servers (SRV-01, SRV-03, SRV-04, SRV-07, SRV-08, SRV-10); Splunk SIEM; CrowdStrike-managed endpoints</td><td><span class="tag tag-green">Best-controlled segment; CrowdStrike deployed; Splunk ingested; MFA enforced; access reviews current</span></td></tr>
+                <tr><td><strong>VLAN 20</strong></td><td>Faculty / Research (General)</td><td>10.20.0.0/18</td><td>OIT-managed faculty (804); dept-managed faculty (536); research lab computers (~380); IAS lab systems (ITAR scope); TMRC IRB server</td><td><span class="tag tag-red">ITAR data present (IAS); dept systems unmonitored; no CrowdStrike on dept devices; TMRC PHI not segmented; foreign national access to ITAR systems</span></td></tr>
+                <tr><td><strong>VLAN 30</strong></td><td>CUI Enclave (CMMC)</td><td>10.30.0.0/24</td><td>127 enrolled CUI researchers; GCC High-connected endpoints; CMMC-scoped systems; dedicated policy enforcement</td><td><span class="tag tag-yellow">Boundary incomplete — 73 of ~200 CUI researchers still on VLAN 20 / commercial M365; CUI arriving via commercial tenant daily; 11 NIST control failures attributed to this gap</span></td></tr>
+                <tr><td><strong>VLAN 40</strong></td><td>Student / Residential</td><td>10.40.0.0/18</td><td>~4,200 graduate student BYOD; student lab computers; residential network</td><td><span class="tag tag-yellow">BYOD; 802.1X auth only; no MDM; no EDR; isolated from VLAN 10/30 via ACL</span></td></tr>
+                <tr><td><strong>VLAN 50</strong></td><td>eduroam (Visiting Researchers)</td><td>172.16.50.0/22</td><td>Visiting international researchers; conference visitors; external collaborators (eduroam credentials)</td><td><span class="tag tag-green">Fully isolated — no route to any ARU internal VLAN; internet-only access; acceptable posture</span></td></tr>
+                <tr><td><strong>VLAN 60</strong></td><td>HPC / Research Computing</td><td>10.60.0.0/24</td><td>HPC head node (SRV-05); NetApp NAS (SRV-06); 48 compute nodes; SLURM scheduler</td><td><span class="tag tag-red">TCP/22 SSH open to internet (0.0.0.0/0); no IDS/IPS on segment; DOE+DOD CUI; Palo Alto SSH inspection disabled; CISA Nov 2025 advisory; nation-state targeting risk</span></td></tr>
+                <tr><td><strong>VLAN 70</strong></td><td>IoT / Lab Instruments</td><td>10.70.0.0/22</td><td>Legacy lab instruments (Windows XP/7); building automation systems; smart HVAC; environmental sensors</td><td><span class="tag tag-yellow">Legacy OS (XP/7) — no patch path; building automation on same segment as instruments; some instruments require internet for vendor licensing (poorly controlled outbound rules)</span></td></tr>
+                <tr><td><strong>VLAN 80</strong></td><td>IT Management</td><td>10.80.0.0/24</td><td>Server management interfaces (iDRAC/BMC); OIT admin workstations; CyberArk PAM (in deployment); network management systems</td><td><span class="tag tag-green">Restricted access; admin workstations only; PAM deployment in progress (CyberArk — 60% deployed); iDRAC credentials being rotated per CMMC remediation</span></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Network Diagram</h3>
+            <div class="net-diagram">
+<span class="nd-title">ALLEGHENY RESEARCH UNIVERSITY — NETWORK TOPOLOGY — OIT / FAC-01 PRIMARY DATA CENTER</span>
+<span class="nd-comment">═══════════════════════════════════════════════════════════════════════════════════════</span>
+
+<span class="nd-white">INTERNET</span>              <span class="nd-white">Internet2 (100 Gbps research peering)</span>
+    │                              │
+    ▼                              ▼
+<span class="nd-yellow">[ Comcast Business — 10 Gbps ]</span>   <span class="nd-cyan">[ Internet2 — 100 Gbps ]</span>  <span class="nd-comment">← high-speed research data xfer</span>
+    │                              │
+    └──────────────┬───────────────┘
+                   ▼
+<span class="nd-purple">[ Palo Alto PA-5220 NGFW + Panorama ]</span>  <span class="nd-comment">← IPS current; SSH inspection DISABLED on VLAN 60</span>
+    │          │
+    │          └──── <span class="nd-yellow">[ Cisco AnyConnect SSL VPN + Duo MFA ]</span>  <span class="nd-red">← 61% researcher adoption; HPC researchers EXEMPT</span>
+    │                    │
+    │               Remote offices (Pittsburgh, Philadelphia, DC, Brussels)
+    │
+    ▼
+<span class="nd-purple">[ Cisco Catalyst 9500 Core Switch — FAC-01 ]</span>
+    │
+    ├── <span class="nd-green">VLAN 10</span>  10.10.0.0/20    <span class="nd-white">Admin / Corporate</span>          <span class="nd-comment">(2,200 staff; OIT servers; Splunk; CrowdStrike)</span>
+    │
+    ├── <span class="nd-red">VLAN 20</span>  10.20.0.0/18    <span class="nd-white">Faculty / Research (General)</span>  <span class="nd-comment">(1,340 endpoints; dept-managed; IAS ITAR; TMRC PHI)</span>
+    │       │
+    │       └── <span class="nd-red">⚠ IAS ITAR lab systems on VLAN 20 — must be migrated to VLAN 30 CUI Enclave</span>
+    │
+    ├── <span class="nd-yellow">VLAN 30</span>  10.30.0.0/24    <span class="nd-white">CUI Enclave (CMMC)</span>          <span class="nd-comment">·········· BOUNDARY INCOMPLETE ··········</span>
+    │       │                                                    <span class="nd-comment">(only 127 of ~200 CUI researchers enrolled)</span>
+    │       └── <span class="nd-yellow">⚠ 73 CUI researchers still operating on VLAN 20 + commercial M365</span>
+    │
+    ├── <span class="nd-yellow">VLAN 40</span>  10.40.0.0/18    <span class="nd-white">Student / Residential</span>        <span class="nd-comment">(~4,200 BYOD; 802.1X only; no MDM)</span>
+    │
+    ├── <span class="nd-green">VLAN 50</span>  172.16.50.0/22  <span class="nd-white">eduroam (Visitors)</span>           <span class="nd-comment">(internet-only; fully isolated — OK)</span>
+    │
+    ├── <span class="nd-red">VLAN 60</span>  10.60.0.0/24    <span class="nd-white">HPC / Research Computing</span>     <span class="nd-comment">(SRV-05 + SRV-06 at FAC-04 via dark fiber)</span>
+    │       │
+    │       └──→ <span class="nd-red">⚠⚠ TCP/22 SSH OPEN TO INTERNET (0.0.0.0/0) — NO MFA — DOE+DOD CUI — NO IDS ⚠⚠</span>
+    │
+    ├── <span class="nd-yellow">VLAN 70</span>  10.70.0.0/22    <span class="nd-white">IoT / Lab Instruments</span>        <span class="nd-comment">(legacy Win XP/7; building automation; env sensors)</span>
+    │
+    └── <span class="nd-green">VLAN 80</span>  10.80.0.0/24    <span class="nd-white">IT Management</span>               <span class="nd-comment">(iDRAC/BMC; CyberArk PAM in deployment; admin only)</span>
+
+<span class="nd-comment">── REMOTE CAMPUS CONNECTIVITY ──────────────────────────────────────────────────</span>
+<span class="nd-white">FAC-02</span> (Drayton / DR)         ←── 10 Gbps dark fiber ───→  FAC-01 Core Switch
+<span class="nd-white">FAC-04</span> (Kellogg / HPC+NAS)    ←── 10 Gbps dark fiber ───→  FAC-01 Core Switch  <span class="nd-red">← VLAN 60 + SSH internet</span>
+<span class="nd-white">FAC-06</span> (IAS Laboratory)       ←── 1 Gbps fiber ─────────→  FAC-01 Core Switch  <span class="nd-red">← ITAR data on VLAN 20</span>
+<span class="nd-yellow">Pittsburgh, Philadelphia</span>     ←── Comcast MPLS ──────────→  Cisco AnyConnect VPN → FAC-01
+<span class="nd-yellow">DC, Brussels</span>                 ←── Internet ──────────────→  Cisco AnyConnect VPN → FAC-01
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Finding — HPC VLAN 60 Internet-Facing SSH:</strong> The HPC head node (SRV-05) on VLAN 60 accepts inbound SSH connections from any IP address (0.0.0.0/0 on TCP/22). This configuration was established in 2019 to allow external research collaborators worldwide to submit compute jobs. The Palo Alto NGFW <strong>does not inspect SSH traffic on this port</strong> (SSH inspection disabled at VP Research request — "blocks legitimate research tools"). There is no IDS/IPS monitoring on VLAN 60. A CISA advisory received in November 2025 warned of nation-state actors specifically targeting SSH interfaces on university HPC clusters hosting DOE and DOD research data. Two HPC accounts remain without MFA enrollment. The HPC is connected via dark fiber to the Research NAS (SRV-06) storing 480 TB of commingled federal research data — a successful SSH compromise provides immediate, authenticated access to all of it.
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>CUI Enclave Boundary Failure — VLAN 30 Porous:</strong> The CMMC CUI Enclave (VLAN 30, M365 GCC High) requires that ALL CUI-generating research be conducted on enclave-connected systems. However, 73 of approximately 200 researchers working on CUI projects have not migrated from commercial M365 (VLAN 20) to GCC High (VLAN 30). These researchers are receiving, creating, and transmitting CUI on commercial Microsoft 365 — a system that does not meet NIST SP 800-171 requirements. The C3PAO identified this as a critical gap accounting for <strong>failures in 11 of the 47 unimplemented NIST 800-171 practices</strong>, primarily in the Access Control (AC), System and Communications Protection (SC), and Configuration Management (CM) families.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         7. SECURITY CONTROLS & CYBERSECURITY POSTURE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🛡️ Security Controls &amp; Cybersecurity Posture <span class="section-badge">CONTROLS</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>ARU's security posture reflects an institution in transition: OIT-managed systems have foundational controls in place (EDR, SIEM, MFA, NGFW), but coverage is incomplete — systematically excluding the highest-risk environments: the HPC cluster, the Research NAS, departmental research endpoints, and shadow IT servers. The CMMC gap assessment identified this partial-coverage pattern as the root cause of 31 of the 47 unimplemented NIST 800-171 practices. The controls below represent the state as of the Q1 2026 assessment.</p>
+
+            <div class="metrics-grid" style="grid-template-columns: repeat(4,1fr);">
+                <div class="metric-box"><div class="mnum" style="color:#dc3545;">1</div><div class="mlbl">Domain at MIL 0 (WORKFORCE)</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#856404;">8</div><div class="mlbl">Domains at MIL 1 (Partial)</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#7b1fa2;">1</div><div class="mlbl">Domain at MIL 2 (RISK)</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#888;">0</div><div class="mlbl">Domains at MIL 3</div></div>
+            </div>
+
+            <table class="data-table">
+                <thead><tr><th>Control Domain</th><th>Tool / Solution</th><th>Coverage</th><th>Status</th><th>Key Gap</th></tr></thead>
+                <tbody>
+                <tr>
+                    <td><strong>Perimeter Firewall / NGFW</strong></td>
+                    <td>Palo Alto PA-5220 + Panorama (FAC-01)</td>
+                    <td>All inbound/outbound internet traffic; all campus VLANs</td>
+                    <td><span class="tag tag-yellow">Partial</span></td>
+                    <td>SSH inspection disabled on VLAN 60 at VP Research request — eliminates visibility into HPC internet-facing SSH sessions; IPS signatures current but ineffective on uninspected traffic</td>
+                </tr>
+                <tr>
+                    <td><strong>Endpoint Detection &amp; Response (EDR)</strong></td>
+                    <td>CrowdStrike Falcon (cloud-managed)</td>
+                    <td>OIT-managed endpoints only: 804 faculty laptops + 2,200 staff workstations = 3,004 endpoints (~37% of total 8,128)</td>
+                    <td><span class="tag tag-yellow">Partial — 37% coverage</span></td>
+                    <td>536 dept-managed faculty laptops, ~380 research lab computers, ~4,200 student BYOD, and 8 shadow servers completely excluded; CUI-handling researchers on unmanaged devices</td>
+                </tr>
+                <tr>
+                    <td><strong>SIEM / Log Management</strong></td>
+                    <td>Splunk Enterprise 9.2 (on-prem SRV-07, FAC-01)</td>
+                    <td>OIT-managed systems (VLAN 10, VLAN 80, select VLAN 20 OIT devices)</td>
+                    <td><span class="tag tag-yellow">Partial</span></td>
+                    <td>HPC cluster (SRV-05), Research NAS (SRV-06), VLAN 60, departmental systems (VLAN 20), shadow servers — NOT ingested; SOC analyst has no visibility into highest-risk environments; primary CMMC AU-domain failure</td>
+                </tr>
+                <tr>
+                    <td><strong>Multi-Factor Authentication (MFA)</strong></td>
+                    <td>Duo Security (integrated with AD; Cisco AnyConnect VPN; M365 GCC High)</td>
+                    <td>All staff (2,200) — enforced; OIT-managed faculty — enforced; VPN — staff enforced; researcher/faculty VPN adoption: 61%</td>
+                    <td><span class="tag tag-yellow">Partial</span></td>
+                    <td>HPC cluster SSH exempt at VP Research request; 39% of researchers not using VPN+MFA for remote access; 34 PIs not using MFA for Kuali Research; Duo not required for eduroam (visiting researchers)</td>
+                </tr>
+                <tr>
+                    <td><strong>Vulnerability Management</strong></td>
+                    <td>Tenable.io (cloud-based; authenticated scanning)</td>
+                    <td>OIT-managed servers (SRV-01 through SRV-10) and OIT endpoints</td>
+                    <td><span class="tag tag-yellow">Partial</span></td>
+                    <td>HPC (SRV-05) and NAS (SRV-06) scanning blocked — HPC Manager cites performance impact; departmental systems and shadow servers not scanned; 2 open CVEs on SRV-09 (CVSS 7.2, 6.8) unpatched 10+ weeks</td>
+                </tr>
+                <tr>
+                    <td><strong>Backup &amp; Recovery</strong></td>
+                    <td>Veeam Backup &amp; Replication v12 (SRV-10) + Azure Blob offsite copy</td>
+                    <td>OIT-managed servers (SRV-01 through SRV-04, SRV-07 through SRV-10); offsite: Azure Blob</td>
+                    <td><span class="tag tag-yellow">Partial</span></td>
+                    <td>HPC compute nodes and SRV-06 Research NAS (480 TB CUI data) NOT backed up; departmental systems and shadow servers excluded; HPC/NAS recovery plan: none documented</td>
+                </tr>
+                <tr>
+                    <td><strong>Identity &amp; Access Management (IAM)</strong></td>
+                    <td>Microsoft Active Directory (Windows Server 2022); Azure AD Connect; Duo RADIUS</td>
+                    <td>OIT-managed user accounts; all staff and OIT-managed faculty</td>
+                    <td><span class="tag tag-yellow">Partial</span></td>
+                    <td>No formal access review cycle (last conducted: 18 months ago); departmental IT staff manage their own accounts outside OIT directory; shadow IT server accounts unknown; 12 inactive accounts identified in March 2026 review</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Loss Prevention (DLP)</strong></td>
+                    <td>None deployed</td>
+                    <td>No coverage</td>
+                    <td><span class="tag tag-red">Not Deployed</span></td>
+                    <td>CUI flowing through commercial M365 (uncontrolled); no inspection of outbound email/file transfers for CUI keywords; no USB restriction policy enforced; C3PAO cited DLP absence as contributing to 6 NIST 800-171 failures (MP-5, SC-28, SI-12)</td>
+                </tr>
+                <tr>
+                    <td><strong>Privileged Access Management (PAM)</strong></td>
+                    <td>CyberArk Privileged Access Manager (cloud-hosted; in deployment)</td>
+                    <td>60% deployed — OIT sysadmins and some server privileged accounts vaulted</td>
+                    <td><span class="tag tag-yellow">In Deployment</span></td>
+                    <td>HPC cluster privileged accounts, NAS admin accounts, departmental IT privileged accounts NOT in CyberArk; completion target: Q3 2026; Security Engineer vacancy slowing deployment</td>
+                </tr>
+                <tr>
+                    <td><strong>Email Security</strong></td>
+                    <td>Microsoft Defender for Office 365 Plan 1 (commercial M365); GCC High configured separately</td>
+                    <td>Commercial M365 tenant (all staff/faculty); GCC High (127 enrolled researchers)</td>
+                    <td><span class="tag tag-yellow">Partial</span></td>
+                    <td>73 CUI researchers still on commercial M365 — receiving and sending CUI outside CMMC boundary; commercial M365 ATP policies not tuned for research environment; no anti-phishing custom training for research PIs</td>
+                </tr>
+                <tr>
+                    <td><strong>Physical Security</strong></td>
+                    <td>Keycard access (Honeywell Pro-Watch) at FAC-01, FAC-02, FAC-05; camera (Axis) at FAC-01, FAC-05</td>
+                    <td>Primary facilities FAC-01 and FAC-05 (best); FAC-04 compromised</td>
+                    <td><span class="tag tag-yellow">Partial</span></td>
+                    <td>FAC-04 (HPC) badge system misconfigured since Oct 2025 — not logging all entries; FAC-03 (Armstrong Research) has no OIT physical security standards; FAC-06 (IAS) visitor controls inadequate for ITAR; CISA flagged FAC-04 in Jan 2026</td>
+                </tr>
+                <tr>
+                    <td><strong>Security Awareness Training</strong></td>
+                    <td>KnowBe4 (contracted); targeted phishing simulations</td>
+                    <td>OIT-managed staff and faculty accounts assigned training; ~3,000 assignees</td>
+                    <td><span class="tag tag-red">Not Enforced</span></td>
+                    <td>No mandatory enforcement; completion rate not tracked; Faculty Senate resolution cited against mandating training; zero ITAR/EAR-specific training for researchers; zero CUI handling training for PIs; departmental IT staff excluded from KnowBe4 program</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warning">
+                <strong>Overall Security Posture:</strong> ARU's security controls reflect a classic "split campus" gap — strong central controls for administrative functions, near-zero controls for research environments. The HPC cluster hosting DOE and DOD CUI has no EDR, no SIEM coverage, no MFA-enforced access, and internet-facing SSH. The 480 TB Research NAS has no backup, no DLP, and commingled CUI. The 536 departmental faculty endpoints have no antivirus. This pattern — not the absence of tools, but the systematic exclusion of the highest-risk environments from available tools — is the defining characteristic of ARU's cybersecurity risk profile.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         8. THIRD-PARTY RELATIONSHIPS & VENDOR RISK
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🤝 Third-Party Relationships &amp; Vendor Risk <span class="section-badge">VENDORS</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>ARU's third-party risk posture is fragmented across two parallel vendor ecosystems: OIT-managed vendor relationships (with formal contracts, SOC 2 reviews, and BAAs where applicable) and departmental vendor relationships (acquired independently by 24 departmental IT staff, largely unknown to OIT, with no security vetting). The CMMC pre-assessment identified the lack of a formal Third-Party Risk Management (TPRM) program as a contributing factor in Supply Chain &amp; Dependencies domain failures. Six key vendor relationships are assessed below.</p>
+
+            <div class="vendor-grid">
+                <div class="vendor-card">
+                    <h4>Granite Shield LLC</h4>
+                    <div class="vendor-type">C3PAO / CMMC Assessor</div>
+                    <ul>
+                        <li>Services: CMMC Level 2 third-party assessment; pre-assessment gap analysis; POA&amp;M consultation</li>
+                        <li>Access: Full access to ARU SSP, network diagrams, security policies, system configurations, and personnel interviews</li>
+                        <li>Risk Rating: <span class="tag tag-yellow">MEDIUM — Sensitive access to full security posture</span></li>
+                        <li>Contract: C3PAO assessment agreement executed; NDA in place; DoD CMMC AB accredited</li>
+                        <li>Assessment target: Q4 2026</li>
+                    </ul>
+                </div>
+                <div class="vendor-card">
+                    <h4>Microsoft Corporation</h4>
+                    <div class="vendor-type">SaaS — M365 Commercial + GCC High</div>
+                    <ul>
+                        <li>Services: Email, Teams, SharePoint (commercial); CUI enclave (GCC High)</li>
+                        <li>Access: All staff/faculty email and collaboration; 127 CUI-researcher accounts in GCC High</li>
+                        <li>Risk Rating: <span class="tag tag-orange">HIGH — CUI enclave boundary incomplete; CUI in commercial tenant</span></li>
+                        <li>Contract: Enterprise Agreement current; GCC High tenant 6 months old; BAA not applicable (no HIPAA PHI in M365)</li>
+                        <li>Gap: 73 CUI researchers still on commercial tenant — CUI handling outside CMMC boundary daily</li>
+                    </ul>
+                </div>
+                <div class="vendor-card">
+                    <h4>Ellucian</h4>
+                    <div class="vendor-type">SaaS — Banner 9 Student Information System</div>
+                    <ul>
+                        <li>Services: Student records, enrollment, financial aid, grades — 18,400 students; FERPA scope</li>
+                        <li>Access: Cloud-hosted; on-prem integration via SRV-08 (Banner middleware)</li>
+                        <li>Risk Rating: <span class="tag tag-yellow">MEDIUM — FERPA scope; Ellucian SOC 2 Type II current</span></li>
+                        <li>Contract: Managed services agreement; BAA not required (FERPA, not HIPAA); SOC 2 Type II reviewed FY2025</li>
+                        <li>Gap: SRV-08 on-prem middleware is the vulnerability — Ellucian cloud environment itself is secure</li>
+                    </ul>
+                </div>
+                <div class="vendor-card">
+                    <h4>CrowdStrike</h4>
+                    <div class="vendor-type">Cloud-Managed EDR</div>
+                    <ul>
+                        <li>Services: Falcon EDR — endpoint detection, threat hunting, vulnerability management</li>
+                        <li>Access: Agent on all OIT-managed endpoints; telemetry to CrowdStrike cloud</li>
+                        <li>Risk Rating: <span class="tag tag-green">LOW — CrowdStrike SOC 2 Type II; FedRAMP Authorized; strong security controls</span></li>
+                        <li>Contract: Current; FedRAMP Authorized cloud; reviewed FY2025</li>
+                        <li>Gap: Coverage limited to OIT-managed endpoints (37% of total fleet)</li>
+                    </ul>
+                </div>
+                <div class="vendor-card">
+                    <h4>Kuali Inc.</h4>
+                    <div class="vendor-type">SaaS — Research Grants Management</div>
+                    <ul>
+                        <li>Services: Proposal development, grant tracking, sub-award management, federal contract compliance documentation</li>
+                        <li>Access: Cloud-hosted; contains federal contract terms, budget data, sub-award info for all 4 active contracts</li>
+                        <li>Risk Rating: <span class="tag tag-yellow">MEDIUM — Federal contract data; SOC 2 Type II; MFA gap</span></li>
+                        <li>Contract: SaaS agreement current; SOC 2 Type II reviewed FY2025</li>
+                        <li>Gap: MFA not enforced for 34 of ~200 PI users — ARU configuration gap, not vendor limitation</li>
+                    </ul>
+                </div>
+                <div class="vendor-card">
+                    <h4>Comcast Business</h4>
+                    <div class="vendor-type">ISP — Primary Internet Uplink</div>
+                    <ul>
+                        <li>Services: 10 Gbps commodity internet (primary WAN); backup MPLS for Pittsburgh and Philadelphia offices</li>
+                        <li>Access: Physical infrastructure; BGP peering at campus edge; no internal system access</li>
+                        <li>Risk Rating: <span class="tag tag-yellow">MEDIUM — Critical infrastructure dependency; single ISP for primary internet</span></li>
+                        <li>Contract: Enterprise services agreement; SLA: 99.9% uptime; no redundant ISP for primary campus</li>
+                        <li>Gap: No redundant ISP — Comcast outage takes down all commodity internet AND the HPC internet SSH access path; Internet2 peering is separate and resilient</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>Critical Gap — No Formal Third-Party Risk Management Program:</strong> ARU has no formal TPRM program. OIT reviews SOC 2 reports for major SaaS vendors, but: (1) the 24 departmental IT staff acquire vendors independently with no security vetting — the number and identity of departmental vendor relationships is unknown to OIT; (2) research-specific vendors (instrument manufacturers, specialty software) have persistent internet connections to lab systems on VLAN 20 with no monitoring; (3) no vendor security questionnaire process exists for non-SaaS vendors; (4) the DARPA contract CMMC requirement flows down to sub-awardees — ARU has not assessed whether any of its three active sub-awardees on the DARPA contract meet CMMC Level 1 requirements. The C3PAO identified supply chain &amp; dependencies as a MIL 1 domain with an immediate remediation requirement tied to CMMC certification.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         9. POLICIES, GOVERNANCE & COMPLIANCE
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>📋 Policies, Governance &amp; Compliance <span class="section-badge">POLICY</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Policy Inventory</h3>
+            <table class="data-table">
+                <thead><tr><th>Policy Name</th><th>Status</th><th>Last Reviewed</th><th>Key Gap</th></tr></thead>
+                <tbody>
+                <tr><td>Information Security Policy (Master)</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>March 2022</td><td>Predates CISO appointment; does not address CMMC, CUI, or departmental IT; under revision by GRC Specialist (target: May 2026)</td></tr>
+                <tr><td>Acceptable Use Policy (AUP)</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>January 2021</td><td>Does not address CUI handling, research data classification, or GCC High enclave requirements; faculty senate objects to USB restriction provisions</td></tr>
+                <tr><td>CUI Handling &amp; Data Classification Policy</td><td><span class="tag tag-red">Does Not Exist</span></td><td>—</td><td>Critical CMMC gap; no policy defining CUI identification, marking, handling, or approved systems; draft in progress by GRC Specialist (target: June 2026)</td></tr>
+                <tr><td>System Security Plan (SSP) — CMMC Enclave</td><td><span class="tag tag-yellow">Draft — Incomplete</span></td><td>In progress (started Sept 2025)</td><td>Required for CMMC Level 2 assessment; 60% complete; enclave boundary section not finalized due to 73 unmigrated researchers; Granite Shield C3PAO review scheduled Q3 2026</td></tr>
+                <tr><td>Incident Response Plan (IRP)</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>November 2023</td><td>Does not address HPC compromise scenario, ITAR breach notification, DFARS 252.204-7012 72-hour reporting, or FERPA breach; last tabletop exercise: 2022</td></tr>
+                <tr><td>Export Control Policy (ITAR/EAR)</td><td><span class="tag tag-red">Does Not Exist</span></td><td>—</td><td>No institutional ITAR/EAR technology control plan; no deemed export screening for research staff; IAS incident (Dr. Liu) directly attributable to this gap; Office of Research Compliance owns this — not OIT</td></tr>
+                <tr><td>Remote Access Policy</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>February 2022</td><td>Does not require MFA for all remote access; does not address HPC exempt status; VPN split-tunneling allowed without restriction</td></tr>
+                <tr><td>Data Backup &amp; Recovery Policy</td><td><span class="tag tag-yellow">Exists — Current</span></td><td>August 2025</td><td>Scoped to OIT-managed systems only; HPC cluster and Research NAS explicitly excluded ("managed by VP Research office"); no RTO/RPO defined for research data</td></tr>
+                <tr><td>Third-Party Risk Management Policy</td><td><span class="tag tag-red">Does Not Exist</span></td><td>—</td><td>No vendor security assessment requirements; departmental vendor acquisitions not subject to OIT review; C3PAO (Granite Shield) was engaged before a TPRM policy existed</td></tr>
+                <tr><td>Physical Security Policy</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>June 2021</td><td>Does not address Research Park facilities (FAC-04, FAC-06); predates ITAR requirements for IAS lab; badge audit requirements not met at FAC-04</td></tr>
+                <tr><td>HIPAA Privacy &amp; Security Policies</td><td><span class="tag tag-yellow">Exists — Outdated</span></td><td>March 2022</td><td>HIPAA risk analysis dated 2022; does not cover TMRC PHI-scope systems; BAA inventory incomplete (1 NIH data repository BAA not executed)</td></tr>
+                <tr><td>Security Awareness Training Policy</td><td><span class="tag tag-red">Does Not Exist as Mandatory Policy</span></td><td>—</td><td>KnowBe4 training assigned but not required; no policy mandating completion or defining role-based requirements; Faculty Senate resolution creates enforcement barrier; NIST 800-171 AT-2 / AT-3 non-conformity</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Regulatory Compliance Summary</h3>
+            <table class="data-table">
+                <thead><tr><th>Framework</th><th>Applicability</th><th>Current Compliance Status</th></tr></thead>
+                <tbody>
+                <tr><td><strong>NIST SP 800-171 r2</strong></td><td>All DOE, DOD/DARPA, and applicable NIH/NSF CUI-handling research</td><td><span class="tag tag-red">Non-Compliant — 47 of 110 practices unimplemented; SPRS estimated: −87; C3PAO assessment Q4 2026</span></td></tr>
+                <tr><td><strong>CMMC Level 2</strong></td><td>DARPA autonomous systems contract (required by contract clause); extends to all CUI-scope systems</td><td><span class="tag tag-red">Not Yet Certified — pre-assessment complete; POA&amp;M in progress; target certification Q4 2026 contingent on gap closure</span></td></tr>
+                <tr><td><strong>FERPA</strong></td><td>All student education records (18,400 students; Banner SIS; Canvas; Workday academic integration)</td><td><span class="tag tag-yellow">Substantially Compliant — Ellucian Banner SOC 2 Type II; annual FERPA training assigned; SRV-08 middleware is primary vulnerability; no FERPA breach history</span></td></tr>
+                <tr><td><strong>HIPAA Security Rule</strong></td><td>NIH-funded human subjects research (TMRC); limited PHI scope</td><td><span class="tag tag-yellow">Partially Compliant — HIPAA risk analysis dated 2022 (overdue); BAA incomplete (1 NIH repository); TMRC PHI-scope systems on VLAN 20 (not segmented); no encryption verification on TMRC endpoints</span></td></tr>
+                <tr><td><strong>ITAR (22 CFR 120–130)</strong></td><td>IAS DARPA autonomous systems research (UAV/autonomous vehicle defense articles)</td><td><span class="tag tag-red">Active Violation — deemed export violation (Dr. Liu); DDTC self-report not yet filed; IAS data on VLAN 20 (not CUI enclave); no Technology Control Plan; export license review overdue</span></td></tr>
+                <tr><td><strong>EAR (15 CFR 730–774)</strong></td><td>Dual-use research with potential export control implications (Materials Innovation Center, computational research)</td><td><span class="tag tag-yellow">Limited Assessment — no formal EAR screening program; Office of Research Compliance handles case-by-case; systematic review not conducted; low current risk vs. ITAR</span></td></tr>
+                <tr><td><strong>2 CFR Part 200 (Uniform Guidance)</strong></td><td>All federal grant funding (DOE, DOD/DARPA, NIH, NSF — $185M total)</td><td><span class="tag tag-yellow">Substantially Compliant — Kuali Research grants management; financial audit current; cybersecurity controls are the primary open compliance gap affecting grant renewals</span></td></tr>
+                <tr><td><strong>Pennsylvania Breach Notification Law (73 P.S. §2301)</strong></td><td>Any breach of PA resident personal information (students, employees)</td><td><span class="tag tag-green">Policy Aware — legal counsel has standing guidance; 60-day notification requirement; no breach history; IRP addresses but predates FERPA/HIPAA specific triggers</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         10. C2M2 DOMAIN ASSESSMENT PREPARATION
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>📊 C2M2 Domain Assessment Preparation <span class="section-badge">C2M2</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+            <p>ARU conducted a C2M2 v2.1 self-evaluation in Q1 2026, facilitated by CISO James Whitfield with input from the OIT team and Granite Shield LLC (C3PAO). The assessment evaluated all ten C2M2 domains against documented practices, interviews with IT staff and select faculty, and review of available policy documentation. Results reflect an institution with foundational controls for administrative IT, nearly absent controls for research IT, and governance gaps that undercut the effectiveness of deployed tools. The overall profile: MIL 1 across most domains, MIL 2 only in Risk Management (where the CMMC gap assessment and POA&amp;M represent structured management), and MIL 0 in Workforce Management.</p>
+
+            <div class="metrics-grid" style="grid-template-columns: repeat(4,1fr);">
+                <div class="metric-box"><div class="mnum" style="color:#dc3545;">1</div><div class="mlbl">Domain at MIL 0</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#856404;">8</div><div class="mlbl">Domains at MIL 1</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#7b1fa2;">1</div><div class="mlbl">Domain at MIL 2</div></div>
+                <div class="metric-box"><div class="mnum" style="color:#888;">0</div><div class="mlbl">Domains at MIL 3</div></div>
+            </div>
+
+            <div class="domain-grid">
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Asset, Change &amp; Configuration Management (ASSET)</h4>
+                    <p>OIT maintains a formal asset inventory for OIT-managed systems via ServiceNow ITSM. However, the 380+ research endpoints, 8 shadow servers, and departmental IT assets are not in the inventory. No baseline configuration standards exist for research or lab systems.</p>
+                    <ul>
+                        <li>OIT asset inventory current for ~3,004 managed endpoints and 10 servers</li>
+                        <li>8 shadow servers discovered Nov 2025 — still being inventoried</li>
+                        <li>No configuration baseline for HPC cluster or Research NAS</li>
+                        <li>Change management: informal ticketing in ServiceNow for OIT; no change process for HPC or departmental systems</li>
+                        <li>Software inventory incomplete — departmental and research applications unknown</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Threat &amp; Vulnerability Management (THREAT)</h4>
+                    <p>Tenable.io provides authenticated vulnerability scanning for OIT-managed systems. CISA advisories are received (REN-ISAC and CISA email). However, the HPC cluster and Research NAS are not scanned, and the November 2025 CISA advisory about HPC SSH targeting took 6 weeks to reach the CISO after initial receipt.</p>
+                    <ul>
+                        <li>Tenable.io scanning: OIT servers and managed endpoints only</li>
+                        <li>HPC (SRV-05) scan blocked by HPC Manager — "performance impact"</li>
+                        <li>2 unpatched CVEs on SRV-09 (CVSS 7.2 and 6.8) open 10+ weeks</li>
+                        <li>No formal vulnerability remediation SLA or tracking metrics</li>
+                        <li>CISA Nov 2025 HPC advisory: received via CISA email; no formal threat intel integration or response tracking</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil2">
+                    <span class="mil-badge mil-badge-2">MIL 2 — Managed</span>
+                    <h4>Risk Management (RISK)</h4>
+                    <p>Risk Management is ARU's strongest C2M2 domain — driven by the CMMC gap assessment, active POA&amp;M, and C3PAO engagement. A formal risk register is maintained by the GRC Specialist. Risk ownership is assigned. Executive visibility exists through the new ISGC. This is the only domain where management-level practices (MIL 2) are substantially demonstrated.</p>
+                    <ul>
+                        <li>Formal risk register maintained in GRC tool (Drata); updated monthly</li>
+                        <li>CMMC gap assessment (47 practices) provides prioritized risk baseline</li>
+                        <li>POA&amp;M in place; milestone dates assigned; C3PAO reviewing Q3 2026</li>
+                        <li>ISGC (Information Security Governance Committee) meets quarterly</li>
+                        <li>Cyber insurance policy reviewed annually; $5M limit; coverage gap analysis pending</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Identity &amp; Access Management (ACCESS)</h4>
+                    <p>Duo MFA is deployed for staff and VPN. Active Directory manages OIT user accounts. However, there is no formal access review cycle, departmental accounts are managed outside OIT, and CyberArk PAM is only 60% deployed. The HPC cluster has no MFA.</p>
+                    <ul>
+                        <li>Duo MFA enforced for staff (100%) and OIT-managed faculty (VPN: 61% adoption)</li>
+                        <li>HPC SSH: no MFA — VP Research exemption in place</li>
+                        <li>No formal access review cycle completed in 18 months; 12 inactive accounts found</li>
+                        <li>CyberArk PAM: 60% deployed; HPC and departmental privileged accounts excluded</li>
+                        <li>34 PIs with Kuali Research access using password-only (ARU configuration gap)</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Situational Awareness (SITUATION)</h4>
+                    <p>Splunk SIEM is deployed and monitored by a dedicated SOC Analyst during business hours. However, coverage is limited to OIT-managed systems. The HPC cluster, Research NAS, departmental endpoints, and shadow servers generate no telemetry in Splunk. A CISA advisory about HPC targeting was received but not actioned for 6 weeks.</p>
+                    <ul>
+                        <li>Splunk Enterprise 9.2 active; 1 SOC Analyst (business hours only)</li>
+                        <li>HPC (VLAN 60), NAS (SRV-06), departmental systems NOT in Splunk</li>
+                        <li>No 24/7 monitoring; after-hours incidents would go undetected until morning</li>
+                        <li>REN-ISAC threat feeds available but not integrated into Splunk</li>
+                        <li>CISA advisory Nov 2025 (HPC SSH targeting): received by email; 6-week delay before CISO briefed</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Event &amp; Incident Response, Continuity (RESPONSE)</h4>
+                    <p>An Incident Response Plan exists but has not been updated since November 2023 and has never been exercised for the highest-risk scenarios: HPC compromise, ITAR breach, or ransomware on VLAN 20. The plan does not address DFARS 252.204-7012 72-hour reporting or ITAR notification to DDTC.</p>
+                    <ul>
+                        <li>IRP exists (last updated Nov 2023); does not address ITAR breach, HPC compromise, DFARS reporting</li>
+                        <li>Last tabletop exercise: 2022 (ransomware scenario — general IT, not research-specific)</li>
+                        <li>No 24/7 SOC or on-call rotation for after-hours incidents</li>
+                        <li>Business Continuity Plan covers Banner/Workday; no continuity plan for research operations or HPC downtime</li>
+                        <li>Recovery for HPC and NAS not documented; no tested backup for 480 TB NAS</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Supply Chain &amp; External Dependencies (DEPENDENCIES)</h4>
+                    <p>OIT reviews SOC 2 reports for major SaaS vendors (Workday, Ellucian, CrowdStrike, Kuali). However, no formal TPRM program exists, departmental vendor relationships are unknown, and research instrument vendors have unmonitored network access. CMMC sub-awardee security not assessed.</p>
+                    <ul>
+                        <li>SOC 2 Type II reviewed for: Workday, Ellucian, CrowdStrike, Kuali, Instructure</li>
+                        <li>No TPRM program; no vendor security questionnaire process</li>
+                        <li>Departmental vendor relationships: unknown count, unknown access levels</li>
+                        <li>Research instrument vendors have persistent internet connections to VLAN 20/70 — unmonitored</li>
+                        <li>DARPA contract sub-awardees (3 organizations): CMMC compliance not assessed</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil0">
+                    <span class="mil-badge mil-badge-0">MIL 0 — Not Performed</span>
+                    <h4>Workforce Management (WORKFORCE)</h4>
+                    <p>ARU's Workforce Management is the only domain assessed at MIL 0. No mandatory security awareness training exists. The Faculty Senate resolution actively creates a political barrier to enforcement. No role-based security training is provided for researchers handling CUI, ITAR data, or HIPAA-scope information. The CISO has no authority to mandate training for departmental IT staff.</p>
+                    <ul>
+                        <li>KnowBe4 assigned but not required — completion rate not tracked or enforced</li>
+                        <li>Faculty Senate resolution (Nov 2025) cited against training mandates by department chairs</li>
+                        <li>Zero ITAR/EAR-specific training for any IAS researcher or faculty</li>
+                        <li>Zero CUI handling training for any of the ~200 CUI-scope PIs</li>
+                        <li>24 departmental IT staff receive no OIT security training</li>
+                        <li>NIST 800-171 AT-2 and AT-3 non-conformity: directly contributing to CMMC failure</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Cybersecurity Architecture (ARCHITECTURE)</h4>
+                    <p>Palo Alto NGFW, Cisco VLAN segmentation, and CrowdStrike EDR constitute the architectural foundation. However, the architecture has critical intentional gaps: SSH inspection disabled on VLAN 60, no zero-trust principles, CUI enclave boundary incomplete, and no DLP. The architecture protects administrative IT well and research IT poorly.</p>
+                    <ul>
+                        <li>Palo Alto PA-5220 NGFW with Panorama — current; SSH inspection disabled VLAN 60</li>
+                        <li>VLAN segmentation implemented; CUI enclave (VLAN 30) boundary incomplete</li>
+                        <li>No zero-trust or microsegmentation within VLANs</li>
+                        <li>No DLP deployed anywhere on the network or endpoints</li>
+                        <li>Internet2 peering provides 100 Gbps research data path — no special security controls on this path</li>
+                        <li>VLAN 70 (IoT/instruments): legacy OS systems on same segment as building automation</li>
+                    </ul>
+                </div>
+
+                <div class="domain-card dc-mil1">
+                    <span class="mil-badge mil-badge-1">MIL 1 — Initiated</span>
+                    <h4>Cybersecurity Program Management (PROGRAM)</h4>
+                    <p>The CISO appointment 18 months ago marked ARU's first formal cybersecurity program. Budget exists, a GRC tool is in use, and CMMC remediation is structured. However, the CISO lacks formal authority over research IT, the ISGC is new and untested, and the Security Engineer vacancy leaves the program understaffed for its remediation workload.</p>
+                    <ul>
+                        <li>First CISO appointed Sept 2024 — 18 months; CISSP-certified; former DoD contractor</li>
+                        <li>Security budget exists ($1.2M cybersecurity); formal budget line item in FY2026</li>
+                        <li>GRC tool (Drata) in use for POA&amp;M and evidence management</li>
+                        <li>ISGC established Oct 2025; met 3 times; no binding directives to departmental IT yet</li>
+                        <li>Security Engineer vacancy (9 months) creates critical program capacity gap</li>
+                        <li>No formal security metrics reported to Board of Trustees; CIO briefs annually</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         11. EXERCISE DISCUSSION QUESTIONS
+    ══════════════════════════════════ -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h2>🎓 Exercise Discussion Questions &amp; Scenario Injects <span class="section-badge">EXERCISE</span></h2>
+            <span class="section-arrow">▼</span>
+        </div>
+        <div class="section-body">
+
+            <h3>Discussion Questions</h3>
+
+            <div class="exercise-q">
+                <strong>Q1 — Asset Management (ASSET): Shadow IT Server Discovery</strong>
+                <p>During a network scan in November 2025, OIT discovered 8 unregistered servers in a lab closet at FAC-03 (Armstrong Research Complex). The servers are running unknown operating systems and are connected to VLAN 20. The departmental IT manager for the college says "those have been there for years — they run some bioinformatics pipelines." As the CISO, what are your immediate actions? What risks do these servers create for ARU's CMMC posture? Who has the authority to require their remediation, and what process would you follow?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q2 — Identity &amp; Access Management (ACCESS): HPC MFA Governance Logjam</strong>
+                <p>Two faculty PIs — Dr. James Park (Physics) and Dr. Elena Vasquez (Engineering) — have refused to enroll in Duo Security for HPC access despite six months of escalation. Their accounts have active SSH access to SRV-05 (password only) which hosts DOE and DOD CUI. CISO Whitfield's request for a VP Research mandate has been pending 11 weeks. What governance levers does the CISO have to force compliance? What are the consequences of inaction if a breach occurs through one of these accounts? Draft a one-paragraph escalation memo to the President that frames this as an institutional risk, not an IT request.</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q3 — Situational Awareness (SITUATION): Blind Spot Architecture</strong>
+                <p>ARU's Splunk SIEM covers OIT-managed systems only. The HPC (VLAN 60), Research NAS (SRV-06), departmental endpoints (VLAN 20), and shadow IT servers generate no telemetry. Assume ARU's security budget cannot increase for 12 months. Design a minimum viable monitoring approach that closes the most critical blind spots within existing resources. Specifically: what three telemetry sources would provide the highest-value coverage, and how would you deploy Splunk forwarders without VP Research approval for the HPC cluster?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q4 — Incident Response (RESPONSE): Research NAS Suspicious Access</strong>
+                <p>At 11:47 PM on a Tuesday, a network flow anomaly alert (triggered by Internet2 traffic analysis, not Splunk) shows 340 GB of outbound data from the Research NAS (SRV-06) to an IP address in Eastern Europe over a 4-hour window. The CISO is paged. The NAS contains CUI from four active federal contracts. Walk through ARU's first 60 minutes of incident response. Who is notified? What containment actions are available? What are the DFARS 252.204-7012 reporting requirements, and what is the 72-hour deadline clock from the moment of discovery?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q5 — Program Management (PROGRAM): Faculty Senate vs. CMMC</strong>
+                <p>The Faculty Senate resolution (November 2025) expressing concern about cybersecurity controls impeding academic freedom has been cited by three department chairs as justification for not implementing OIT security baselines on departmental endpoints — specifically blocking CrowdStrike deployment on 536 dept-managed faculty laptops. ARU's DARPA Contracting Officer has written to the President stating that CMMC Level 2 certification is required by Q4 2026 or the contract ($18M) is at risk. How do you frame the CMMC requirement to the Faculty Senate? What is the minimum control set that satisfies CMMC without triggering academic freedom concerns? Who has final decision authority if the Faculty Senate and the President's office are in conflict?</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q6 — Supply Chain &amp; Dependencies (DEPENDENCIES): Departmental Vendor Ecosystem</strong>
+                <p>ARU's 24 departmental IT staff independently acquire vendors for research software, lab instruments, and specialized computing tools. Several of these have persistent network connections to VLAN 20 (general faculty/research). OIT has no inventory of these relationships. For the CMMC enclave, how does this create a supply chain risk? What is the minimum TPRM control set that would satisfy CMMC Level 2 Practice SC.L2-3.13.1 (boundary protection) as it relates to third-party connections? Design a lightweight departmental vendor notification process that doesn't require full OIT procurement control.</p>
+            </div>
+
+            <div class="exercise-q">
+                <strong>Q7 — Risk Management (RISK): Emergency Budget Prioritization</strong>
+                <p>The President has authorized a $200,000 emergency cybersecurity allocation following the ITAR incident (Dr. Liu). The CISO has 90 days to spend it and must present a prioritized plan to the Board of Trustees. The four highest-risk items are: (1) close HPC SSH internet exposure via a VPN jump host — estimated $35K in tools + 3 weeks staff time; (2) migrate remaining 73 CUI researchers to GCC High — $0 licensing (seats purchased), 2 months staff time; (3) deploy Splunk forwarders to HPC and NAS — $45K in Splunk licensing + 4 weeks; (4) fill Security Engineer vacancy — $135K salary + benefits, 60-day hiring timeline. Prioritize these four items and justify your sequencing based on C2M2 domain impact and risk reduction per dollar.</p>
+            </div>
+
+            <h3>Scenario Injects</h3>
+
+            <div class="inject-card">
+                <div class="inject-title">🚨 Inject A — HPC Credential Compromise (Nation-State SSH Attack)</div>
+                <p><strong>Scenario:</strong> It is 11:04 PM on a Tuesday. The ARU SOC Analyst receives an automated Splunk alert: 847 failed SSH authentication attempts against SRV-05 (HPC head node) from a Russian IP block (ASN associated with APT29 activity per CISA indicator feed) over the past 40 minutes. At 11:23 PM the alert type changes — successful SSH login from a new IP in the same block, using the credentials of <strong>Dr. James Park</strong> (Physics), one of the two PIs who never enrolled in Duo. The session is active. The attacker is running <code>rsync -av /mnt/nas_research/ [external IP]:/drop/</code> — exfiltrating from the Research NAS. Estimated data transferred so far: 22 GB. The SOC Analyst wakes the CISO.</p>
+                <ul>
+                    <li>Who does the CISO notify first — CIO, VP Research, Dr. Park, General Counsel, the DARPA CO, or DOE security officer? Map out the notification sequence and first 30 minutes of decision-making.</li>
+                    <li>The SOC Analyst can terminate the SSH session in 90 seconds. What are the forensic and operational risks of immediate termination vs. monitoring the active session to gather attacker intelligence while data continues exfiltrating?</li>
+                    <li>The Research NAS (SRV-06) contains CUI from four active federal contracts. DFARS 252.204-7012 requires contractor notification to the DoD CIO within 72 hours of a "cyber incident" affecting CDI. What constitutes the moment the 72-hour clock starts? Who makes that determination?</li>
+                    <li>Dr. Park is in Geneva at a physics conference (time zone: +6 hours; currently 5:23 AM for him). How do you reach him, what do you tell him, and what actions do you request of him? His department chair is reachable but has no knowledge of HPC security procedures.</li>
+                    <li>The CISO wants to immediately block all inbound SSH to VLAN 60 on the Palo Alto firewall. The HPC Manager (reached at 11:40 PM) says three active compute jobs from other research groups will be killed — including a 72-hour DOE simulation that is 68 hours complete. Who has the authority to make this call at 11:45 PM?</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">⚠️ Inject B — ITAR Deemed Export Discovery</div>
+                <p><strong>Scenario:</strong> During a quarterly audit of the CMMC CUI enclave access list, the GRC Specialist discovers that <strong>Dr. Wei Liu</strong> — a Chinese national with H-1B immigration status, employed as a Research Assistant Professor in the Institute for Autonomous Systems — has been accessing IAS lab systems containing ITAR-controlled technical data (UAV guidance algorithms and autonomous vehicle control source code) for the past 14 months. The systems are on VLAN 20 (general faculty network). Access logs show 42 authenticated sessions to the IAS NAS from Dr. Liu's account. The IAS Lab Director (Dr. Liu's direct supervisor) was aware of his access and did not flag it as a concern. ARU has no Technology Control Plan on file with the State Department.</p>
+                <ul>
+                    <li>Is this a deemed export violation under ITAR §120.17? Analyze: Does the fact that Dr. Liu is physically located in the United States change the analysis? Does his H-1B visa status matter? Does faculty employment at a U.S. university provide any exemption?</li>
+                    <li>ARU has not filed an ITAR voluntary self-disclosure with the State Department's DDTC. What is the 30-day voluntary disclosure window, what does it require, and what are the potential penalties for failure to disclose vs. the benefits of timely self-report?</li>
+                    <li>Who within ARU must be notified in the next 24 hours — and in what order? What documents and access logs must be preserved immediately, and who has authority to place a legal hold on Dr. Liu's access and files?</li>
+                    <li>The DARPA Contracting Officer (CO) has been told informally via phone. What are ARU's formal contractual obligations to DARPA regarding ITAR violations on a DARPA-funded contract? Under what conditions can DARPA terminate the $18M contract for cause?</li>
+                    <li>The IAS Lab Director was aware of Dr. Liu's access and did not report it. What is ARU's institutional liability exposure as a result of supervisory knowledge? What HR, legal, and potentially criminal liability considerations apply to the Lab Director?</li>
+                </ul>
+            </div>
+
+            <div class="inject-card">
+                <div class="inject-title">🔴 Inject C — Ransomware on VLAN 20 / Financial Aid Disbursement at Risk</div>
+                <p><strong>Scenario:</strong> It is 7:34 AM on a Monday — eight days before ARU's spring semester financial aid disbursement date ($4.2 million to 6,800 students). The Help Desk receives 17 simultaneous calls from faculty reporting encrypted files and a ransom note on their screens. Investigation by the OIT Infrastructure Director confirms: a ransomware variant has spread across VLAN 20 (faculty/research) originating from a dept-managed faculty laptop (no CrowdStrike deployed). The malware has encrypted files on the IAS NAS and multiple research lab computers and is actively attempting lateral movement to VLAN 10 (admin). The VLAN 10/20 ACL appears to be holding. SRV-08 (Banner Integration Middleware — the financial aid dependency) is on VLAN 10 and is not yet affected. The 8 shadow IT servers are unresponsive. Three IAS researchers report their ITAR files appear to have been exfiltrated.</p>
+                <ul>
+                    <li>VLAN 20 contains 1,340+ endpoints (faculty laptops and research systems). Isolating VLAN 20 completely would halt all research activity across seven colleges and four research centers. What is your network isolation decision, and what criteria determine whether you do partial isolation (specific subnets) vs. full VLAN 20 shutdown?</li>
+                    <li>The 8 shadow IT servers are unresponsive. They may be compromised or may simply be offline. What is your approach to these systems in the first 4 hours — do you isolate, image, restore, or wait? How does the fact that you don't know what's on them change your decision?</li>
+                    <li>ITAR data from IAS (the autonomous vehicle control source code) may have been exfiltrated. ITAR breach notification to DDTC and DARPA CO is potentially required. What are the timelines, and can you make a disclosure before you know the full extent of the exfiltration? What is the risk of waiting vs. the risk of disclosing prematurely?</li>
+                    <li>SRV-08 (Banner Integration Middleware on VLAN 10) is not yet affected, and financial aid disbursement is 8 days away. At what point do you escalate to the Provost and CFO about potential disbursement disruption? What is your go/no-go decision point — and what is the fallback if SRV-08 is encrypted before disbursement day?</li>
+                    <li>The President wants to issue a public statement within 2 hours for students and faculty. The CISO recommends waiting 24 hours until the scope is determined. The GC says a statement is legally advisable given FERPA and PA breach law requirements. Who has final authority over the timing and content of the public communication, and how do you balance transparency with operational security?</li>
+                </ul>
+            </div>
+
+            <h3>Remediation Planning Exercise</h3>
+            <div class="exercise-q" style="background:#fff8f8; border-left: 4px solid #7b1fa2; border-radius: 8px;">
+                <strong>Exercise: 90-Day / 1-Year / 3-Year Remediation Roadmap</strong>
+                <p><strong>Constraints:</strong> $850,000 emergency authorization (one-time); 4-person security team (CISO + Security Analyst + GRC Specialist + SOC Analyst) plus 1 vacant Security Engineer position; institutional governance friction (Faculty Senate resolution, VP Research HPC authority); CMMC Level 2 assessment deadline Q4 2026.</p>
+                <p><strong>Task:</strong> Using the ARU case study data, construct a prioritized remediation roadmap across three time horizons. For each item, identify the C2M2 domain it addresses, the estimated cost or effort, and the primary owner (CISO / CIO / VP Research / Legal). Justify your sequencing — what must happen first to enable later remediation steps?</p>
+                <p><strong>Suggested Priority Framework:</strong></p>
+                <ul>
+                    <li><strong>90-Day (Emergency — pre-CMMC assessment):</strong> Close HPC SSH internet exposure via VPN jump host + enforce MFA via VP Research mandate; isolate IAS lab to VLAN 30 (CUI enclave); migrate remaining 73 CUI researchers to GCC High; initiate ITAR self-disclosure to DDTC; inventory 8 shadow servers; deploy Splunk forwarders to HPC and NAS</li>
+                    <li><strong>Year 1 (Structural — CMMC certification track):</strong> Fill Security Engineer vacancy; deploy CrowdStrike to departmental faculty laptops (Faculty Senate negotiation required); complete CyberArk PAM rollout to HPC and departmental systems; mandatory CUI and ITAR training rollout for ~200 CUI-scope researchers; formalize TPRM program; complete SSP and submit to C3PAO</li>
+                    <li><strong>Year 3 (Mature — MIL 2 across all domains):</strong> Achieve CMMC Level 2 certification; integrate departmental IT governance under OIT through updated Board of Trustees policy; deploy DLP across commercial M365 and GCC High; implement zero-trust network architecture for VLAN 20/30 boundary; 24/7 SOC capability (MSSP or internal); RTO/RPO for HPC and Research NAS documented and tested</li>
+                    <li><strong>Discussion:</strong> Which of the 47 unimplemented NIST 800-171 practices can be closed within the 90-day window? Which require multi-year governance changes? What is the minimum practice closure count to achieve a positive SPRS score?</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Allegheny Research University (ARU)</strong> — Fictional C2M2 Training Case Study</p>
+        <p>Part of the C2M2 Case Study Series · <a href="casestudies.html">← Return to Case Studies</a></p>
+        <p style="margin-top:0.5rem;opacity:0.6;">All organizations, individuals, systems, and events are entirely fictional and for educational use only.</p>
+    </div>
+</div>
+
+<script>
+    function toggleSection(header) {
+        const body = header.nextElementSibling;
+        const arrow = header.querySelector('.section-arrow');
+        const isOpen = body.classList.contains('open');
+        body.classList.toggle('open', !isOpen);
+        body.style.display = isOpen ? 'none' : 'block';
+        arrow.classList.toggle('open', !isOpen);
+        header.classList.toggle('open', !isOpen);
+    }
+
+    function expandAll() {
+        document.querySelectorAll('.section-body').forEach(b => { b.style.display = 'block'; b.classList.add('open'); });
+        document.querySelectorAll('.section-arrow').forEach(a => a.classList.add('open'));
+        document.querySelectorAll('.section-header').forEach(h => h.classList.add('open'));
+    }
+
+    function collapseAll() {
+        document.querySelectorAll('.section-body').forEach(b => { b.style.display = 'none'; b.classList.remove('open'); });
+        document.querySelectorAll('.section-arrow').forEach(a => a.classList.remove('open'));
+        document.querySelectorAll('.section-header').forEach(h => h.classList.remove('open'));
+    }
+
+    let editMode = false;
+    function toggleEditMode() {
+        editMode = !editMode;
+        document.body.classList.toggle('edit-active', editMode);
+        const btn = document.getElementById('editBtn');
+        btn.textContent = editMode ? '🔒 Lock Edits' : '✏️ Edit Mode';
+        btn.classList.toggle('active', editMode);
+        if (editMode) { enableEditing(); loadFromStorage(); }
+        else { disableEditing(); saveToStorage(); }
+    }
+
+    function enableEditing() {
+        document.querySelectorAll(
+            '.section-body p, .section-body li, .section-body td, .section-body h3, ' +
+            '.inject-card p, .inject-card li, .metric-box .mnum, .metric-box .mlbl, ' +
+            '.stat-card .snum, .stat-card .slbl, .page-header h1, .page-header .subtitle, ' +
+            '.domain-card p, .domain-card li, .exercise-q p, .exercise-q li'
+        ).forEach(el => el.setAttribute('contenteditable', 'true'));
+        document.querySelectorAll('.data-table tbody').forEach(tbody => {
+            const btn = document.createElement('button');
+            btn.className = 'add-row-btn'; btn.textContent = '+ Add Row';
+            btn.onclick = () => addTableRow(tbody);
+            tbody.parentElement.after(btn);
+        });
+        document.querySelectorAll('.inject-card ul, .exercise-q ul, .domain-card ul').forEach(ul => {
+            const btn = document.createElement('button');
+            btn.className = 'add-row-btn'; btn.textContent = '+ Add Item';
+            btn.style.marginTop = '0.3rem';
+            btn.onclick = () => addListItem(ul);
+            ul.after(btn);
+        });
+    }
+
+    function disableEditing() {
+        document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+        document.querySelectorAll('.add-row-btn').forEach(btn => btn.remove());
+        document.querySelectorAll('.del-btn').forEach(btn => btn.remove());
+    }
+
+    function addTableRow(tbody) {
+        const cols = tbody.querySelector('tr') ? tbody.querySelector('tr').cells.length : 4;
+        const tr = document.createElement('tr');
+        for (let i = 0; i < cols; i++) {
+            const td = document.createElement('td');
+            td.setAttribute('contenteditable', 'true'); td.textContent = 'New entry';
+            tr.appendChild(td);
+        }
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-btn'; delBtn.textContent = '✕';
+        delBtn.onclick = () => tr.remove();
+        tr.lastChild.appendChild(delBtn);
+        tbody.appendChild(tr);
+    }
+
+    function addListItem(ul) {
+        const li = document.createElement('li');
+        li.setAttribute('contenteditable', 'true'); li.textContent = 'New item';
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-btn'; delBtn.textContent = '✕';
+        delBtn.onclick = () => li.remove();
+        li.appendChild(delBtn);
+        ul.appendChild(li);
+    }
+
+    const STORAGE_KEY = 'aru-case-study-edits';
+    function saveToStorage() {
+        try { localStorage.setItem(STORAGE_KEY, document.querySelector('.container').innerHTML); }
+        catch(e) { console.warn('Save failed:', e); }
+    }
+    function loadFromStorage() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) document.querySelector('.container').innerHTML = saved;
+        } catch(e) { console.warn('Load failed:', e); }
+    }
+    function resetChanges() {
+        if (confirm('Reset all edits and reload the original case study?')) {
+            localStorage.removeItem(STORAGE_KEY); location.reload();
+        }
+    }
+
+    function exportHTML() {
+        const html = '<!DOCTYPE html>\n<html lang="en">\n' + document.documentElement.innerHTML + '\n</html>';
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'case-study-research-aru.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const firstBody = document.querySelector('.section-body.open');
+        if (firstBody) firstBody.style.display = 'block';
+    });
+</script>
+</body>
+</html>
